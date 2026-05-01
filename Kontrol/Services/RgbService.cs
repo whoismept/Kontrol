@@ -9,7 +9,6 @@ using RGB.NET.Devices.OpenRGB;
 using RGB.NET.Devices.Razer;
 using RGB.NET.Devices.SteelSeries;
 using RGB.NET.Devices.Wooting;
-using System.Collections.Concurrent;
 using NetColor = RGB.NET.Core.Color;
 using WColor = System.Windows.Media.Color;
 
@@ -22,7 +21,6 @@ public class RgbService : IDisposable
     private bool _initialized;
     private bool _disposed;
 
-    public bool IsInitialized => _initialized;
     public IReadOnlyList<string> InitLog => _initLog;
 
     public void Initialize(AppSettings? settings = null)

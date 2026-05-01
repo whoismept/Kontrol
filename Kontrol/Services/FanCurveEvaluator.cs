@@ -19,32 +19,8 @@ public class FanCurveEvaluator
 
     private float InterpolatePoints(FanCurve curve, float tempC, string fanKey)
     {
-        var points = curve.Points.OrderBy(p => p.TempC).ToList();
-        if (points.Count == 0) return 50f;
-        if (points.Count == 1) return points[0].Percent;
-
         float effectiveTemp = ApplyHysteresis(curve, tempC, fanKey);
-
-        if (effectiveTemp <= points[0].TempC)
-            return points[0].Percent;
-        if (effectiveTemp >= points[^1].TempC)
-            return points[^1].Percent;
-
-        for (int i = 0; i < points.Count - 1; i++)
-        {
-            var lo = points[i];
-            var hi = points[i + 1];
-
-            if (effectiveTemp >= lo.TempC && effectiveTemp <= hi.TempC)
-            {
-                float range = hi.TempC - lo.TempC;
-                if (range <= 0) return lo.Percent;
-                float t = (effectiveTemp - lo.TempC) / range;
-                return lo.Percent + t * (hi.Percent - lo.Percent);
-            }
-        }
-
-        return points[^1].Percent;
+        return CurveInterpolator.Interpolate(curve.Points, effectiveTemp);
     }
 
     private float ApplyHysteresis(FanCurve curve, float currentTemp, string fanKey)
@@ -94,12 +70,6 @@ public class FanCurveEvaluator
         }
 
         return state.CurrentPercent;
-    }
-
-    public void ResetState(string fanKey)
-    {
-        _hysteresisStates.TryRemove(fanKey, out _);
-        _smoothingStates.TryRemove(fanKey, out _);
     }
 
     public void ResetAll()

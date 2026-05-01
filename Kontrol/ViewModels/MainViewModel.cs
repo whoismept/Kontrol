@@ -11,9 +11,6 @@ public partial class MainViewModel : ObservableObject
     public SettingsViewModel Settings { get; }
     public FanControlViewModel FanConfig { get; }
 
-    [ObservableProperty]
-    private int _selectedTabIndex;
-
     public MainViewModel(AppSettings settings)
     {
         var hardwareService = App.HardwareServiceInstance ?? new HardwareService();

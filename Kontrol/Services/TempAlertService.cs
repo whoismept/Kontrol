@@ -27,7 +27,6 @@ public class TempAlertService : IDisposable
     }
 
     public void Start() => _timer.Start();
-    public void Stop() => _timer.Stop();
 
     private void CheckTemperatures()
     {

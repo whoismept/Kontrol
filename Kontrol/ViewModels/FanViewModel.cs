@@ -175,9 +175,3 @@ public partial class FanViewModel : ObservableObject, IDisposable
         _timer.Stop();
     }
 }
-
-public partial class SensorGroup : ObservableObject
-{
-    public string HardwareName { get; set; } = string.Empty;
-    public ObservableCollection<SensorReading> Sensors { get; } = new();
-}

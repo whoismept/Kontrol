@@ -46,16 +46,6 @@ public class FanControllerService : IDisposable
         _timer.Start();
     }
 
-    public void Stop()
-    {
-        _timer.Stop();
-    }
-
-    public void SetPollingInterval(int ms)
-    {
-        _timer.Interval = TimeSpan.FromMilliseconds(ms);
-    }
-
     public void DiscoverFans()
     {
         _fans = _fanControlService.DiscoverControllableFans(_hardwareService.GetHardwareList());
@@ -83,7 +73,6 @@ public class FanControllerService : IDisposable
     {
         try
         {
-            _hardwareService.UpdateAll();
             var readings = _hardwareService.GetAllReadings();
 
             foreach (var fan in _fans)

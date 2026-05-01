@@ -54,39 +54,12 @@ public partial class SettingsViewModel : ObservableObject
         _settings.OpenRgbPort = OpenRgbPort;
         _settings.OpenRgbClientName = OpenRgbClientName;
         _settings.Save();
-        ApplyTheme(SelectedTheme);
+        Services.ThemeHelper.Apply(SelectedTheme);
         SaveStatusText = $"Kaydedildi {DateTime.Now:HH:mm:ss}";
     }
 
     partial void OnSelectedThemeChanged(string value)
     {
-        ApplyTheme(value);
-    }
-
-    private static void ApplyTheme(string theme)
-    {
-        var resolved = theme;
-        if (resolved == "System")
-        {
-            resolved = IsSystemDarkTheme() ? "Dark" : "Light";
-        }
-
-        var appTheme = resolved == "Light"
-            ? Wpf.Ui.Appearance.ApplicationTheme.Light
-            : Wpf.Ui.Appearance.ApplicationTheme.Dark;
-
-        Wpf.Ui.Appearance.ApplicationThemeManager.Apply(appTheme);
-    }
-
-    private static bool IsSystemDarkTheme()
-    {
-        try
-        {
-            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
-                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-            var val = key?.GetValue("AppsUseLightTheme");
-            return val is int i && i == 0;
-        }
-        catch { return true; }
+        Services.ThemeHelper.Apply(value);
     }
 }

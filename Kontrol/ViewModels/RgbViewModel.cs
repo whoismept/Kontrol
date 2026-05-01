@@ -146,5 +146,6 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        _rgbService.Dispose();
     }
 }

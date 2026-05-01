@@ -25,8 +25,6 @@ public class CurveGraphEditor : Canvas
         set => SetValue(CurveProperty, value);
     }
 
-    public event Action? CurvePointsChanged;
-
     public CurveGraphEditor()
     {
         ClipToBounds = true;
@@ -45,6 +43,12 @@ public class CurveGraphEditor : Canvas
         Redraw();
     }
 
+    private Brush ResolveBrush(string resourceKey, Brush fallback)
+    {
+        try { return (Brush)FindResource(resourceKey); }
+        catch { return fallback; }
+    }
+
     private void Redraw()
     {
         Children.Clear();
@@ -57,36 +61,28 @@ public class CurveGraphEditor : Canvas
         double left = Padding, right = w - 10;
         double top = 10, bottom = h - Padding;
 
-        DrawGrid(left, right, top, bottom);
+        var gridBrush = ResolveBrush("ControlStrokeColorDefaultBrush", new SolidColorBrush(Color.FromArgb(30, 128, 128, 128)));
+        var textBrush = ResolveBrush("TextFillColorSecondaryBrush", new SolidColorBrush(Color.FromArgb(150, 128, 128, 128)));
+        var accentBrush = ResolveBrush("AccentFillColorDefaultBrush", new SolidColorBrush(Color.FromRgb(103, 58, 183)));
+
+        DrawGrid(left, right, top, bottom, gridBrush);
         DrawCurveLine(left, right, top, bottom);
-        DrawPoints(left, right, top, bottom);
-        DrawAxisLabels(left, right, top, bottom);
+        DrawPoints(left, right, top, bottom, textBrush, accentBrush);
+        DrawAxisLabels(left, right, top, bottom, textBrush);
     }
 
-    private void DrawGrid(double left, double right, double top, double bottom)
+    private void DrawGrid(double left, double right, double top, double bottom, Brush gridBrush)
     {
-        var gridBrush = new SolidColorBrush(Color.FromArgb(30, 255, 255, 255));
-
         for (int t = 0; t <= 100; t += 20)
         {
             double x = left + (right - left) * t / 100.0;
-            var line = new Line
-            {
-                X1 = x, Y1 = top, X2 = x, Y2 = bottom,
-                Stroke = gridBrush, StrokeThickness = 1
-            };
-            Children.Add(line);
+            Children.Add(new Line { X1 = x, Y1 = top, X2 = x, Y2 = bottom, Stroke = gridBrush, StrokeThickness = 1, Opacity = 0.4 });
         }
 
         for (int p = 0; p <= 100; p += 20)
         {
             double y = bottom - (bottom - top) * p / 100.0;
-            var line = new Line
-            {
-                X1 = left, Y1 = y, X2 = right, Y2 = y,
-                Stroke = gridBrush, StrokeThickness = 1
-            };
-            Children.Add(line);
+            Children.Add(new Line { X1 = left, Y1 = y, X2 = right, Y2 = y, Stroke = gridBrush, StrokeThickness = 1, Opacity = 0.4 });
         }
     }
 
@@ -101,7 +97,7 @@ public class CurveGraphEditor : Canvas
 
         for (float t = minT; t <= maxT; t += 0.5f)
         {
-            float pct = InterpolatePercent(points, t);
+            float pct = CurveInterpolator.Interpolate(points, t);
             double x = left + (right - left) * (t - minT) / (maxT - minT);
             double y = bottom - (bottom - top) * pct / 100.0;
 
@@ -117,45 +113,36 @@ public class CurveGraphEditor : Canvas
         }
 
         var gradient = new LinearGradientBrush(
-            Color.FromRgb(76, 175, 80),
-            Color.FromRgb(244, 67, 54),
+            Color.FromRgb(76, 175, 80), Color.FromRgb(244, 67, 54),
             new Point(0, 0), new Point(1, 0));
 
-        var path = new Path
+        Children.Add(new Path
         {
             Data = new PathGeometry(new[] { pathFigure }),
             Stroke = gradient,
             StrokeThickness = 2.5,
             StrokeLineJoin = PenLineJoin.Round
-        };
-        Children.Add(path);
+        });
 
         var fillFigure = new PathFigure { StartPoint = pathFigure.StartPoint };
         foreach (var seg in pathFigure.Segments) fillFigure.Segments.Add(seg.Clone());
 
-        double lastX = left + (right - left);
-        double firstX = left;
-        fillFigure.Segments.Add(new LineSegment(new Point(lastX, bottom), true));
-        fillFigure.Segments.Add(new LineSegment(new Point(firstX, bottom), true));
+        fillFigure.Segments.Add(new LineSegment(new Point(left + (right - left), bottom), true));
+        fillFigure.Segments.Add(new LineSegment(new Point(left, bottom), true));
         fillFigure.IsClosed = true;
 
         var fillGradient = new LinearGradientBrush(
-            Color.FromArgb(40, 76, 175, 80),
-            Color.FromArgb(40, 244, 67, 54),
+            Color.FromArgb(40, 76, 175, 80), Color.FromArgb(40, 244, 67, 54),
             new Point(0, 0), new Point(1, 0));
 
-        var fillPath = new Path
-        {
-            Data = new PathGeometry(new[] { fillFigure }),
-            Fill = fillGradient
-        };
-        Children.Add(fillPath);
+        Children.Add(new Path { Data = new PathGeometry(new[] { fillFigure }), Fill = fillGradient });
     }
 
-    private void DrawPoints(double left, double right, double top, double bottom)
+    private void DrawPoints(double left, double right, double top, double bottom, Brush textBrush, Brush accentBrush)
     {
         var points = Curve!.Points.OrderBy(p => p.TempC).ToList();
         float minT = 0, maxT = 100;
+        var strokeBrush = ResolveBrush("TextFillColorPrimaryBrush", Brushes.White);
 
         for (int i = 0; i < points.Count; i++)
         {
@@ -167,8 +154,8 @@ public class CurveGraphEditor : Canvas
             {
                 Width = PointRadius * 2,
                 Height = PointRadius * 2,
-                Fill = new SolidColorBrush(Color.FromRgb(103, 58, 183)),
-                Stroke = Brushes.White,
+                Fill = accentBrush,
+                Stroke = strokeBrush,
                 StrokeThickness = 2,
                 Cursor = Cursors.Hand,
                 Tag = i
@@ -188,7 +175,7 @@ public class CurveGraphEditor : Canvas
             {
                 Text = $"{pt.TempC:F0}°C, {pt.Percent:F0}%",
                 FontSize = 10,
-                Foreground = new SolidColorBrush(Color.FromArgb(200, 255, 255, 255))
+                Foreground = textBrush
             };
             SetLeft(label, x - 20);
             SetTop(label, y - 20);
@@ -196,19 +183,12 @@ public class CurveGraphEditor : Canvas
         }
     }
 
-    private void DrawAxisLabels(double left, double right, double top, double bottom)
+    private void DrawAxisLabels(double left, double right, double top, double bottom, Brush textBrush)
     {
-        var brush = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255));
-
         for (int t = 0; t <= 100; t += 20)
         {
             double x = left + (right - left) * t / 100.0;
-            var tb = new TextBlock
-            {
-                Text = $"{t}°",
-                FontSize = 10,
-                Foreground = brush
-            };
+            var tb = new TextBlock { Text = $"{t}°", FontSize = 10, Foreground = textBrush };
             SetLeft(tb, x - 10);
             SetTop(tb, bottom + 4);
             Children.Add(tb);
@@ -217,12 +197,7 @@ public class CurveGraphEditor : Canvas
         for (int p = 0; p <= 100; p += 20)
         {
             double y = bottom - (bottom - top) * p / 100.0;
-            var tb = new TextBlock
-            {
-                Text = $"{p}%",
-                FontSize = 10,
-                Foreground = brush
-            };
+            var tb = new TextBlock { Text = $"{p}%", FontSize = 10, Foreground = textBrush };
             SetLeft(tb, 2);
             SetTop(tb, y - 8);
             Children.Add(tb);
@@ -245,7 +220,6 @@ public class CurveGraphEditor : Canvas
         {
             _dragIndex = -1;
             el.ReleaseMouseCapture();
-            CurvePointsChanged?.Invoke();
             e.Handled = true;
         }
     }
@@ -274,25 +248,5 @@ public class CurveGraphEditor : Canvas
         point.Percent = MathF.Round(percent);
 
         Redraw();
-    }
-
-    private static float InterpolatePercent(List<CurvePoint> points, float tempC)
-    {
-        if (points.Count == 0) return 50;
-        if (tempC <= points[0].TempC) return points[0].Percent;
-        if (tempC >= points[^1].TempC) return points[^1].Percent;
-
-        for (int i = 0; i < points.Count - 1; i++)
-        {
-            if (tempC >= points[i].TempC && tempC <= points[i + 1].TempC)
-            {
-                float range = points[i + 1].TempC - points[i].TempC;
-                if (range <= 0) return points[i].Percent;
-                float t = (tempC - points[i].TempC) / range;
-                return points[i].Percent + t * (points[i + 1].Percent - points[i].Percent);
-            }
-        }
-
-        return points[^1].Percent;
     }
 }

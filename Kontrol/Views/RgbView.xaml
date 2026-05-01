@@ -6,7 +6,6 @@
 
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
-        <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         <conv:ColorToSolidBrushConverter x:Key="ColorToBrush"/>
     </UserControl.Resources>
 
@@ -40,7 +39,7 @@
 
             <!-- No devices found -->
             <ui:Card Padding="24"
-                     Visibility="{Binding HasDevices, Converter={StaticResource InvBoolToVis}}">
+                     Visibility="{Binding HasDevices, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
                 <StackPanel HorizontalAlignment="Center">
                     <ui:SymbolIcon Symbol="Color24" FontSize="48" Opacity="0.5" HorizontalAlignment="Center"/>
                     <TextBlock Text="RGB cihaz bulunamadı"

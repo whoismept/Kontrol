@@ -72,7 +72,7 @@ public partial class App : Application
             _tempAlertService.Start();
             WriteLog("TempAlertService başlatıldı");
 
-            _mainWindow = new MainWindow();
+            _mainWindow = new MainWindow(settings);
             WriteLog("MainWindow oluşturuldu");
 
             if (settings.StartMinimized)
@@ -174,23 +174,7 @@ public partial class App : Application
 
     private static void ApplyStartupTheme(string theme)
     {
-        try
-        {
-            var resolved = theme;
-            if (resolved == "System")
-            {
-                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
-                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-                var val = key?.GetValue("AppsUseLightTheme");
-                resolved = (val is int i && i == 0) ? "Dark" : "Light";
-            }
-
-            var appTheme = resolved == "Light"
-                ? Wpf.Ui.Appearance.ApplicationTheme.Light
-                : Wpf.Ui.Appearance.ApplicationTheme.Dark;
-
-            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(appTheme);
-        }
+        try { Services.ThemeHelper.Apply(theme); }
         catch { }
     }
 

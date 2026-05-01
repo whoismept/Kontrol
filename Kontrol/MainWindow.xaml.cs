@@ -11,10 +11,10 @@ public partial class MainWindow : FluentWindow
     private readonly MainViewModel _vm;
     private readonly AppSettings _settings;
 
-    public MainWindow()
+    public MainWindow(AppSettings settings)
     {
         InitializeComponent();
-        _settings = AppSettings.Load();
+        _settings = settings;
         _vm = new MainViewModel(_settings);
         DataContext = _vm;
     }
