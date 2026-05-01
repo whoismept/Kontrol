@@ -4,9 +4,9 @@
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
-        <!-- requireAdministrator: Anakart üzerine PWM yazmak ve LibreHardwareMonitor kernel sürücüsünü
-             çalıştırmak için yönetici yetkisi zorunludur. Build sonrası 'dotnet run' yerine
-             bin\refactor\Kontrol.exe doğrudan UAC ile çalıştırılmalıdır. -->
+        <!-- requireAdministrator: Administrator privileges are required to write PWM
+             values to the motherboard and run the LibreHardwareMonitor kernel driver.
+             After build, run bin\refactor\Kontrol.exe directly with UAC instead of 'dotnet run'. -->
         <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
       </requestedPrivileges>
     </security>

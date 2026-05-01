@@ -22,7 +22,7 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <ui:SymbolIcon Symbol="Color24" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="RGB Kontrolü" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="RGB Control" FontSize="24" FontWeight="SemiBold"/>
                     <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.55"/>
                 </StackPanel>
             </StackPanel>
@@ -31,7 +31,7 @@
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        Icon="{ui:SymbolIcon ArrowClockwise24}"
-                       ToolTip="Yeniden Tara"/>
+                       ToolTip="Rescan"/>
         </Grid>
 
         <!-- Main content -->
@@ -43,13 +43,13 @@
                      Visibility="{Binding HasDevices, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
                 <StackPanel HorizontalAlignment="Center">
                     <ui:SymbolIcon Symbol="Color24" FontSize="48" Opacity="0.5" HorizontalAlignment="Center"/>
-                    <TextBlock Text="RGB cihaz bulunamadı"
+                    <TextBlock Text="No RGB devices found"
                                FontSize="16" FontWeight="SemiBold"
                                Margin="0,12,0,4" HorizontalAlignment="Center"/>
                     <TextBlock TextAlignment="Center" Opacity="0.7" MaxWidth="500" TextWrapping="Wrap">
-                        <Run Text="Desteklenen markalar: ASUS Aura, Corsair iCUE, Cooler Master, Logitech, MSI, Razer Chroma, SteelSeries, Wooting."/>
+                        <Run Text="Supported brands: ASUS Aura, Corsair iCUE, Cooler Master, Logitech, MSI, Razer Chroma, SteelSeries, Wooting."/>
                         <LineBreak/>
-                        <Run Text="Cihazınız listelenmiyorsa: ilgili üreticinin SDK'sının yüklü olduğundan emin olun, sonra Yeniden Tara'ya basın."/>
+                        <Run Text="If your device is not listed, make sure the vendor SDK is installed, then click Rescan."/>
                     </TextBlock>
 =======
             <ScrollViewer Visibility="{Binding HasDevices, Converter={StaticResource InvBoolToVis}}"
@@ -58,16 +58,16 @@
                     <ui:Card Padding="24" Margin="0,0,0,12">
                         <StackPanel>
                             <ui:SymbolIcon Symbol="Color24" FontSize="36" Opacity="0.35" HorizontalAlignment="Left" Margin="0,0,0,12"/>
-                            <TextBlock Text="RGB cihaz bulunamadı" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                            <TextBlock Text="No RGB devices found" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
                             <TextBlock TextWrapping="Wrap" Opacity="0.7" LineHeight="20" FontSize="13">
-                                Uygulama iki yöntemle cihazları tanır:<LineBreak/>
+                                The app detects devices in two ways:<LineBreak/>
                                 <LineBreak/>
                                 <Run FontWeight="SemiBold">1. Windows Native (LampArray)</Run>
-                                <Run>— Herhangi bir SDK gerektirmez. HID LampArray protokolünü destekleyen cihazları otomatik bulur.</Run>
+                                <Run>— Requires no vendor SDK. Automatically discovers devices supporting HID LampArray.</Run>
                                 <LineBreak/>
                                 <LineBreak/>
                                 <Run FontWeight="SemiBold">2. Vendor SDK</Run>
-                                <Run>— Aşağıdaki markalara ait cihazlar ilgili yazılım yüklüyse çalışır.</Run>
+                                <Run>— Devices from the vendors below work when their software is installed.</Run>
                             </TextBlock>
                         </StackPanel>
                     </ui:Card>
@@ -75,7 +75,7 @@
                     <!-- Vendor table -->
                     <ui:Card Padding="20" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="Desteklenen Vendor SDK'ları" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
+                            <TextBlock Text="Supported Vendor SDKs" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="130"/>
@@ -107,7 +107,7 @@
                                 <TextBlock Grid.Row="6" Text="SteelSeries" FontWeight="SemiBold" FontSize="12" Margin="0,3"/>
                                 <TextBlock Grid.Row="6" Grid.Column="1" Text="SteelSeries GG" Opacity="0.65" FontSize="12" Margin="0,3"/>
                                 <TextBlock Grid.Row="7" Text="Wooting" FontWeight="SemiBold" FontSize="12" Margin="0,3"/>
-                                <TextBlock Grid.Row="7" Grid.Column="1" Text="Direkt HID (yazılım gerekmez)" Opacity="0.65" FontSize="12" Margin="0,3"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="Direct HID (no software required)" Opacity="0.65" FontSize="12" Margin="0,3"/>
                             </Grid>
                         </StackPanel>
                     </ui:Card>
@@ -115,10 +115,10 @@
                     <!-- Init log -->
                     <ui:Card Padding="18">
                         <StackPanel>
-                            <TextBlock Text="Başlatma Özeti" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                            <TextBlock Text="Startup Summary" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
                             <TextBlock Text="{Binding InitLogText}" FontSize="12" Opacity="0.7" Margin="0,0,0,6"/>
                             <TextBlock FontSize="11" Opacity="0.55" TextWrapping="Wrap">
-                                Vendor yazılımını yükledikten sonra uygulamayı yeniden başlatın.
+                                Restart the app after installing vendor software.
                             </TextBlock>
                         </StackPanel>
                     </ui:Card>
@@ -138,7 +138,7 @@
                 <ui:Card Grid.Column="0" Padding="0">
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top"
-                                   Text="Cihazlar" FontWeight="SemiBold" FontSize="13"
+                                   Text="Devices" FontWeight="SemiBold" FontSize="13"
                                    Margin="16,14,16,8"/>
                         <Border DockPanel.Dock="Top" Height="1"
                                 Background="{DynamicResource DividerStrokeColorDefaultBrush}"
@@ -256,7 +256,7 @@
                                 </Grid>
 
                                 <!-- Presets -->
-                                <TextBlock Text="Hazır Renkler" FontSize="11" Opacity="0.55" Margin="0,20,0,8"/>
+                                <TextBlock Text="Preset Colors" FontSize="11" Opacity="0.55" Margin="0,20,0,8"/>
                                 <WrapPanel>
                                     <Button Click="OnPresetColorClick" Tag="#FF0000" Width="40" Height="40" Margin="3"
                                             Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand">
@@ -324,12 +324,12 @@
                                     <ui:Button Command="{Binding ApplyColorToDeviceCommand}"
                                                Appearance="Primary"
                                                Icon="{ui:SymbolIcon Lightbulb24}"
-                                               Content="Seçili Cihaza Uygula"
+                                               Content="Apply to Selected Device"
                                                Margin="0,0,8,0"/>
                                     <ui:Button Command="{Binding ApplyColorToAllCommand}"
                                                Appearance="Secondary"
                                                Icon="{ui:SymbolIcon Lightbulb24}"
-                                               Content="Tümüne Uygula"/>
+                                               Content="Apply to All"/>
                                 </StackPanel>
                             </StackPanel>
                         </ui:Card>
@@ -337,7 +337,7 @@
                         <!-- Profiles -->
                         <ui:Card Padding="20">
                             <StackPanel>
-                                <TextBlock Text="Profiller" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,12"/>
+                                <TextBlock Text="Profiles" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,12"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                     <ComboBox ItemsSource="{Binding Profiles}"
                                               SelectedItem="{Binding SelectedProfile}"
@@ -345,16 +345,16 @@
                                     <ui:Button Command="{Binding LoadProfileCommand}"
                                                Appearance="Secondary"
                                                Icon="{ui:SymbolIcon FolderOpen24}"
-                                               Content="Yükle"/>
+                                               Content="Load"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:TextBox Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}"
-                                                PlaceholderText="Yeni profil adı"
+                                                PlaceholderText="New profile name"
                                                 Width="200" Margin="0,0,8,0"/>
                                     <ui:Button Command="{Binding SaveProfileCommand}"
                                                Appearance="Primary"
                                                Icon="{ui:SymbolIcon Save24}"
-                                               Content="Kaydet"/>
+                                               Content="Save"/>
                                 </StackPanel>
                             </StackPanel>
                         </ui:Card>

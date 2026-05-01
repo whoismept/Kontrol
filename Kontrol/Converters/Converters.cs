@@ -94,10 +94,10 @@ public class FanModeDisplayConverter : IValueConverter
     {
         return value is FanMode mode ? mode switch
         {
-            FanMode.Auto => "Otomatik (BIOS)",
-            FanMode.ManualConstant => "Sabit Hız",
-            FanMode.Curve => "Eğri (Sıcaklığa Göre)",
-            FanMode.Off => "Kapalı",
+            FanMode.Auto => "Automatic (BIOS)",
+            FanMode.ManualConstant => "Fixed Speed",
+            FanMode.Curve => "Curve (Temperature-Based)",
+            FanMode.Off => "Off",
             _ => mode.ToString()
         } : string.Empty;
     }
@@ -112,9 +112,9 @@ public class TempSourceModeDisplayConverter : IValueConverter
     {
         return value is TempSourceMode mode ? mode switch
         {
-            TempSourceMode.Single => "Tek Sensör",
-            TempSourceMode.Max => "Maksimum",
-            TempSourceMode.Average => "Ortalama",
+            TempSourceMode.Single => "Single Sensor",
+            TempSourceMode.Max => "Maximum",
+            TempSourceMode.Average => "Average",
             TempSourceMode.Min => "Minimum",
             _ => mode.ToString()
         } : string.Empty;
@@ -166,7 +166,7 @@ public class HiddenOpacityConverter : IValueConverter
 public class HideToggleTooltipConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is bool b && b ? "Göster" : "Gizle";
+        => value is bool b && b ? "Show" : "Hide";
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();

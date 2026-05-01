@@ -15,8 +15,8 @@ public partial class FanViewModel : ObservableObject, IDisposable
     private bool _disposed;
 
     [ObservableProperty] private bool _isLoading = true;
-    [ObservableProperty] private string _statusText = "Sensörler okunuyor...";
-    [ObservableProperty] private string _fanStatusText = "Hazır";
+    [ObservableProperty] private string _statusText = "Reading sensors...";
+    [ObservableProperty] private string _fanStatusText = "Ready";
     [ObservableProperty] private int _pollingIntervalMs = 2000;
     [ObservableProperty] private bool _hasControllableFans;
 
@@ -39,8 +39,8 @@ public partial class FanViewModel : ObservableObject, IDisposable
 
         if (!hardwareService.IsAvailable)
         {
-            StatusText = $"Uyarı: Sensörler okunamıyor — {hardwareService.InitError ?? "Bilinmeyen hata"}";
-            FanStatusText = "Donanım servisi başlatılamadı";
+            StatusText = $"Warning: Sensors cannot be read — {hardwareService.InitError ?? "Unknown error"}";
+            FanStatusText = "Hardware service failed to start";
             IsLoading = false;
         }
 
@@ -75,12 +75,12 @@ public partial class FanViewModel : ObservableObject, IDisposable
 
             UpdateLiveSummary(readings);
 
-            StatusText = $"Son güncelleme: {DateTime.Now:HH:mm:ss}";
+            StatusText = $"Last update: {DateTime.Now:HH:mm:ss}";
             IsLoading = false;
         }
         catch (Exception ex)
         {
-            StatusText = $"Hata: {ex.Message}";
+            StatusText = $"Error: {ex.Message}";
             IsLoading = false;
         }
     }
@@ -136,12 +136,12 @@ public partial class FanViewModel : ObservableObject, IDisposable
                     if (manual)
                     {
                         _fanControlService.SetSpeed(f, f.CurrentSpeed);
-                        FanStatusText = $"{f.Name} manuel";
+                        FanStatusText = $"{f.Name} manual";
                     }
                     else
                     {
                         _fanControlService.SetAuto(f);
-                        FanStatusText = $"{f.Name} otomatik";
+                        FanStatusText = $"{f.Name} automatic";
                     }
                 };
 
@@ -151,12 +151,12 @@ public partial class FanViewModel : ObservableObject, IDisposable
 
             HasControllableFans = ControllableFans.Count > 0;
             FanStatusText = HasControllableFans
-                ? $"{ControllableFans.Count} fan kontrol edilebilir"
-                : "Kontrol edilebilir fan yok";
+                ? $"{ControllableFans.Count} controllable fans"
+                : "No controllable fans";
         }
         catch (Exception ex)
         {
-            FanStatusText = $"Tarama hatası: {ex.Message}";
+            FanStatusText = $"Scan error: {ex.Message}";
         }
     }
 

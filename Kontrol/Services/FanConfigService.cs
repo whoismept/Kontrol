@@ -60,7 +60,7 @@ public class FanConfigService
         var mbMax = new TempSource
         {
             Id = "mb_max",
-            Name = "Anakart Max",
+            Name = "Motherboard Max",
             Mode = TempSourceMode.Max,
             SensorRefs = new() { new SensorRef { HardwareName = "*Motherboard*", SensorName = "*" } }
         };
@@ -68,7 +68,7 @@ public class FanConfigService
         var silent = new FanCurve
         {
             Id = "silent",
-            Name = "Sessiz",
+            Name = "Silent",
             Type = FanCurveType.Graph,
             Points = new()
             {
@@ -86,7 +86,7 @@ public class FanConfigService
         var balanced = new FanCurve
         {
             Id = "balanced",
-            Name = "Dengeli",
+            Name = "Balanced",
             Type = FanCurveType.Graph,
             Points = new()
             {
@@ -104,7 +104,7 @@ public class FanConfigService
         var performance = new FanCurve
         {
             Id = "performance",
-            Name = "Performans",
+            Name = "Performance",
             Type = FanCurveType.Graph,
             Points = new()
             {

@@ -87,7 +87,7 @@
                                  Tag="3" Checked="OnNavChecked" Margin="4,0,4,8">
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="Settings24" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Ayarlar" VerticalAlignment="Center" FontSize="13"/>
+                            <TextBlock Text="Settings" VerticalAlignment="Center" FontSize="13"/>
                         </StackPanel>
                     </RadioButton>
 
@@ -143,14 +143,14 @@
                                  Tag="0" IsChecked="True" Checked="OnNavChecked">
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="Gauge24" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Donanım" VerticalAlignment="Center" FontSize="13"/>
+                            <TextBlock Text="Hardware" VerticalAlignment="Center" FontSize="13"/>
                         </StackPanel>
                     </RadioButton>
                     <RadioButton x:Name="FansNav" Style="{StaticResource NavButton}"
                                  Tag="1" Checked="OnNavChecked">
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="WeatherBlowingSnow24" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Fan Kontrolü" VerticalAlignment="Center" FontSize="13"/>
+                            <TextBlock Text="Fan Control" VerticalAlignment="Center" FontSize="13"/>
                         </StackPanel>
                     </RadioButton>
                     <RadioButton x:Name="RgbNav" Style="{StaticResource NavButton}"

@@ -1,4 +1,4 @@
-﻿using Hardcodet.Wpf.TaskbarNotification;
+using Hardcodet.Wpf.TaskbarNotification;
 using Kontrol.Models;
 using Kontrol.Services;
 using System.IO;
@@ -25,30 +25,30 @@ public partial class App : Application
     {
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
-            var msg = args.ExceptionObject?.ToString() ?? "Bilinmeyen hata";
+            var msg = args.ExceptionObject?.ToString() ?? "Unknown error";
             WriteLog("UnhandledException: " + msg);
-            MessageBox.Show(msg, "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(msg, "Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
         };
     }
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        WriteLog("OnStartup başladı");
+        WriteLog("OnStartup started");
 
         DispatcherUnhandledException += (_, args) =>
         {
             WriteLog("DispatcherUnhandledException: " + args.Exception);
-            MessageBox.Show(args.Exception?.ToString(), "UI Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(args.Exception?.ToString(), "UI Error", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
 
         try
         {
             base.OnStartup(e);
-            WriteLog("base.OnStartup tamamlandı");
+            WriteLog("base.OnStartup completed");
 
             var settings = AppSettings.Load();
-            WriteLog("Settings yüklendi");
+            WriteLog("Settings loaded");
 
             ApplyStartupTheme(settings.Theme);
 
@@ -63,17 +63,17 @@ public partial class App : Application
                 settings.PollingIntervalMs);
             FanControllerInstance = _fanController;
             _fanController.Start();
-            WriteLog("FanControllerService başlatıldı");
+            WriteLog("FanControllerService started");
 
             CreateTrayIcon();
-            WriteLog("Tray icon oluşturuldu");
+            WriteLog("Tray icon created");
 
             _tempAlertService = new TempAlertService(HardwareServiceInstance, _trayIcon!, settings);
             _tempAlertService.Start();
-            WriteLog("TempAlertService başlatıldı");
+            WriteLog("TempAlertService started");
 
             _mainWindow = new MainWindow(settings);
-            WriteLog("MainWindow oluşturuldu");
+            WriteLog("MainWindow created");
 
             if (settings.StartMinimized)
             {
@@ -86,14 +86,14 @@ public partial class App : Application
                 _mainWindow.Show();
             }
 
-            WriteLog("MainWindow gösterildi");
+            WriteLog("MainWindow shown");
         }
         catch (Exception ex)
         {
-            WriteLog("OnStartup HATA: " + ex);
+            WriteLog("OnStartup ERROR: " + ex);
             MessageBox.Show(
-                $"Başlatma hatası:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nDetaylar için Desktop'taki Kontrol_startup.log dosyasını kontrol edin.",
-                "Başlatma Hatası",
+                $"Startup error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nCheck Kontrol_startup.log on Desktop for details.",
+                "Startup Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown(1);
@@ -104,13 +104,13 @@ public partial class App : Application
     {
         var contextMenu = new ContextMenu();
 
-        var toggleItem = new MenuItem { Header = "Göster/Gizle", FontWeight = FontWeights.SemiBold };
+        var toggleItem = new MenuItem { Header = "Show/Hide", FontWeight = FontWeights.SemiBold };
         toggleItem.Click += (_, _) => ToggleMainWindow();
         contextMenu.Items.Add(toggleItem);
 
         contextMenu.Items.Add(new Separator());
 
-        var exitItem = new MenuItem { Header = "Çıkış" };
+        var exitItem = new MenuItem { Header = "Exit" };
         exitItem.Click += (_, _) =>
         {
             _trayIcon?.Dispose();
@@ -126,7 +126,7 @@ public partial class App : Application
         _trayIcon.TrayLeftMouseDown += (_, _) => ToggleMainWindow();
 
         try { _trayIcon.Icon = LoadAppIcon(); }
-        catch (Exception ex) { WriteLog("Icon yükleme hatası (önemsiz): " + ex.Message); }
+        catch (Exception ex) { WriteLog("Icon load warning (non-critical): " + ex.Message); }
     }
 
     internal static System.Drawing.Icon LoadAppIcon()

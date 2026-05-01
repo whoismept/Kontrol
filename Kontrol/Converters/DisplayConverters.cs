@@ -19,10 +19,10 @@ public class FanModeDisplayConverter : IValueConverter
     {
         return value is FanMode mode ? mode switch
         {
-            FanMode.Auto => "Otomatik (BIOS)",
-            FanMode.ManualConstant => "Sabit Hız",
-            FanMode.Curve => "Eğri (Sıcaklığa Göre)",
-            FanMode.Off => "Kapalı",
+            FanMode.Auto => "Automatic (BIOS)",
+            FanMode.ManualConstant => "Fixed Speed",
+            FanMode.Curve => "Curve (Temperature-Based)",
+            FanMode.Off => "Off",
             _ => mode.ToString()
         } : string.Empty;
     }
@@ -37,9 +37,9 @@ public class TempSourceModeDisplayConverter : IValueConverter
     {
         return value is TempSourceMode mode ? mode switch
         {
-            TempSourceMode.Single => "Tek Sensör",
-            TempSourceMode.Max => "Maksimum",
-            TempSourceMode.Average => "Ortalama",
+            TempSourceMode.Single => "Single Sensor",
+            TempSourceMode.Max => "Maximum",
+            TempSourceMode.Average => "Average",
             TempSourceMode.Min => "Minimum",
             _ => mode.ToString()
         } : string.Empty;

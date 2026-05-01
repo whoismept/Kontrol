@@ -12,20 +12,20 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="32,24,32,16" VerticalAlignment="Center">
             <ui:SymbolIcon Symbol="Settings24" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
-            <TextBlock Text="Ayarlar" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock Text="Settings" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,24">
             <StackPanel MaxWidth="640" HorizontalAlignment="Left">
 
                 <!-- Hardware monitoring -->
-                <TextBlock Text="Donanım İzleme" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock Text="Sensör Güncelleme Aralığı (ms)"
+                        <TextBlock Text="Sensor Update Interval (ms)"
                                    FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
-                        <TextBlock Text="Düşük değer daha akıcı ama daha çok CPU kullanır."
+                        <TextBlock Text="Lower values feel smoother but use more CPU."
                                    FontSize="11" Opacity="0.7" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -45,7 +45,7 @@
                 </ui:Card>
 
                 <!-- App behavior -->
-                <TextBlock Text="Uygulama Davranışı" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="Application Behavior" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
@@ -55,8 +55,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Tray'e küçült" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Pencere kapatıldığında sistem tepsisinde kal"
+                                <TextBlock Text="Minimize to tray" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="Keep running in system tray when window is closed"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding MinimizeToTray}"/>
@@ -68,8 +68,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Küçültülmüş başlat" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Uygulama açıldığında sistem tepsisinden başlasın"
+                                <TextBlock Text="Start minimized" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="Start in system tray when app launches"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding StartMinimized}"/>
@@ -81,8 +81,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Windows ile başlat" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Oturum açıldığında otomatik çalıştır"
+                                <TextBlock Text="Launch with Windows" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="Run automatically at sign in"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding LaunchOnWindowsStartup}"/>
@@ -91,7 +91,7 @@
                 </ui:Card>
 
                 <!-- Temp Alerts -->
-                <TextBlock Text="Sıcaklık Uyarıları" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="Temperature Alerts" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
@@ -101,14 +101,14 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Sıcaklık uyarılarını etkinleştir" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Eşik aşıldığında sistem tepsisinden bildirim göster"
+                                <TextBlock Text="Enable temperature alerts" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="Show tray notification when threshold is exceeded"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding TempAlertsEnabled}"/>
                         </Grid>
 
-                        <TextBlock Text="Uyarı Eşiği (°C)" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
+                        <TextBlock Text="Alert Threshold (°C)" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -131,7 +131,7 @@
                 </ui:Card>
 
                 <!-- OpenRGB -->
-                <TextBlock Text="OpenRGB Entegrasyonu" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="OpenRGB Integration" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
@@ -141,8 +141,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="OpenRGB SDK Sunucusu" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="OpenRGB uygulamasının SDK Server modunu kullanarak tüm cihazları kontrol et"
+                                <TextBlock Text="OpenRGB SDK Server" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="Control all devices using OpenRGB SDK Server mode"
                                            FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding OpenRgbEnabled}"/>
@@ -153,7 +153,7 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Sunucu:" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="Host:" FontSize="13" VerticalAlignment="Center"/>
                             <ui:TextBox Grid.Column="1"
                                         Text="{Binding OpenRgbHost, UpdateSourceTrigger=PropertyChanged}"
                                         PlaceholderText="127.0.0.1"/>
@@ -173,19 +173,19 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="İstemci:" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="Client:" FontSize="13" VerticalAlignment="Center"/>
                             <ui:TextBox Grid.Column="1"
                                         Text="{Binding OpenRgbClientName, UpdateSourceTrigger=PropertyChanged}"
                                         PlaceholderText="Kontrol"/>
                         </Grid>
 
-                        <TextBlock Text="Not: OpenRGB uygulamasında SDK Server'ı etkinleştirmeniz gerekir. Değişiklik için uygulamayı yeniden başlatın."
+                        <TextBlock Text="Note: Enable SDK Server in OpenRGB. Restart the app for changes to take effect."
                                    FontSize="11" Opacity="0.6" TextWrapping="Wrap" Margin="0,12,0,0"/>
                     </StackPanel>
                 </ui:Card>
 
                 <!-- Appearance -->
-                <TextBlock Text="Görünüm" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="Appearance" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <Grid>
@@ -194,8 +194,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Tema" FontWeight="SemiBold" FontSize="13"/>
-                            <TextBlock Text="Koyu, Açık veya Sistem temasını seçin"
+                            <TextBlock Text="Theme" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock Text="Choose Dark, Light, or System theme"
                                        FontSize="11" Opacity="0.7"/>
                         </StackPanel>
                         <ComboBox Grid.Column="1"
@@ -212,7 +212,7 @@
                     <ui:Button Command="{Binding SaveCommand}"
                                Appearance="Primary"
                                Icon="{ui:SymbolIcon Save24}"
-                               Content="Kaydet"/>
+                               Content="Save"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

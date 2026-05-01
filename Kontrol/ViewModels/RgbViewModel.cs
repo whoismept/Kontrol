@@ -14,7 +14,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     private readonly AppSettings _settings;
     private bool _disposed;
 
-    [ObservableProperty] private string _statusText = "Hazır";
+    [ObservableProperty] private string _statusText = "Ready";
     [ObservableProperty] private RgbDevice? _selectedDevice;
     [ObservableProperty] private Color _selectedColor = Colors.Red;
     [ObservableProperty] private string? _selectedProfile;
@@ -59,7 +59,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
 
     private void Initialize()
     {
-        StatusText = "RGB cihazlar taranıyor...";
+        StatusText = "Scanning RGB devices...";
 
         try
         {
@@ -67,7 +67,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            StatusText = $"Başlatma hatası: {ex.Message}";
+            StatusText = $"Startup error: {ex.Message}";
         }
 
         BuildInitLogText();
@@ -82,10 +82,10 @@ public partial class RgbViewModel : ObservableObject, IDisposable
 
         var okNames = ok.Select(l => l.Replace("[OK] ", "")).ToList();
         var detail = okNames.Count > 0
-            ? $"Aktif: {string.Join(", ", okNames)}"
-            : "Hiçbir provider aktif değil";
+            ? $"Active: {string.Join(", ", okNames)}"
+            : "No provider is active";
 
-        InitLogText = $"{detail} | {skip.Count} provider atlandı";
+        InitLogText = $"{detail} | {skip.Count} provider skipped";
     }
 
     [RelayCommand]
@@ -99,7 +99,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            StatusText = $"Cihaz tarama hatası: {ex.Message}";
+            StatusText = $"Device scan error: {ex.Message}";
         }
 
         HasDevices = Devices.Count > 0;
@@ -113,7 +113,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         }
         else
         {
-            StatusText = "Cihaz bulunamadı";
+            StatusText = "No device found";
         }
     }
 
@@ -129,7 +129,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     {
         if (SelectedDevice is null) return;
         _rgbService.SetDeviceColor(SelectedDevice, SelectedColor);
-        StatusText = $"{SelectedDevice.Name} — renk uygulandı";
+        StatusText = $"{SelectedDevice.Name} — color applied";
     }
 
     [RelayCommand]
@@ -137,7 +137,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     {
         if (Devices.Count == 0) return;
         _rgbService.SetAllDevicesColor(Devices, SelectedColor);
-        StatusText = $"{Devices.Count} cihaza renk uygulandı";
+        StatusText = $"{Devices.Count} devices color applied";
     }
 
     [RelayCommand]
@@ -147,7 +147,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         var profile = _profileService.Load(SelectedProfile);
         if (profile is null)
         {
-            StatusText = "Profil yüklenemedi";
+            StatusText = "Profile could not be loaded";
             return;
         }
 
@@ -158,7 +158,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
                 _rgbService.SetDeviceColor(device, entry.GetColor());
         }
 
-        StatusText = $"Profil yüklendi: {profile.Name}";
+        StatusText = $"Profile loaded: {profile.Name}";
     }
 
     [RelayCommand]
@@ -177,7 +177,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         ReloadProfiles();
         NewProfileName = string.Empty;
         SelectedProfile = name;
-        StatusText = $"Profil kaydedildi: {name}";
+        StatusText = $"Profile saved: {name}";
     }
 
     public void Dispose()

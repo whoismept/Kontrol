@@ -10,7 +10,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyTitle>Kontrol</AssemblyTitle>
     <Product>Kontrol</Product>
-    <Copyright>2026</Copyright>
+    <Copyright>2026 Mert Umut</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RootNamespace>Kontrol</RootNamespace>
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
   </PropertyGroup>

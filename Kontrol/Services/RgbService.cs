@@ -69,7 +69,7 @@ public class RgbService : IDisposable
 
         if (deviceInfos.Count == 0)
         {
-            _initLog.Add("[SKIP] LampArray: cihaz yok");
+            _initLog.Add("[SKIP] LampArray: no device");
             return;
         }
 
@@ -127,7 +127,7 @@ public class RgbService : IDisposable
             {
                 Backend = RgbBackend.RgbNet,
                 Device = d,
-                Name = d.DeviceInfo.DeviceName ?? "Bilinmeyen",
+                Name = d.DeviceInfo.DeviceName ?? "Unknown",
                 Type = d.DeviceInfo.DeviceType.ToString(),
                 Manufacturer = d.DeviceInfo.Manufacturer ?? string.Empty,
                 LedCount = d.Count()

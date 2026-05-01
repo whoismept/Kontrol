@@ -59,7 +59,7 @@ public class TempAlertService : IDisposable
                 _lastAlertTime = DateTime.Now;
                 var message = string.Join("\n", criticalSensors.Take(5));
                 _trayIcon.ShowBalloonTip(
-                    "Yüksek Sıcaklık Uyarısı",
+                    "High Temperature Alert",
                     message,
                     BalloonIcon.Warning);
             }

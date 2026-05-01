@@ -15,13 +15,13 @@ public partial class FanControlViewModel : ObservableObject
     private readonly FanControllerService _controller;
     private readonly HardwareService _hardwareService;
 
-    [ObservableProperty] private string _statusText = "Hazır";
+    [ObservableProperty] private string _statusText = "Ready";
     [ObservableProperty] private FanAssignmentViewModel? _selectedFan;
     [ObservableProperty] private FanCurve? _selectedCurve;
     [ObservableProperty] private TempSource? _selectedTempSource;
     [ObservableProperty] private bool _showHiddenFans = false;
 
-    public string ShowHiddenButtonText => ShowHiddenFans ? "Gizlileri Kapat" : "Gizlileri Göster";
+    public string ShowHiddenButtonText => ShowHiddenFans ? "Hide Hidden" : "Show Hidden";
 
     partial void OnShowHiddenFansChanged(bool value) => OnPropertyChanged(nameof(ShowHiddenButtonText));
 
@@ -71,7 +71,7 @@ public partial class FanControlViewModel : ObservableObject
 
         int visible = FanAssignments.Count(a => !a.IsHidden);
         int hidden = FanAssignments.Count(a => a.IsHidden);
-        StatusText = $"{FanAssignments.Count} fan ({hidden} gizli) · {Curves.Count} eğri · {TempSources.Count} kaynak";
+        StatusText = $"{FanAssignments.Count} fans ({hidden} hidden) · {Curves.Count} curves · {TempSources.Count} sources";
     }
 
     private void SyncFanAssignments(FanConfig config)
@@ -112,7 +112,7 @@ public partial class FanControlViewModel : ObservableObject
         _controller.DiscoverFans();
         LoadFromConfig();
         RefreshAvailableSensors();
-        StatusText = $"{FanAssignments.Count} fan bulundu";
+        StatusText = $"{FanAssignments.Count} fans found";
     }
 
     [RelayCommand]
@@ -120,7 +120,7 @@ public partial class FanControlViewModel : ObservableObject
     {
         ApplyViewModelsToConfig();
         _controller.SaveConfig();
-        StatusText = $"Kaydedildi {DateTime.Now:HH:mm:ss}";
+        StatusText = $"Saved {DateTime.Now:HH:mm:ss}";
     }
 
     [RelayCommand]
@@ -131,7 +131,7 @@ public partial class FanControlViewModel : ObservableObject
     {
         var curve = new FanCurve
         {
-            Name = $"Yeni Eğri {Curves.Count + 1}",
+            Name = $"New Curve {Curves.Count + 1}",
             Points = new()
             {
                 new() { TempC = 30, Percent = 25 },
@@ -159,7 +159,7 @@ public partial class FanControlViewModel : ObservableObject
     {
         var source = new TempSource
         {
-            Name = $"Yeni Kaynak {TempSources.Count + 1}",
+            Name = $"New Source {TempSources.Count + 1}",
             SensorRefs = new() { new SensorRef { HardwareName = "*", SensorName = "*" } }
         };
         _controller.Config.TempSources.Add(source);
@@ -233,8 +233,8 @@ public partial class FanControlViewModel : ObservableObject
             ApplyViewModelsToConfig();
             var dialog = new SaveFileDialog
             {
-                Title = "Fan Profili Dışa Aktar",
-                Filter = "JSON dosyası (*.json)|*.json",
+                Title = "Fan Profili Export",
+                Filter = "JSON file (*.json)|*.json",
                 FileName = "kontrol_fan_profile.json"
             };
 
@@ -242,12 +242,12 @@ public partial class FanControlViewModel : ObservableObject
             {
                 var json = JsonSerializer.Serialize(_controller.Config, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(dialog.FileName, json);
-                StatusText = $"Profil dışa aktarıldı: {Path.GetFileName(dialog.FileName)}";
+                StatusText = $"Profile exported: {Path.GetFileName(dialog.FileName)}";
             }
         }
         catch (Exception ex)
         {
-            StatusText = $"Dışa aktarma hatası: {ex.Message}";
+            StatusText = $"Export error: {ex.Message}";
         }
     }
 
@@ -258,8 +258,8 @@ public partial class FanControlViewModel : ObservableObject
         {
             var dialog = new OpenFileDialog
             {
-                Title = "Fan Profili İçe Aktar",
-                Filter = "JSON dosyası (*.json)|*.json"
+                Title = "Fan Profili Import",
+                Filter = "JSON file (*.json)|*.json"
             };
 
             if (dialog.ShowDialog() == true)
@@ -268,18 +268,18 @@ public partial class FanControlViewModel : ObservableObject
                 var config = JsonSerializer.Deserialize<FanConfig>(json);
                 if (config is null)
                 {
-                    StatusText = "Geçersiz profil dosyası";
+                    StatusText = "Invalid profile file";
                     return;
                 }
 
                 _controller.UpdateConfig(config);
                 LoadFromConfig();
-                StatusText = $"Profil içe aktarıldı: {Path.GetFileName(dialog.FileName)}";
+                StatusText = $"Profile imported: {Path.GetFileName(dialog.FileName)}";
             }
         }
         catch (Exception ex)
         {
-            StatusText = $"İçe aktarma hatası: {ex.Message}";
+            StatusText = $"Import error: {ex.Message}";
         }
     }
 
