@@ -11,16 +11,16 @@ public class FanControlService
 
         foreach (var hw in hardware)
         {
-            CollectFans(hw, fans);
-            foreach (var sub in hw.SubHardware)
-                CollectFans(sub, fans);
+            CollectFansRecursive(hw, fans, depth: 0);
         }
 
         return fans;
     }
 
-    private static void CollectFans(IHardware hardware, List<FanControl> fans)
+    private static void CollectFansRecursive(IHardware hardware, List<FanControl> fans, int depth)
     {
+        if (depth > 3) return;
+
         try { hardware.Update(); } catch { }
 
         foreach (var sensor in hardware.Sensors)
@@ -39,6 +39,9 @@ public class FanControlService
                 FanSensor = fanRpmSensor,
             });
         }
+
+        foreach (var sub in hardware.SubHardware)
+            CollectFansRecursive(sub, fans, depth + 1);
     }
 
     private static ISensor? FindMatchingFanSensor(IHardware hardware, ISensor controlSensor)
@@ -64,11 +67,15 @@ public class FanControlService
         return int.TryParse(digits, out var n) ? n : null;
     }
 
+    // Converts a user-facing 0-100% value into the hardware's native control range,
+    // then calls SetSoftware. This fixes hardware that doesn't use 0-100 natively.
     public void SetSpeed(FanControl fan, float percent)
     {
         if (fan.Control is null) return;
-        var clamped = Math.Clamp(percent, fan.MinValue, fan.MaxValue);
-        try { fan.Control.SetSoftware(clamped); } catch { }
+        float min = fan.MinValue;
+        float max = fan.MaxValue;
+        float value = min + (max - min) * Math.Clamp(percent, 0f, 100f) / 100f;
+        try { fan.Control.SetSoftware(value); } catch { }
     }
 
     public void SetAuto(FanControl fan)

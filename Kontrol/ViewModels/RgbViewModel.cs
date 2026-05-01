@@ -22,6 +22,29 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _hasDevices;
     [ObservableProperty] private string _initLogText = string.Empty;
 
+    public string HexColorText
+    {
+        get => $"#{SelectedColor.R:X2}{SelectedColor.G:X2}{SelectedColor.B:X2}";
+        set
+        {
+            try
+            {
+                var hex = value?.TrimStart('#') ?? "";
+                if (hex.Length == 6)
+                {
+                    byte r = Convert.ToByte(hex[..2], 16);
+                    byte g = Convert.ToByte(hex[2..4], 16);
+                    byte b = Convert.ToByte(hex[4..6], 16);
+                    SelectedColor = Color.FromRgb(r, g, b);
+                    OnPropertyChanged();
+                }
+            }
+            catch { }
+        }
+    }
+
+    partial void OnSelectedColorChanged(Color value) => OnPropertyChanged(nameof(HexColorText));
+
     public ObservableCollection<RgbDevice> Devices { get; } = new();
     public ObservableCollection<string> Profiles { get; } = new();
 
@@ -47,9 +70,22 @@ public partial class RgbViewModel : ObservableObject, IDisposable
             StatusText = $"Başlatma hatası: {ex.Message}";
         }
 
-        InitLogText = string.Join("\n", _rgbService.InitLog);
+        BuildInitLogText();
         LoadDevices();
         ReloadProfiles();
+    }
+
+    private void BuildInitLogText()
+    {
+        var ok = _rgbService.InitLog.Where(l => l.StartsWith("[OK]")).ToList();
+        var skip = _rgbService.InitLog.Where(l => l.StartsWith("[SKIP]")).ToList();
+
+        var okNames = ok.Select(l => l.Replace("[OK] ", "")).ToList();
+        var detail = okNames.Count > 0
+            ? $"Aktif: {string.Join(", ", okNames)}"
+            : "Hiçbir provider aktif değil";
+
+        InitLogText = $"{detail} | {skip.Count} provider atlandı";
     }
 
     [RelayCommand]
@@ -71,11 +107,13 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         if (HasDevices)
         {
             SelectedDevice ??= Devices[0];
-            StatusText = $"{Devices.Count} cihaz bulundu";
+            int lampCount = Devices.Count(d => d.Backend == RgbBackend.LampArray);
+            int sdkCount = Devices.Count(d => d.Backend == RgbBackend.RgbNet);
+            StatusText = $"{Devices.Count} cihaz ({sdkCount} SDK · {lampCount} Native)";
         }
         else
         {
-            StatusText = "Cihaz bulunamadı — desteklenen marka/SDK gerekli";
+            StatusText = "Cihaz bulunamadı";
         }
     }
 
@@ -91,7 +129,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     {
         if (SelectedDevice is null) return;
         _rgbService.SetDeviceColor(SelectedDevice, SelectedColor);
-        StatusText = $"{SelectedDevice.Name} cihazına renk uygulandı";
+        StatusText = $"{SelectedDevice.Name} — renk uygulandı";
     }
 
     [RelayCommand]

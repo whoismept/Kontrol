@@ -1,4 +1,5 @@
 using Kontrol.Models.Fan;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -34,8 +35,19 @@ public class CurveGraphEditor : Canvas
 
     private static void OnCurveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is CurveGraphEditor editor) editor.Redraw();
+        if (d is not CurveGraphEditor editor) return;
+
+        if (e.OldValue is FanCurve old)
+            old.Points.CollectionChanged -= editor.OnPointsCollectionChanged;
+
+        if (e.NewValue is FanCurve newCurve)
+            newCurve.Points.CollectionChanged += editor.OnPointsCollectionChanged;
+
+        editor.Redraw();
     }
+
+    private void OnPointsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => Redraw();
 
     protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
     {
@@ -76,13 +88,21 @@ public class CurveGraphEditor : Canvas
         for (int t = 0; t <= 100; t += 20)
         {
             double x = left + (right - left) * t / 100.0;
+<<<<<<< HEAD
             Children.Add(new Line { X1 = x, Y1 = top, X2 = x, Y2 = bottom, Stroke = gridBrush, StrokeThickness = 1, Opacity = 0.4 });
+=======
+            Children.Add(new Line { X1 = x, Y1 = top, X2 = x, Y2 = bottom, Stroke = gridBrush, StrokeThickness = 1 });
+>>>>>>> claude/strange-gagarin-b63c6b
         }
 
         for (int p = 0; p <= 100; p += 20)
         {
             double y = bottom - (bottom - top) * p / 100.0;
+<<<<<<< HEAD
             Children.Add(new Line { X1 = left, Y1 = y, X2 = right, Y2 = y, Stroke = gridBrush, StrokeThickness = 1, Opacity = 0.4 });
+=======
+            Children.Add(new Line { X1 = left, Y1 = y, X2 = right, Y2 = y, Stroke = gridBrush, StrokeThickness = 1 });
+>>>>>>> claude/strange-gagarin-b63c6b
         }
     }
 
@@ -126,16 +146,29 @@ public class CurveGraphEditor : Canvas
 
         var fillFigure = new PathFigure { StartPoint = pathFigure.StartPoint };
         foreach (var seg in pathFigure.Segments) fillFigure.Segments.Add(seg.Clone());
+<<<<<<< HEAD
 
+=======
+>>>>>>> claude/strange-gagarin-b63c6b
         fillFigure.Segments.Add(new LineSegment(new Point(left + (right - left), bottom), true));
         fillFigure.Segments.Add(new LineSegment(new Point(left, bottom), true));
         fillFigure.IsClosed = true;
 
+<<<<<<< HEAD
         var fillGradient = new LinearGradientBrush(
             Color.FromArgb(40, 76, 175, 80), Color.FromArgb(40, 244, 67, 54),
             new Point(0, 0), new Point(1, 0));
 
         Children.Add(new Path { Data = new PathGeometry(new[] { fillFigure }), Fill = fillGradient });
+=======
+        Children.Add(new Path
+        {
+            Data = new PathGeometry(new[] { fillFigure }),
+            Fill = new LinearGradientBrush(
+                Color.FromArgb(40, 76, 175, 80), Color.FromArgb(40, 244, 67, 54),
+                new Point(0, 0), new Point(1, 0))
+        });
+>>>>>>> claude/strange-gagarin-b63c6b
     }
 
     private void DrawPoints(double left, double right, double top, double bottom, Brush textBrush, Brush accentBrush)
@@ -188,7 +221,11 @@ public class CurveGraphEditor : Canvas
         for (int t = 0; t <= 100; t += 20)
         {
             double x = left + (right - left) * t / 100.0;
+<<<<<<< HEAD
             var tb = new TextBlock { Text = $"{t}°", FontSize = 10, Foreground = textBrush };
+=======
+            var tb = new TextBlock { Text = $"{t}°", FontSize = 10, Foreground = brush };
+>>>>>>> claude/strange-gagarin-b63c6b
             SetLeft(tb, x - 10);
             SetTop(tb, bottom + 4);
             Children.Add(tb);
@@ -197,7 +234,11 @@ public class CurveGraphEditor : Canvas
         for (int p = 0; p <= 100; p += 20)
         {
             double y = bottom - (bottom - top) * p / 100.0;
+<<<<<<< HEAD
             var tb = new TextBlock { Text = $"{p}%", FontSize = 10, Foreground = textBrush };
+=======
+            var tb = new TextBlock { Text = $"{p}%", FontSize = 10, Foreground = brush };
+>>>>>>> claude/strange-gagarin-b63c6b
             SetLeft(tb, 2);
             SetTop(tb, y - 8);
             Children.Add(tb);
