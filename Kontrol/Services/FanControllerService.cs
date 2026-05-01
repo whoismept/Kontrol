@@ -49,14 +49,11 @@ public class FanControllerService : IDisposable
         _timer.Start();
     }
 
-<<<<<<< HEAD
-=======
     public void Stop() => _timer.Stop();
 
     public void SetPollingInterval(int ms)
         => _timer.Interval = TimeSpan.FromMilliseconds(ms);
 
->>>>>>> claude/strange-gagarin-b63c6b
     public void DiscoverFans()
         => _fans = _fanControlService.DiscoverControllableFans(_hardwareService.GetHardwareList());
 

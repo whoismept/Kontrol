@@ -1,107 +1,161 @@
 # Kontrol
 
-Kontrol is a Windows desktop app for **hardware monitoring**, **fan control**, and **RGB lighting management**.
-It provides a single interface to monitor sensors, automate fan behavior by temperature, and manage RGB devices with reusable profiles.
+A Windows desktop application combining fan speed control and RGB management in one place.
 
-The UI is built with **WPF + WPF-UI**. Sensor data comes from **LibreHardwareMonitor**, and RGB integrations are powered by **RGB.NET** (plus optional OpenRGB and native LampArray support).
+![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4)
+![WPF](https://img.shields.io/badge/UI-WPF--UI%204.2-0078D4)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue)
 
-## What It Does
+---
 
-- Reads and groups hardware sensors (temperature, fan speed, load, and related metrics)
-- Controls fans in `Auto`, `ManualConstant`, `Curve`, or `Off` modes
-- Assigns per-fan temperature sources, curves, and min/max speed limits
-- Supports RGB profile create/save/load workflows
-- Runs from the system tray with startup behavior options
-- Persists user settings and control configurations
+## Features
 
-## Main Modules
+### Fan Control
+- **Auto (BIOS)** — Hand control back to the BIOS
+- **Fixed Speed** — Set a manual speed from 0–100% with a slider
+- **Temperature Curve** — Full control via custom temperature/speed points
+- **Fan Naming** — Rename fans with your own labels
+- **Fan Hiding** — Hide fans you don't use from the list
+- **Curve Editor** — Drag-and-drop graphical curve editor
+- **Temperature Sources** — Combine multiple sensors using average, max, or min
+- **Profile Import/Export** — Save and load fan profiles in JSON format
 
-The main window has 4 sections:
+### RGB Control
+- **Windows Native LampArray** — No SDK or third-party app required; built-in support from Windows 10 2004+
+- **8 Vendor SDKs** — ASUS Aura, Corsair iCUE, CoolerMaster, Logitech G HUB, MSI Center, Razer Synapse, SteelSeries GG, Wooting
+- **OpenRGB** — Optional; adds extra device support via its own server
+- **Color Picker** — RGB sliders, HEX input field, and preset color swatches
+- **Profiles** — Save and load per-device color profiles
 
-- **Hardware**: Live monitoring for temperatures, fan speed, and loads
-- **Fan Control**: Fan discovery, assignment, curve tuning, and source mapping
-- **RGB**: Device scan, color application, and profile management
-- **Settings**: Theme, startup behavior, tray options, alert threshold, OpenRGB options
+### Hardware Monitoring
+- CPU / GPU temperatures (LibreHardwareMonitor)
+- Fan speeds (RPM)
+- CPU / GPU load graphs
+- Live mini-stats in the sidebar (temperature + max fan RPM)
+- Critical temperature alerts (configurable threshold)
 
-## Fan Control Logic (Summary)
+### Application
+- Fluent Design interface (WPF-UI + Mica backdrop)
+- Minimize to system tray
+- Launch on Windows startup
+- Dark / Light / System theme
+- Language selection (English, Turkish, German, French, Spanish, and more)
 
-Each fan can be configured with:
-
-1. A **mode**: `Auto`, `ManualConstant`, `Curve`, `Off`
-2. For `Curve` mode:
-   - a **temperature source** (e.g. CPU max, GPU max, motherboard max)
-   - a **fan curve** (default presets or custom points)
-   - optional **min/max clamp** and **Zero RPM below threshold**
-3. A periodic control loop that reads sensors and applies target speed
-
-On first run, default fan sources and three baseline curves are generated automatically.
-
-## Configuration and Data Files
-
-Per-user configuration is stored under `%AppData%\\Kontrol`:
-
-- `settings.json` -> app settings
-- `fan_config.json` -> fan sources, curves, assignments
-- `rgb_profiles\\*.json` -> saved RGB profiles
-
-Startup and critical error logs are written to:
-
-- `Kontrol_startup.log` (Desktop)
+---
 
 ## Requirements
 
-- **OS**: Windows 10 version 2004 (build 19041) or newer
-- **SDK**: [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- **IDE (optional)**: Visual Studio 2022+ with .NET desktop workload
+| Requirement | Minimum |
+|---|---|
+| Windows | 10 2004 (19041) or later |
+| .NET | 9.0 Runtime |
+| Administrator rights | Required for fan control |
 
-Note: Hardware-level fan/RGB control may require administrator privileges and/or vendor software, depending on motherboard/device support.
+> **Note:** Fan control requires administrator privileges so LibreHardwareMonitor can write to hardware. Without them, fans are monitored in read-only mode.
 
-## Local Development
+---
 
-```bash
-dotnet restore
-dotnet build Kontrol.sln -c Release
-dotnet run --project Kontrol/Kontrol.csproj -c Release
-```
+## Installation
 
-## Publish
-
-Basic x64 publish:
+### Build from source
 
 ```bash
-dotnet publish Kontrol/Kontrol.csproj -c Release -r win-x64 --self-contained false
+git clone https://github.com/user/kontrol.git
+cd kontrol
+dotnet build -c Release
 ```
 
-Use `--self-contained true` if you want to bundle the runtime.
+To run:
 
-## Suggested GitHub Release Plan
+```bash
+dotnet run --project Kontrol/Kontrol.csproj
+```
 
-- **v0.1.0-alpha**
-  - Core fan control loop
-  - RGB profile save/load
-  - Settings and tray integration
-- **v0.2.0-beta**
-  - Fan-curve editor UX improvements
-  - Better sensor mapping validation and error messaging
-  - OpenRGB connection flow improvements
-- **v1.0.0**
-  - Packaging/release artifact standardization
-  - Documentation and sample configurations
-  - Stability and performance polish
+### Optional SDKs
 
-## Current Status
+The relevant vendor software must be installed for RGB devices to be detected:
 
-- The repository is under active development.
-- Before release, run a full build check and XAML validation.
+| Brand | Software |
+|---|---|
+| ASUS | Armoury Crate / Aura Sync |
+| Corsair | iCUE |
+| CoolerMaster | MasterPlus+ |
+| Logitech | G HUB |
+| MSI | MSI Center |
+| Razer | Synapse |
+| SteelSeries | SteelSeries GG |
+| Wooting | — (no SDK needed, direct HID) |
+
+Devices that support the Windows LampArray protocol require no additional software.
+
+---
+
+## Project Structure
+
+```
+Kontrol/
+├── Models/
+│   ├── Fan/              # FanConfig, FanCurve, FanAssignment, CurvePoint
+│   ├── AppSettings.cs
+│   ├── RgbDevice.cs      # Dual-backend: RgbNet | LampArray
+│   ├── RgbProfile.cs
+│   └── SensorReading.cs
+├── Services/
+│   ├── HardwareService.cs        # LibreHardwareMonitor integration
+│   ├── FanControlService.cs      # SetSpeed, SetAuto, fan discovery
+│   ├── FanControllerService.cs   # Timer + curve application loop
+│   ├── FanConfigService.cs       # JSON read/write
+│   ├── RgbService.cs             # RGB.NET + LampArray hybrid backend
+│   ├── RgbProfileService.cs
+│   ├── TempSourceEvaluator.cs    # Max/Min/Avg sensor combining
+│   ├── FanCurveEvaluator.cs      # Hysteresis + interpolation
+│   ├── TempAlertService.cs
+│   └── ThemeHelper.cs
+├── ViewModels/
+│   ├── MainViewModel.cs
+│   ├── FanViewModel.cs            # Hardware monitoring (live sensors)
+│   ├── FanControlViewModel.cs     # Fan assignment and curve management
+│   ├── FanAssignmentViewModel.cs  # Per-fan state + renaming
+│   ├── RgbViewModel.cs
+│   └── SettingsViewModel.cs
+├── Views/
+│   ├── FanView.xaml               # Hardware Monitoring page
+│   ├── FanControlView.xaml        # Fan Control page
+│   ├── RgbView.xaml               # RGB Control page
+│   ├── SettingsView.xaml
+│   └── CurveGraphEditor.cs        # Drag-and-drop curve editor (Canvas)
+├── Converters/
+│   └── Converters.cs              # All IValueConverter / IMultiValueConverter
+└── MainWindow.xaml                # Sidebar + navigation + live mini-stats
+```
+
+---
+
+## Technical Notes
+
+**Fan speed range:** `SetSoftware()` does not accept 0–100 on every board. The app performs a proportional conversion based on the hardware's `MinSoftwareValue` / `MaxSoftwareValue` before sending the value.
+
+**LampArray backend:** The `Windows.Devices.Lights.LampArray` API ships in-box from Windows 10 2004 (build 19041). The project therefore targets `net9.0-windows10.0.19041.0`; no OpenRGB or external WinRT package is needed.
+
+**BIOS restriction:** Some motherboards lock software fan control at the firmware level. `SetSoftware()` may send the command successfully, but the hardware can silently ignore it — this is a firmware limitation, not a bug.
+
+**Architecture:** MVVM. Services are injected into ViewModels via constructor injection. A `DispatcherTimer` drives a polling loop configurable from 500 ms to 10 s.
+
+---
+
+## Dependencies
+
+| Package | Version | Purpose |
+|---|---|---|
+| WPF-UI | 4.2.1 | Fluent Design, FluentWindow, ui:Card, etc. |
+| CommunityToolkit.Mvvm | 8.4.2 | ObservableObject, RelayCommand, source generators |
+| LibreHardwareMonitorLib | 0.9.6 | Sensor and fan read/write |
+| RGB.NET.* | 3.2.0 | Vendor SDK RGB control |
+| Hardcodet.NotifyIcon.Wpf | 2.0.1 | System tray support |
+| Windows.Devices.Lights | built-in | LampArray (WinRT, no extra package needed) |
+
+---
 
 ## License
 
-This project is licensed under [MIT](LICENSE).
-
-## Third-Party Dependencies
-
-- [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet)
-- [Hardcodet.NotifyIcon.Wpf](https://github.com/hardcodet/wpf-notifyicon)
-- [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)
-- [RGB.NET](https://github.com/DarthAffe/RGB.NET)
-- [WPF-UI](https://github.com/lepoco/wpfui)
+MIT

@@ -9,11 +9,8 @@ using RGB.NET.Devices.OpenRGB;
 using RGB.NET.Devices.Razer;
 using RGB.NET.Devices.SteelSeries;
 using RGB.NET.Devices.Wooting;
-<<<<<<< HEAD
-=======
 using Windows.Devices.Enumeration;
 using Windows.Devices.Lights;
->>>>>>> claude/strange-gagarin-b63c6b
 using NetColor = RGB.NET.Core.Color;
 using WColor = System.Windows.Media.Color;
 
