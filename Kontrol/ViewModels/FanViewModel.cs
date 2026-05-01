@@ -20,6 +20,12 @@ public partial class FanViewModel : ObservableObject, IDisposable
     [ObservableProperty] private int _pollingIntervalMs = 2000;
     [ObservableProperty] private bool _hasControllableFans;
 
+    // Live summary values for sidebar and quick-stats strip
+    [ObservableProperty] private string _maxCpuTempText = "—";
+    [ObservableProperty] private string _maxGpuTempText = "—";
+    [ObservableProperty] private string _maxFanRpmText = "—";
+    [ObservableProperty] private int _activeFanCount;
+
     public ObservableCollection<SensorGroup> TemperatureGroups { get; } = new();
     public ObservableCollection<SensorGroup> FanGroups { get; } = new();
     public ObservableCollection<SensorGroup> LoadGroups { get; } = new();
@@ -48,9 +54,7 @@ public partial class FanViewModel : ObservableObject, IDisposable
     }
 
     partial void OnPollingIntervalMsChanged(int value)
-    {
-        _timer.Interval = TimeSpan.FromMilliseconds(value);
-    }
+        => _timer.Interval = TimeSpan.FromMilliseconds(value);
 
     private void Tick()
     {
@@ -66,8 +70,10 @@ public partial class FanViewModel : ObservableObject, IDisposable
             var readings = _hardwareService.GetAllReadings();
 
             UpdateGroups(TemperatureGroups, readings.Where(r => r.Category == SensorCategory.Temperature));
-            UpdateGroups(FanGroups,         readings.Where(r => r.Category == SensorCategory.FanSpeed));
-            UpdateGroups(LoadGroups,        readings.Where(r => r.Category == SensorCategory.Load));
+            UpdateGroups(FanGroups, readings.Where(r => r.Category == SensorCategory.FanSpeed));
+            UpdateGroups(LoadGroups, readings.Where(r => r.Category == SensorCategory.Load));
+
+            UpdateLiveSummary(readings);
 
             StatusText = $"Son güncelleme: {DateTime.Now:HH:mm:ss}";
             IsLoading = false;
@@ -79,11 +85,31 @@ public partial class FanViewModel : ObservableObject, IDisposable
         }
     }
 
-    [RelayCommand]
-    private void RescanFans()
+    private void UpdateLiveSummary(List<SensorReading> readings)
     {
-        DiscoverFans();
+        var temps = readings.Where(r => r.Category == SensorCategory.Temperature).ToList();
+        var fans = readings.Where(r => r.Category == SensorCategory.FanSpeed).ToList();
+
+        var cpuMax = temps
+            .Where(r => r.HardwareName.Contains("CPU", StringComparison.OrdinalIgnoreCase))
+            .Select(r => r.Value).DefaultIfEmpty(0).Max();
+        MaxCpuTempText = cpuMax > 0 ? $"{cpuMax:F0}°C" : "—";
+
+        var gpuMax = temps
+            .Where(r => r.HardwareName.Contains("GPU", StringComparison.OrdinalIgnoreCase) ||
+                        r.HardwareName.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase) ||
+                        r.HardwareName.Contains("AMD", StringComparison.OrdinalIgnoreCase))
+            .Select(r => r.Value).DefaultIfEmpty(0).Max();
+        MaxGpuTempText = gpuMax > 0 ? $"{gpuMax:F0}°C" : "—";
+
+        var fanMax = fans.Select(r => r.Value).DefaultIfEmpty(0).Max();
+        MaxFanRpmText = fanMax > 0 ? $"{fanMax:F0} RPM" : "—";
+
+        ActiveFanCount = fans.Count;
     }
+
+    [RelayCommand]
+    private void RescanFans() => DiscoverFans();
 
     private void DiscoverFans()
     {
@@ -110,12 +136,12 @@ public partial class FanViewModel : ObservableObject, IDisposable
                     if (manual)
                     {
                         _fanControlService.SetSpeed(f, f.CurrentSpeed);
-                        FanStatusText = $"{f.Name} manuel moda geçti";
+                        FanStatusText = $"{f.Name} manuel";
                     }
                     else
                     {
                         _fanControlService.SetAuto(f);
-                        FanStatusText = $"{f.Name} otomatik moda geçti";
+                        FanStatusText = $"{f.Name} otomatik";
                     }
                 };
 
@@ -124,14 +150,13 @@ public partial class FanViewModel : ObservableObject, IDisposable
             }
 
             HasControllableFans = ControllableFans.Count > 0;
-
             FanStatusText = HasControllableFans
-                ? $"{ControllableFans.Count} kontrol edilebilir fan bulundu"
-                : "Kontrol edilebilir fan yok — yönetici yetkisi gerekebilir";
+                ? $"{ControllableFans.Count} fan kontrol edilebilir"
+                : "Kontrol edilebilir fan yok";
         }
         catch (Exception ex)
         {
-            FanStatusText = $"Fan tarama hatası: {ex.Message}";
+            FanStatusText = $"Tarama hatası: {ex.Message}";
         }
     }
 

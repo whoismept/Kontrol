@@ -23,17 +23,15 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
         <Grid Grid.Row="0" Margin="32,24,32,16">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <ui:SymbolIcon Symbol="WeatherBlowingSnow24" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                <ui:SymbolIcon Symbol="WeatherBlowingSnow24" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Fan Kontrolü" FontSize="28" FontWeight="SemiBold"/>
-                    <TextBlock Text="Sabit hız, sıcaklığa göre eğri veya BIOS otomatiği ile fan yönetimi"
-                               FontSize="12" Opacity="0.7"/>
+                    <TextBlock Text="Fan Kontrolü" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.55"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -52,12 +50,12 @@
                            Appearance="Secondary"
                            Icon="{ui:SymbolIcon ArrowExport24}"
                            Content="Dışa Aktar"
-                           Margin="0,0,8,0"/>
+                           Margin="0,0,4,0"/>
                 <ui:Button Command="{Binding RescanFansCommand}"
                            Appearance="Secondary"
                            Icon="{ui:SymbolIcon ArrowClockwise24}"
-                           Content="Yeniden Tara"
-                           Margin="0,0,8,0"/>
+                           ToolTip="Yeniden Tara"
+                           Margin="0,0,4,0"/>
                 <ui:Button Command="{Binding SaveConfigCommand}"
                            Appearance="Primary"
                            Icon="{ui:SymbolIcon Save24}"
@@ -66,7 +64,7 @@
         </Grid>
 
         <!-- Tabbed content -->
-        <TabControl Grid.Row="1" Margin="32,0,32,16">
+        <TabControl Grid.Row="1" Margin="32,0,32,24">
 
             <!-- TAB 1: Fanlar -->
             <TabItem>
@@ -80,8 +78,7 @@
                     <ItemsControl ItemsSource="{Binding FanAssignments}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:FanAssignmentViewModel}">
-                                <!-- Hidden fans are collapsed unless ShowHiddenFans is true -->
-                                <ui:Card Margin="0,0,0,12" Padding="20">
+                                <ui:Card Margin="0,0,0,10" Padding="18">
                                     <ui:Card.Visibility>
                                         <MultiBinding Converter="{StaticResource HiddenFanVis}">
                                             <Binding Path="IsHidden"/>
@@ -99,12 +96,12 @@
                                             <!-- Name: normal view -->
                                             <StackPanel Visibility="{Binding IsRenaming, Converter={StaticResource InvBoolToVis}}">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="15"
+                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14"
                                                                Opacity="{Binding IsHidden, Converter={StaticResource HiddenOpacityConverter}, FallbackValue=1}"/>
                                                     <Border Visibility="{Binding IsHidden, Converter={StaticResource BoolToVis}}"
                                                             Background="{DynamicResource ControlFillColorDefaultBrush}"
                                                             CornerRadius="4" Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                        <TextBlock Text="Gizli" FontSize="10" Opacity="0.6"/>
+                                                        <TextBlock Text="Gizli" FontSize="10" Opacity="0.55"/>
                                                     </Border>
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding HardwareName}" FontSize="11" Opacity="0.5" Margin="0,2,0,0"/>
@@ -114,14 +111,13 @@
                                             <StackPanel Visibility="{Binding IsRenaming, Converter={StaticResource BoolToVis}}">
                                                 <ui:TextBox Text="{Binding CustomName, UpdateSourceTrigger=PropertyChanged}"
                                                             PlaceholderText="{Binding FanName}"
-                                                            FontSize="15" FontWeight="SemiBold"/>
+                                                            FontSize="14" FontWeight="SemiBold"/>
                                                 <TextBlock Text="Boş bırakırsanız orijinal isim kullanılır"
                                                            FontSize="10" Opacity="0.5" Margin="0,2,0,0"/>
                                             </StackPanel>
 
-                                            <!-- Action buttons + RPM gauge area -->
+                                            <!-- Action buttons + RPM gauge -->
                                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                                <!-- Rename / Confirm -->
                                                 <ui:Button Margin="0,0,4,0" Appearance="Secondary" VerticalAlignment="Center"
                                                            Visibility="{Binding IsRenaming, Converter={StaticResource InvBoolToVis}}"
                                                            Command="{Binding StartRenameCommand}"
@@ -132,9 +128,7 @@
                                                            Command="{Binding ConfirmRenameCommand}"
                                                            Icon="{ui:SymbolIcon Checkmark24}"
                                                            ToolTip="Onayla"/>
-
-                                                <!-- Hide toggle -->
-                                                <ui:Button Margin="0,0,8,0" Appearance="Secondary" VerticalAlignment="Center"
+                                                <ui:Button Margin="0,0,12,0" Appearance="Secondary" VerticalAlignment="Center"
                                                            Command="{Binding ToggleHiddenCommand}"
                                                            ToolTip="{Binding IsHidden, Converter={StaticResource HideToggleTooltipConverter}, FallbackValue='Gizle'}">
                                                     <ui:Button.Icon>
@@ -142,22 +136,13 @@
                                                     </ui:Button.Icon>
                                                 </ui:Button>
 
-                                                <!-- RPM gauge -->
+                                                <!-- Live stats pill -->
                                                 <Border Padding="12,8" CornerRadius="8"
                                                         Background="{DynamicResource ControlFillColorDefaultBrush}">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="12"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="12"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-
-                                                        <!-- RPM -->
-                                                        <StackPanel VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
                                                             <TextBlock Text="RPM" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
-                                                            <TextBlock FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"
+                                                            <TextBlock FontSize="17" FontWeight="Bold" HorizontalAlignment="Center"
                                                                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
                                                                 <TextBlock.Text>
                                                                     <MultiBinding StringFormat="{}{0:F0}">
@@ -167,15 +152,14 @@
                                                             </TextBlock>
                                                         </StackPanel>
 
-                                                        <Border Grid.Column="1" Width="1" VerticalAlignment="Stretch"
-                                                                Background="{DynamicResource DividerStrokeColorDefaultBrush}"/>
+                                                        <Border Width="1" VerticalAlignment="Stretch"
+                                                                Background="{DynamicResource DividerStrokeColorDefaultBrush}" Margin="0,0,16,0"/>
 
-                                                        <!-- Target % bar -->
-                                                        <StackPanel Grid.Column="2" VerticalAlignment="Center" Width="80">
+                                                        <StackPanel VerticalAlignment="Center" Width="72" Margin="0,0,16,0">
                                                             <TextBlock Text="Hedef" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
                                                             <ProgressBar Value="{Binding CurrentTargetPercent, Mode=OneWay}"
-                                                                         Maximum="100" Height="6" Margin="0,4,0,2"/>
-                                                            <TextBlock FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center">
+                                                                         Maximum="100" Height="5" Margin="0,3,0,2"/>
+                                                            <TextBlock FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center">
                                                                 <TextBlock.Text>
                                                                     <MultiBinding StringFormat="{}{0:F0}%">
                                                                         <Binding Path="CurrentTargetPercent"/>
@@ -184,13 +168,12 @@
                                                             </TextBlock>
                                                         </StackPanel>
 
-                                                        <Border Grid.Column="3" Width="1" VerticalAlignment="Stretch"
-                                                                Background="{DynamicResource DividerStrokeColorDefaultBrush}"/>
+                                                        <Border Width="1" VerticalAlignment="Stretch"
+                                                                Background="{DynamicResource DividerStrokeColorDefaultBrush}" Margin="0,0,16,0"/>
 
-                                                        <!-- Temp -->
-                                                        <StackPanel Grid.Column="4" VerticalAlignment="Center" MinWidth="48">
+                                                        <StackPanel VerticalAlignment="Center" MinWidth="44">
                                                             <TextBlock Text="Sıcaklık" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
-                                                            <TextBlock FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"
+                                                            <TextBlock FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"
                                                                        Foreground="{DynamicResource SystemFillColorCautionBrush}">
                                                                 <TextBlock.Text>
                                                                     <MultiBinding StringFormat="{}{0:F0}°">
@@ -199,7 +182,7 @@
                                                                 </TextBlock.Text>
                                                             </TextBlock>
                                                         </StackPanel>
-                                                    </Grid>
+                                                    </StackPanel>
                                                 </Border>
                                             </StackPanel>
                                         </Grid>
@@ -207,14 +190,14 @@
                                         <!-- Mode selector -->
                                         <Grid Margin="0,0,0,8">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="90"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Mod:" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Mod:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                             <ComboBox Grid.Column="1"
                                                       ItemsSource="{Binding DataContext.FanModes, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                       SelectedItem="{Binding Mode}"
-                                                      Width="240" HorizontalAlignment="Left">
+                                                      Width="220" HorizontalAlignment="Left">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
                                                         <TextBlock Text="{Binding Converter={StaticResource FanModeDisplay}}"/>
@@ -227,17 +210,17 @@
                                         <StackPanel Visibility="{Binding Mode, Converter={StaticResource FanModeToVis}, ConverterParameter=ManualConstant}">
                                             <Grid Margin="0,4,0,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="90"/>
                                                     <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="60"/>
+                                                    <ColumnDefinition Width="52"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="Hız:" FontSize="13" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Hız:" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                                 <Slider Grid.Column="1"
                                                         Value="{Binding ManualPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                         Minimum="0" Maximum="100" TickFrequency="5"
                                                         VerticalAlignment="Center"/>
                                                 <TextBlock Grid.Column="2" HorizontalAlignment="Right"
-                                                           FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center">
+                                                           FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center">
                                                     <TextBlock.Text>
                                                         <MultiBinding StringFormat="{}{0:F0}%">
                                                             <Binding Path="ManualPercent"/>
@@ -251,7 +234,7 @@
                                         <StackPanel Visibility="{Binding Mode, Converter={StaticResource FanModeToVis}, ConverterParameter=Curve}">
                                             <Grid Margin="0,4,0,4">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="90"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
@@ -264,37 +247,37 @@
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
 
-                                                <TextBlock Grid.Row="0" Text="Eğri:" FontSize="13" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="0" Text="Eğri:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <ComboBox Grid.Row="0" Grid.Column="1"
                                                           ItemsSource="{Binding DataContext.Curves, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           SelectedValue="{Binding CurveId}"
                                                           SelectedValuePath="Id"
                                                           DisplayMemberPath="Name"
-                                                          Width="240" HorizontalAlignment="Left"/>
+                                                          Width="220" HorizontalAlignment="Left"/>
 
-                                                <TextBlock Grid.Row="2" Text="Kaynak:" FontSize="13" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="2" Text="Kaynak:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <ComboBox Grid.Row="2" Grid.Column="1"
                                                           ItemsSource="{Binding DataContext.TempSources, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           SelectedValue="{Binding TempSourceId}"
                                                           SelectedValuePath="Id"
                                                           DisplayMemberPath="Name"
-                                                          Width="240" HorizontalAlignment="Left"/>
+                                                          Width="220" HorizontalAlignment="Left"/>
 
-                                                <TextBlock Grid.Row="4" Text="Min/Max %:" FontSize="13" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="4" Text="Min/Max:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
                                                     <Slider Value="{Binding MinPercent}" Minimum="0" Maximum="100"
-                                                            Width="120" VerticalAlignment="Center"/>
-                                                    <TextBlock VerticalAlignment="Center" Margin="8,0">
+                                                            Width="110" VerticalAlignment="Center"/>
+                                                    <TextBlock VerticalAlignment="Center" Margin="8,0" FontSize="12">
                                                         <TextBlock.Text>
                                                             <MultiBinding StringFormat="{}{0:F0}%">
                                                                 <Binding Path="MinPercent"/>
                                                             </MultiBinding>
                                                         </TextBlock.Text>
                                                     </TextBlock>
-                                                    <TextBlock Text="—" VerticalAlignment="Center" Margin="4,0"/>
+                                                    <TextBlock Text="—" VerticalAlignment="Center" Margin="4,0" Opacity="0.5"/>
                                                     <Slider Value="{Binding MaxPercent}" Minimum="0" Maximum="100"
-                                                            Width="120" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                                    <TextBlock VerticalAlignment="Center" Margin="8,0">
+                                                            Width="110" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                                    <TextBlock VerticalAlignment="Center" Margin="8,0" FontSize="12">
                                                         <TextBlock.Text>
                                                             <MultiBinding StringFormat="{}{0:F0}%">
                                                                 <Binding Path="MaxPercent"/>
@@ -303,10 +286,10 @@
                                                     </TextBlock>
                                                 </StackPanel>
 
-                                                <TextBlock Grid.Row="6" Text="Sıcaklık:" FontSize="13" VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+                                                <TextBlock Grid.Row="6" Text="Anlık:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <TextBlock Grid.Row="6" Grid.Column="1"
-                                                           FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center">
+                                                           FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"
+                                                           Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
                                                     <TextBlock.Text>
                                                         <MultiBinding StringFormat="{}{0:F1}°C → {1:F0}%">
                                                             <Binding Path="CurrentTempC"/>
@@ -320,7 +303,7 @@
                                         <!-- Off mode note -->
                                         <TextBlock Visibility="{Binding Mode, Converter={StaticResource FanModeToVis}, ConverterParameter=Off}"
                                                    Text="Fan kapatıldı — donanımınız 0 RPM desteklemiyorsa minimum hızda dönebilir."
-                                                   FontSize="11" Opacity="0.7" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                                   FontSize="11" Opacity="0.6" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                     </StackPanel>
                                 </ui:Card>
                             </DataTemplate>
@@ -359,7 +342,7 @@
                                 <DataTemplate>
                                     <StackPanel Margin="4,6">
                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"/>
-                                        <TextBlock FontSize="11" Opacity="0.6">
+                                        <TextBlock FontSize="11" Opacity="0.55">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}{0} nokta · {1}">
                                                     <Binding Path="Points.Count"/>
@@ -383,42 +366,42 @@
                                        Opacity="0.5" Margin="0,24,0,0" HorizontalAlignment="Center"/>
 
                             <!-- Graph preview -->
-                            <ui:Card Padding="12" Margin="0,0,0,12"
+                            <ui:Card Padding="12" Margin="0,0,0,10"
                                      Visibility="{Binding DataContext.SelectedCurve, RelativeSource={RelativeSource AncestorType=UserControl},
                                                   Converter={StaticResource BoolToVis}}">
-                                <views:CurveGraphEditor Height="220"
+                                <views:CurveGraphEditor Height="200"
                                     Curve="{Binding DataContext.SelectedCurve, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                             </ui:Card>
 
-                            <ui:Card Padding="20" Margin="0,0,0,12"
+                            <ui:Card Padding="18" Margin="0,0,0,10"
                                      Visibility="{Binding DataContext.SelectedCurve, RelativeSource={RelativeSource AncestorType=UserControl},
                                                   Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
-                                    <Grid Margin="0,0,0,12">
+                                    <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Ad:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Ad:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ui:TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Grid>
-                                    <Grid Margin="0,0,0,12">
+                                    <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Tür:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Tür:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ComboBox Grid.Column="1"
                                                   ItemsSource="{Binding DataContext.CurveTypes, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                  SelectedItem="{Binding Type}" Width="180" HorizontalAlignment="Left"/>
+                                                  SelectedItem="{Binding Type}" Width="160" HorizontalAlignment="Left"/>
                                     </Grid>
-                                    <Grid Margin="0,0,0,8">
+                                    <Grid Margin="0,0,0,6">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="48"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Hysteresis:" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Hysteresis:" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                         <Slider Grid.Column="1" Value="{Binding HysteresisC}"
                                                 Minimum="0" Maximum="10" TickFrequency="0.5" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12">
@@ -433,9 +416,9 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="48"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Tepki:" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Tepki:" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                         <Slider Grid.Column="1" Value="{Binding ResponseTimeMs}"
                                                 Minimum="0" Maximum="5000" TickFrequency="100" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12">
@@ -450,12 +433,12 @@
                             </ui:Card>
 
                             <!-- Curve points -->
-                            <ui:Card Padding="20"
+                            <ui:Card Padding="18"
                                      Visibility="{Binding DataContext.SelectedCurve, RelativeSource={RelativeSource AncestorType=UserControl},
                                                   Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
                                     <Grid Margin="0,0,0,8">
-                                        <TextBlock Text="Eğri Noktaları" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="Eğri Noktaları" FontWeight="SemiBold" FontSize="13"/>
                                         <ui:Button HorizontalAlignment="Right"
                                                    Command="{Binding DataContext.AddCurvePointCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                    Icon="{ui:SymbolIcon Add24}" Content="Nokta Ekle"
@@ -464,12 +447,12 @@
 
                                     <Grid Margin="0,0,0,4">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="120"/>
-                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="110"/>
+                                            <ColumnDefinition Width="110"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Sıcaklık (°C)" FontWeight="SemiBold" FontSize="11" Opacity="0.7"/>
-                                        <TextBlock Grid.Column="1" Text="Hız (%)" FontWeight="SemiBold" FontSize="11" Opacity="0.7"/>
+                                        <TextBlock Text="Sıcaklık (°C)" FontWeight="SemiBold" FontSize="11" Opacity="0.6"/>
+                                        <TextBlock Grid.Column="1" Text="Hız (%)" FontWeight="SemiBold" FontSize="11" Opacity="0.6"/>
                                     </Grid>
 
                                     <ItemsControl ItemsSource="{Binding Points}">
@@ -477,14 +460,14 @@
                                             <DataTemplate>
                                                 <Grid Margin="0,2">
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="120"/>
-                                                        <ColumnDefinition Width="120"/>
+                                                        <ColumnDefinition Width="110"/>
+                                                        <ColumnDefinition Width="110"/>
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
                                                     <ui:TextBox Text="{Binding TempC, UpdateSourceTrigger=LostFocus}"
-                                                                Width="100" HorizontalAlignment="Left"/>
+                                                                Width="96" HorizontalAlignment="Left"/>
                                                     <ui:TextBox Grid.Column="1" Text="{Binding Percent, UpdateSourceTrigger=LostFocus}"
-                                                                Width="100" HorizontalAlignment="Left"/>
+                                                                Width="96" HorizontalAlignment="Left"/>
                                                     <ui:Button Grid.Column="2"
                                                                Command="{Binding DataContext.RemoveCurvePointCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                CommandParameter="{Binding}"
@@ -533,7 +516,7 @@
                                     <StackPanel Margin="4,6">
                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"/>
                                         <TextBlock Text="{Binding Mode, Converter={StaticResource TempSourceModeDisplay}}"
-                                                   FontSize="11" Opacity="0.6"/>
+                                                   FontSize="11" Opacity="0.55"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
@@ -543,25 +526,25 @@
                     <!-- Source editor -->
                     <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
                         <StackPanel DataContext="{Binding SelectedTempSource}">
-                            <ui:Card Padding="20" Margin="0,0,0,12">
+                            <ui:Card Padding="18" Margin="0,0,0,10">
                                 <StackPanel>
-                                    <Grid Margin="0,0,0,12">
+                                    <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Ad:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Ad:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ui:TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Grid>
-                                    <Grid Margin="0,0,0,12">
+                                    <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Mod:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Mod:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ComboBox Grid.Column="1"
                                                   ItemsSource="{Binding DataContext.TempSourceModes, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                  SelectedItem="{Binding Mode}" Width="200" HorizontalAlignment="Left">
+                                                  SelectedItem="{Binding Mode}" Width="190" HorizontalAlignment="Left">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding Converter={StaticResource TempSourceModeDisplay}}"/>
@@ -573,17 +556,17 @@
                             </ui:Card>
 
                             <!-- Sensor refs -->
-                            <ui:Card Padding="20">
+                            <ui:Card Padding="18">
                                 <StackPanel>
                                     <Grid Margin="0,0,0,8">
-                                        <TextBlock Text="Sensör Filtreleri" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="Sensör Filtreleri" FontWeight="SemiBold" FontSize="13"/>
                                         <ui:Button HorizontalAlignment="Right"
                                                    Command="{Binding DataContext.AddSensorRefCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                    Icon="{ui:SymbolIcon Add24}" Content="Filtre Ekle"
                                                    Appearance="Secondary"/>
                                     </Grid>
                                     <TextBlock Text="Wildcard destekler: *CPU*, *GPU*, * (tümü)"
-                                               FontSize="11" Opacity="0.6" Margin="0,0,0,8"/>
+                                               FontSize="11" Opacity="0.55" Margin="0,0,0,8"/>
 
                                     <ItemsControl ItemsSource="{Binding SensorRefs}">
                                         <ItemsControl.ItemTemplate>
@@ -612,12 +595,12 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
 
-                                    <TextBlock Text="Bulunan Sıcaklık Sensörleri:" FontWeight="SemiBold"
-                                               FontSize="12" Margin="0,16,0,4"/>
+                                    <TextBlock Text="Bulunan Sıcaklık Sensörleri" FontWeight="SemiBold"
+                                               FontSize="12" Margin="0,16,0,6"/>
                                     <ItemsControl ItemsSource="{Binding DataContext.AvailableSensors, RelativeSource={RelativeSource AncestorType=UserControl}}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding}" FontSize="11" Opacity="0.7" Margin="0,1"/>
+                                                <TextBlock Text="{Binding}" FontSize="11" Opacity="0.65" Margin="0,1"/>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -628,13 +611,5 @@
                 </Grid>
             </TabItem>
         </TabControl>
-
-        <!-- Status -->
-        <Border Grid.Row="2"
-                BorderThickness="0,1,0,0"
-                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
-                Padding="32,8">
-            <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.7"/>
-        </Border>
     </Grid>
 </UserControl>

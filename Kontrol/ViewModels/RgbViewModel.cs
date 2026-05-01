@@ -22,6 +22,29 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _hasDevices;
     [ObservableProperty] private string _initLogText = string.Empty;
 
+    public string HexColorText
+    {
+        get => $"#{SelectedColor.R:X2}{SelectedColor.G:X2}{SelectedColor.B:X2}";
+        set
+        {
+            try
+            {
+                var hex = value?.TrimStart('#') ?? "";
+                if (hex.Length == 6)
+                {
+                    byte r = Convert.ToByte(hex[..2], 16);
+                    byte g = Convert.ToByte(hex[2..4], 16);
+                    byte b = Convert.ToByte(hex[4..6], 16);
+                    SelectedColor = Color.FromRgb(r, g, b);
+                    OnPropertyChanged();
+                }
+            }
+            catch { }
+        }
+    }
+
+    partial void OnSelectedColorChanged(Color value) => OnPropertyChanged(nameof(HexColorText));
+
     public ObservableCollection<RgbDevice> Devices { get; } = new();
     public ObservableCollection<string> Profiles { get; } = new();
 
