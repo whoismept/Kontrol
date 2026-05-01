@@ -1,0 +1,205 @@
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using Kontrol.Models;
+using Kontrol.Services;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace Kontrol;
+
+public partial class App : Application
+{
+    private static readonly string LogPath = System.IO.Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Kontrol_startup.log");
+
+    private TaskbarIcon? _trayIcon;
+    private MainWindow? _mainWindow;
+    private FanControllerService? _fanController;
+    private TempAlertService? _tempAlertService;
+
+    public static HardwareService? HardwareServiceInstance { get; private set; }
+    public static FanControlService? FanControlServiceInstance { get; private set; }
+    public static FanControllerService? FanControllerInstance { get; private set; }
+
+    public App()
+    {
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            var msg = args.ExceptionObject?.ToString() ?? "Bilinmeyen hata";
+            WriteLog("UnhandledException: " + msg);
+            MessageBox.Show(msg, "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+    }
+
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        WriteLog("OnStartup başladı");
+
+        DispatcherUnhandledException += (_, args) =>
+        {
+            WriteLog("DispatcherUnhandledException: " + args.Exception);
+            MessageBox.Show(args.Exception?.ToString(), "UI Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true;
+        };
+
+        try
+        {
+            base.OnStartup(e);
+            WriteLog("base.OnStartup tamamlandı");
+
+            var settings = AppSettings.Load();
+            WriteLog("Settings yüklendi");
+
+            ApplyStartupTheme(settings.Theme);
+
+            HardwareServiceInstance = new HardwareService();
+            FanControlServiceInstance = new FanControlService();
+            var fanConfigService = new FanConfigService();
+
+            _fanController = new FanControllerService(
+                HardwareServiceInstance,
+                FanControlServiceInstance,
+                fanConfigService,
+                settings.PollingIntervalMs);
+            FanControllerInstance = _fanController;
+            _fanController.Start();
+            WriteLog("FanControllerService başlatıldı");
+
+            CreateTrayIcon();
+            WriteLog("Tray icon oluşturuldu");
+
+            _tempAlertService = new TempAlertService(HardwareServiceInstance, _trayIcon!, settings);
+            _tempAlertService.Start();
+            WriteLog("TempAlertService başlatıldı");
+
+            _mainWindow = new MainWindow();
+            WriteLog("MainWindow oluşturuldu");
+
+            if (settings.StartMinimized)
+            {
+                _mainWindow.Show();
+                _mainWindow.WindowState = WindowState.Minimized;
+                _mainWindow.Hide();
+            }
+            else
+            {
+                _mainWindow.Show();
+            }
+
+            WriteLog("MainWindow gösterildi");
+        }
+        catch (Exception ex)
+        {
+            WriteLog("OnStartup HATA: " + ex);
+            MessageBox.Show(
+                $"Başlatma hatası:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nDetaylar için Desktop'taki Kontrol_startup.log dosyasını kontrol edin.",
+                "Başlatma Hatası",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown(1);
+        }
+    }
+
+    private void CreateTrayIcon()
+    {
+        var contextMenu = new ContextMenu();
+
+        var toggleItem = new MenuItem { Header = "Göster/Gizle", FontWeight = FontWeights.SemiBold };
+        toggleItem.Click += (_, _) => ToggleMainWindow();
+        contextMenu.Items.Add(toggleItem);
+
+        contextMenu.Items.Add(new Separator());
+
+        var exitItem = new MenuItem { Header = "Çıkış" };
+        exitItem.Click += (_, _) =>
+        {
+            _trayIcon?.Dispose();
+            Shutdown();
+        };
+        contextMenu.Items.Add(exitItem);
+
+        _trayIcon = new TaskbarIcon
+        {
+            ToolTipText = "Kontrol — Fan + RGB Dashboard",
+            ContextMenu = contextMenu
+        };
+        _trayIcon.TrayLeftMouseDown += (_, _) => ToggleMainWindow();
+
+        try { _trayIcon.Icon = LoadAppIcon(); }
+        catch (Exception ex) { WriteLog("Icon yükleme hatası (önemsiz): " + ex.Message); }
+    }
+
+    internal static System.Drawing.Icon LoadAppIcon()
+    {
+        var uri = new Uri("pack://application:,,,/Resources/app.ico", UriKind.Absolute);
+        var stream = System.Windows.Application.GetResourceStream(uri)?.Stream;
+        if (stream is not null)
+            return new System.Drawing.Icon(stream);
+        throw new FileNotFoundException("Embedded app.ico not found.");
+    }
+
+    private void ToggleMainWindow()
+    {
+        if (_mainWindow is null) return;
+
+        if (_mainWindow.IsVisible)
+        {
+            _mainWindow.Hide();
+            _mainWindow.ShowInTaskbar = false;
+        }
+        else
+        {
+            ShowMainWindow();
+        }
+    }
+
+    private void ShowMainWindow()
+    {
+        if (_mainWindow is null) return;
+        _mainWindow.Show();
+        _mainWindow.ShowInTaskbar = true;
+        _mainWindow.WindowState = WindowState.Normal;
+        _mainWindow.Activate();
+        _mainWindow.Focus();
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _tempAlertService?.Dispose();
+        _fanController?.Dispose();
+        HardwareServiceInstance?.Dispose();
+        _trayIcon?.Dispose();
+        base.OnExit(e);
+    }
+
+    private static void ApplyStartupTheme(string theme)
+    {
+        try
+        {
+            var resolved = theme;
+            if (resolved == "System")
+            {
+                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+                var val = key?.GetValue("AppsUseLightTheme");
+                resolved = (val is int i && i == 0) ? "Dark" : "Light";
+            }
+
+            var appTheme = resolved == "Light"
+                ? Wpf.Ui.Appearance.ApplicationTheme.Light
+                : Wpf.Ui.Appearance.ApplicationTheme.Dark;
+
+            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(appTheme);
+        }
+        catch { }
+    }
+
+    private static void WriteLog(string msg)
+    {
+        try
+        {
+            File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n");
+        }
+        catch { }
+    }
+}
