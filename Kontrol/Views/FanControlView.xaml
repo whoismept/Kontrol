@@ -7,16 +7,16 @@
              xmlns:views="clr-namespace:Kontrol.Views">
 
     <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         <conv:FanModeToVisibilityConverter x:Key="FanModeToVis"/>
         <conv:FanModeDisplayConverter x:Key="FanModeDisplay"/>
         <conv:TempSourceModeDisplayConverter x:Key="TempSourceModeDisplay"/>
-<<<<<<< HEAD
-=======
         <conv:NullableFloatConverter x:Key="NullableFloat"/>
         <conv:HiddenFanVisibilityConverter x:Key="HiddenFanVis"/>
         <conv:HiddenOpacityConverter x:Key="HiddenOpacityConverter"/>
         <conv:HideToggleTooltipConverter x:Key="HideToggleTooltipConverter"/>
->>>>>>> claude/strange-gagarin-b63c6b
+        <conv:LocalizedFormatMultiConverter x:Key="LocalizedFormat"/>
     </UserControl.Resources>
 
     <Grid>
@@ -30,7 +30,7 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <ui:SymbolIcon Symbol="WeatherBlowingSnow24" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Fan Control" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="{DynamicResource PageFanControl}" FontSize="24" FontWeight="SemiBold"/>
                     <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.55"/>
                 </StackPanel>
             </StackPanel>
@@ -40,26 +40,26 @@
                            Icon="{ui:SymbolIcon Eye24}"
                            Content="{Binding ShowHiddenButtonText}"
                            Margin="0,0,4,0"
-                           ToolTip="Show/hide hidden fans"/>
+                           ToolTip="{DynamicResource TipShowHide}"/>
                 <ui:Button Command="{Binding ImportConfigCommand}"
                            Appearance="Secondary"
                            Icon="{ui:SymbolIcon ArrowImport24}"
-                           Content="Import"
+                           Content="{DynamicResource BtnImport}"
                            Margin="0,0,4,0"/>
                 <ui:Button Command="{Binding ExportConfigCommand}"
                            Appearance="Secondary"
                            Icon="{ui:SymbolIcon ArrowExport24}"
-                           Content="Export"
+                           Content="{DynamicResource BtnExport}"
                            Margin="0,0,4,0"/>
                 <ui:Button Command="{Binding RescanFansCommand}"
                            Appearance="Secondary"
                            Icon="{ui:SymbolIcon ArrowClockwise24}"
-                           ToolTip="Rescan"
+                           ToolTip="{DynamicResource TipRescan}"
                            Margin="0,0,4,0"/>
                 <ui:Button Command="{Binding SaveConfigCommand}"
                            Appearance="Primary"
                            Icon="{ui:SymbolIcon Save24}"
-                           Content="Save"/>
+                           Content="{DynamicResource BtnSave}"/>
             </StackPanel>
         </Grid>
 
@@ -71,7 +71,7 @@
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <ui:SymbolIcon Symbol="WeatherBlowingSnow24" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Fans" VerticalAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource SecFans}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,12,0,0">
@@ -101,7 +101,7 @@
                                                     <Border Visibility="{Binding IsHidden, Converter={StaticResource BoolToVis}}"
                                                             Background="{DynamicResource ControlFillColorDefaultBrush}"
                                                             CornerRadius="4" Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                        <TextBlock Text="Hidden" FontSize="10" Opacity="0.55"/>
+                                                        <TextBlock Text="{DynamicResource LblHidden}" FontSize="10" Opacity="0.55"/>
                                                     </Border>
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding HardwareName}" FontSize="11" Opacity="0.5" Margin="0,2,0,0"/>
@@ -112,58 +112,22 @@
                                                 <ui:TextBox Text="{Binding CustomName, UpdateSourceTrigger=PropertyChanged}"
                                                             PlaceholderText="{Binding FanName}"
                                                             FontSize="14" FontWeight="SemiBold"/>
-                                                <TextBlock Text="If left empty, original name is used"
+                                                <TextBlock Text="{DynamicResource HintFanNameEmpty}"
                                                            FontSize="10" Opacity="0.5" Margin="0,2,0,0"/>
                                             </StackPanel>
 
-<<<<<<< HEAD
-                                                    <!-- RPM -->
-                                                    <StackPanel VerticalAlignment="Center">
-                                                        <TextBlock Text="RPM" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
-                                                        <TextBlock FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"
-                                                                   Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                                                   Text="{Binding CurrentRpm, StringFormat={}{0:F0}}"/>
-                                                    </StackPanel>
-
-                                                    <!-- Divider -->
-                                                    <Border Grid.Column="1" Width="1" VerticalAlignment="Stretch"
-                                                            Background="{DynamicResource DividerStrokeColorDefaultBrush}"/>
-
-                                                    <!-- Speed bar -->
-                                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Width="80">
-                                                        <TextBlock Text="Hedef" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
-                                                        <ProgressBar Value="{Binding CurrentTargetPercent, Mode=OneWay}"
-                                                                     Maximum="100" Height="6" Margin="0,4,0,2"/>
-                                                        <TextBlock FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center"
-                                                                   Text="{Binding CurrentTargetPercent, StringFormat={}{0:F0}%}"/>
-                                                    </StackPanel>
-
-                                                    <!-- Divider -->
-                                                    <Border Grid.Column="3" Width="1" VerticalAlignment="Stretch"
-                                                            Background="{DynamicResource DividerStrokeColorDefaultBrush}"/>
-
-                                                    <!-- Temp (curve mode only) -->
-                                                    <StackPanel Grid.Column="4" VerticalAlignment="Center" MinWidth="48">
-                                                        <TextBlock Text="Temperature" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
-                                                        <TextBlock FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"
-                                                                   Foreground="{DynamicResource SystemFillColorCautionBrush}"
-                                                                   Text="{Binding CurrentTempC, StringFormat={}{0:F0}°}"/>
-                                                    </StackPanel>
-                                                </Grid>
-                                            </Border>
-=======
-                                            <!-- Action buttons + RPM gauge -->
+                                            <!-- Action buttons + live stats -->
                                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                                 <ui:Button Margin="0,0,4,0" Appearance="Secondary" VerticalAlignment="Center"
                                                            Visibility="{Binding IsRenaming, Converter={StaticResource InvBoolToVis}}"
                                                            Command="{Binding StartRenameCommand}"
                                                            Icon="{ui:SymbolIcon Rename24}"
-                                                           ToolTip="Rename"/>
+                                                           ToolTip="{DynamicResource TipRename}"/>
                                                 <ui:Button Margin="0,0,4,0" Appearance="Primary" VerticalAlignment="Center"
                                                            Visibility="{Binding IsRenaming, Converter={StaticResource BoolToVis}}"
                                                            Command="{Binding ConfirmRenameCommand}"
                                                            Icon="{ui:SymbolIcon Checkmark24}"
-                                                           ToolTip="Confirm"/>
+                                                           ToolTip="{DynamicResource TipConfirm}"/>
                                                 <ui:Button Margin="0,0,12,0" Appearance="Secondary" VerticalAlignment="Center"
                                                            Command="{Binding ToggleHiddenCommand}"
                                                            ToolTip="{Binding IsHidden, Converter={StaticResource HideToggleTooltipConverter}, FallbackValue='Hide'}">
@@ -177,7 +141,7 @@
                                                         Background="{DynamicResource ControlFillColorDefaultBrush}">
                                                     <StackPanel Orientation="Horizontal">
                                                         <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                                                            <TextBlock Text="RPM" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LblRPM}" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
                                                             <TextBlock FontSize="17" FontWeight="Bold" HorizontalAlignment="Center"
                                                                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
                                                                 <TextBlock.Text>
@@ -192,7 +156,7 @@
                                                                 Background="{DynamicResource DividerStrokeColorDefaultBrush}" Margin="0,0,16,0"/>
 
                                                         <StackPanel VerticalAlignment="Center" Width="72" Margin="0,0,16,0">
-                                                            <TextBlock Text="Hedef" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LblTarget}" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
                                                             <ProgressBar Value="{Binding CurrentTargetPercent, Mode=OneWay}"
                                                                          Maximum="100" Height="5" Margin="0,3,0,2"/>
                                                             <TextBlock FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center">
@@ -208,7 +172,7 @@
                                                                 Background="{DynamicResource DividerStrokeColorDefaultBrush}" Margin="0,0,16,0"/>
 
                                                         <StackPanel VerticalAlignment="Center" MinWidth="44">
-                                                            <TextBlock Text="Temperature" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="{DynamicResource LblTemperature}" FontSize="9" Opacity="0.5" HorizontalAlignment="Center"/>
                                                             <TextBlock FontSize="15" FontWeight="Bold" HorizontalAlignment="Center"
                                                                        Foreground="{DynamicResource SystemFillColorCautionBrush}">
                                                                 <TextBlock.Text>
@@ -221,7 +185,6 @@
                                                     </StackPanel>
                                                 </Border>
                                             </StackPanel>
->>>>>>> claude/strange-gagarin-b63c6b
                                         </Grid>
 
                                         <!-- Mode selector -->
@@ -230,7 +193,7 @@
                                                 <ColumnDefinition Width="90"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Mode:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
+                                            <TextBlock Text="{DynamicResource LblMode}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                             <ComboBox Grid.Column="1"
                                                       ItemsSource="{Binding DataContext.FanModes, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                       SelectedItem="{Binding Mode}"
@@ -251,16 +214,12 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="52"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="Speed:" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
+                                                <TextBlock Text="{DynamicResource LblSpeed}" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                                 <Slider Grid.Column="1"
                                                         Value="{Binding ManualPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                         Minimum="0" Maximum="100" TickFrequency="5"
                                                         VerticalAlignment="Center"/>
                                                 <TextBlock Grid.Column="2" HorizontalAlignment="Right"
-<<<<<<< HEAD
-                                                           FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"
-                                                           Text="{Binding ManualPercent, StringFormat={}{0:F0}%}"/>
-=======
                                                            FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center">
                                                     <TextBlock.Text>
                                                         <MultiBinding StringFormat="{}{0:F0}%">
@@ -268,7 +227,6 @@
                                                         </MultiBinding>
                                                     </TextBlock.Text>
                                                 </TextBlock>
->>>>>>> claude/strange-gagarin-b63c6b
                                             </Grid>
                                         </StackPanel>
 
@@ -289,7 +247,7 @@
                                                     <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
 
-                                                <TextBlock Grid.Row="0" Text="Curve:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="0" Text="{DynamicResource LblCurve}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <ComboBox Grid.Row="0" Grid.Column="1"
                                                           ItemsSource="{Binding DataContext.Curves, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           SelectedValue="{Binding CurveId}"
@@ -297,7 +255,7 @@
                                                           DisplayMemberPath="Name"
                                                           Width="220" HorizontalAlignment="Left"/>
 
-                                                <TextBlock Grid.Row="2" Text="Source:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="2" Text="{DynamicResource LblSource}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <ComboBox Grid.Row="2" Grid.Column="1"
                                                           ItemsSource="{Binding DataContext.TempSources, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           SelectedValue="{Binding TempSourceId}"
@@ -305,19 +263,9 @@
                                                           DisplayMemberPath="Name"
                                                           Width="220" HorizontalAlignment="Left"/>
 
-                                                <TextBlock Grid.Row="4" Text="Min/Max:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="4" Text="{DynamicResource LblMinMax}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
                                                     <Slider Value="{Binding MinPercent}" Minimum="0" Maximum="100"
-<<<<<<< HEAD
-                                                            Width="120" VerticalAlignment="Center"/>
-                                                    <TextBlock VerticalAlignment="Center" Margin="8,0"
-                                                               Text="{Binding MinPercent, StringFormat={}{0:F0}%}"/>
-                                                    <TextBlock Text="—" VerticalAlignment="Center" Margin="4,0"/>
-                                                    <Slider Value="{Binding MaxPercent}" Minimum="0" Maximum="100"
-                                                            Width="120" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                                    <TextBlock VerticalAlignment="Center" Margin="8,0"
-                                                               Text="{Binding MaxPercent, StringFormat={}{0:F0}%}"/>
-=======
                                                             Width="110" VerticalAlignment="Center"/>
                                                     <TextBlock VerticalAlignment="Center" Margin="8,0" FontSize="12">
                                                         <TextBlock.Text>
@@ -336,10 +284,9 @@
                                                             </MultiBinding>
                                                         </TextBlock.Text>
                                                     </TextBlock>
->>>>>>> claude/strange-gagarin-b63c6b
                                                 </StackPanel>
 
-                                                <TextBlock Grid.Row="6" Text="Live:" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="6" Text="{DynamicResource LblLive}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
                                                 <TextBlock Grid.Row="6" Grid.Column="1"
                                                            FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"
                                                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
@@ -355,7 +302,7 @@
 
                                         <!-- Off mode note -->
                                         <TextBlock Visibility="{Binding Mode, Converter={StaticResource FanModeToVis}, ConverterParameter=Off}"
-                                                   Text="Fan is off — if your hardware does not support 0 RPM, it may spin at minimum speed."
+                                                   Text="{DynamicResource HintFanOff}"
                                                    FontSize="11" Opacity="0.6" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                     </StackPanel>
                                 </ui:Card>
@@ -370,7 +317,7 @@
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <ui:SymbolIcon Symbol="DataLine24" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Curves" VerticalAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource SecCurves}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <Grid Margin="0,12,0,0">
@@ -384,9 +331,9 @@
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0">
                             <ui:Button Command="{Binding AddCurveCommand}" Icon="{ui:SymbolIcon Add24}"
-                                       Content="Add" Appearance="Primary" Margin="0,0,4,0"/>
+                                       Content="{DynamicResource BtnAdd}" Appearance="Primary" Margin="0,0,4,0"/>
                             <ui:Button Command="{Binding DeleteCurveCommand}" Icon="{ui:SymbolIcon Delete24}"
-                                       Content="Delete" Appearance="Secondary"/>
+                                       Content="{DynamicResource BtnDelete}" Appearance="Secondary"/>
                         </StackPanel>
                         <ListBox ItemsSource="{Binding Curves}"
                                  SelectedItem="{Binding SelectedCurve}"
@@ -397,7 +344,7 @@
                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"/>
                                         <TextBlock FontSize="11" Opacity="0.55">
                                             <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0} nokta · {1}">
+                                                <MultiBinding Converter="{StaticResource LocalizedFormat}" ConverterParameter="FmtCurveItem">
                                                     <Binding Path="Points.Count"/>
                                                     <Binding Path="Type"/>
                                                 </MultiBinding>
@@ -413,7 +360,7 @@
                     <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
                         <StackPanel DataContext="{Binding SelectedCurve}">
                             <!-- Empty state -->
-                            <TextBlock Text="Select a curve from the left list or add a new one."
+                            <TextBlock Text="{DynamicResource HintSelectCurve}"
                                        Visibility="{Binding DataContext.SelectedCurve, RelativeSource={RelativeSource AncestorType=UserControl},
                                                     Converter={StaticResource InvBoolToVis}}"
                                        Opacity="0.5" Margin="0,24,0,0" HorizontalAlignment="Center"/>
@@ -435,7 +382,7 @@
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Name:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource LblName}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ui:TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Grid>
                                     <Grid Margin="0,0,0,10">
@@ -443,7 +390,7 @@
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Type:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource LblType}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ComboBox Grid.Column="1"
                                                   ItemsSource="{Binding DataContext.CurveTypes, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                   SelectedItem="{Binding Type}" Width="160" HorizontalAlignment="Left"/>
@@ -454,14 +401,8 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="48"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Hysteresis:" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource LblHysteresis}" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                         <Slider Grid.Column="1" Value="{Binding HysteresisC}"
-<<<<<<< HEAD
-                                                Minimum="0" Maximum="10" TickFrequency="0.5"
-                                                VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12"
-                                                   Text="{Binding HysteresisC, StringFormat={}{0:F1}°C}"/>
-=======
                                                 Minimum="0" Maximum="10" TickFrequency="0.5" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12">
                                             <TextBlock.Text>
@@ -470,7 +411,6 @@
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
->>>>>>> claude/strange-gagarin-b63c6b
                                     </Grid>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -478,14 +418,8 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="48"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Response:" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource LblResponse}" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
                                         <Slider Grid.Column="1" Value="{Binding ResponseTimeMs}"
-<<<<<<< HEAD
-                                                Minimum="0" Maximum="5000" TickFrequency="100"
-                                                VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12"
-                                                   Text="{Binding ResponseTimeMs, StringFormat={}{0}ms}"/>
-=======
                                                 Minimum="0" Maximum="5000" TickFrequency="100" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12">
                                             <TextBlock.Text>
@@ -494,7 +428,6 @@
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
->>>>>>> claude/strange-gagarin-b63c6b
                                     </Grid>
                                 </StackPanel>
                             </ui:Card>
@@ -505,10 +438,10 @@
                                                   Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
                                     <Grid Margin="0,0,0,8">
-                                        <TextBlock Text="Curve Points" FontWeight="SemiBold" FontSize="13"/>
+                                        <TextBlock Text="{DynamicResource SecCurvePoints}" FontWeight="SemiBold" FontSize="13"/>
                                         <ui:Button HorizontalAlignment="Right"
                                                    Command="{Binding DataContext.AddCurvePointCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                   Icon="{ui:SymbolIcon Add24}" Content="Nokta Add"
+                                                   Icon="{ui:SymbolIcon Add24}" Content="{DynamicResource BtnAddPoint}"
                                                    Appearance="Secondary"/>
                                     </Grid>
 
@@ -518,8 +451,8 @@
                                             <ColumnDefinition Width="110"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Temperature (°C)" FontWeight="SemiBold" FontSize="11" Opacity="0.6"/>
-                                        <TextBlock Grid.Column="1" Text="Speed (%)" FontWeight="SemiBold" FontSize="11" Opacity="0.6"/>
+                                        <TextBlock Text="{DynamicResource LblTempC}" FontWeight="SemiBold" FontSize="11" Opacity="0.6"/>
+                                        <TextBlock Grid.Column="1" Text="{DynamicResource LblSpeedPct}" FontWeight="SemiBold" FontSize="11" Opacity="0.6"/>
                                     </Grid>
 
                                     <ItemsControl ItemsSource="{Binding Points}">
@@ -540,7 +473,7 @@
                                                                CommandParameter="{Binding}"
                                                                Icon="{ui:SymbolIcon Delete24}"
                                                                Appearance="Secondary"
-                                                               ToolTip="Delete point"/>
+                                                               ToolTip="{DynamicResource TipDeletePoint}"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -557,7 +490,7 @@
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <ui:SymbolIcon Symbol="Temperature24" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Temperature Sources" VerticalAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource SecTempSources}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
                 <Grid Margin="0,12,0,0">
@@ -571,9 +504,9 @@
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0">
                             <ui:Button Command="{Binding AddTempSourceCommand}" Icon="{ui:SymbolIcon Add24}"
-                                       Content="Add" Appearance="Primary" Margin="0,0,4,0"/>
+                                       Content="{DynamicResource BtnAdd}" Appearance="Primary" Margin="0,0,4,0"/>
                             <ui:Button Command="{Binding DeleteTempSourceCommand}" Icon="{ui:SymbolIcon Delete24}"
-                                       Content="Delete" Appearance="Secondary"/>
+                                       Content="{DynamicResource BtnDelete}" Appearance="Secondary"/>
                         </StackPanel>
                         <ListBox ItemsSource="{Binding TempSources}"
                                  SelectedItem="{Binding SelectedTempSource}"
@@ -600,7 +533,7 @@
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Name:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource LblName}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ui:TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Grid>
                                     <Grid>
@@ -608,7 +541,7 @@
                                             <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Mode:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource LblMode}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                                         <ComboBox Grid.Column="1"
                                                   ItemsSource="{Binding DataContext.TempSourceModes, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                   SelectedItem="{Binding Mode}" Width="190" HorizontalAlignment="Left">
@@ -626,13 +559,13 @@
                             <ui:Card Padding="18">
                                 <StackPanel>
                                     <Grid Margin="0,0,0,8">
-                                        <TextBlock Text="Sensor Filters" FontWeight="SemiBold" FontSize="13"/>
+                                        <TextBlock Text="{DynamicResource SecSensorFilters}" FontWeight="SemiBold" FontSize="13"/>
                                         <ui:Button HorizontalAlignment="Right"
                                                    Command="{Binding DataContext.AddSensorRefCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                   Icon="{ui:SymbolIcon Add24}" Content="Filtre Add"
+                                                   Icon="{ui:SymbolIcon Add24}" Content="{DynamicResource BtnAddFilter}"
                                                    Appearance="Secondary"/>
                                     </Grid>
-                                    <TextBlock Text="Supports wildcards: *CPU*, *GPU*, * (all)"
+                                    <TextBlock Text="{DynamicResource HintWildcardSupport}"
                                                FontSize="11" Opacity="0.55" Margin="0,0,0,8"/>
 
                                     <ItemsControl ItemsSource="{Binding SensorRefs}">
@@ -646,23 +579,23 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
                                                     <ui:TextBox Text="{Binding HardwareName, UpdateSourceTrigger=PropertyChanged}"
-                                                                PlaceholderText="Hardware name (*CPU*)"
+                                                                PlaceholderText="{DynamicResource HintHardwareName}"
                                                                 VerticalAlignment="Center"/>
                                                     <ui:TextBox Grid.Column="2" Text="{Binding SensorName, UpdateSourceTrigger=PropertyChanged}"
-                                                                PlaceholderText="Sensor name (*)"
+                                                                PlaceholderText="{DynamicResource HintSensorName}"
                                                                 VerticalAlignment="Center"/>
                                                     <ui:Button Grid.Column="3" Margin="4,0,0,0"
                                                                Command="{Binding DataContext.RemoveSensorRefCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                CommandParameter="{Binding}"
                                                                Icon="{ui:SymbolIcon Delete24}"
                                                                Appearance="Secondary"
-                                                               ToolTip="Delete filter"/>
+                                                               ToolTip="{DynamicResource TipDeleteFilter}"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
 
-                                    <TextBlock Text="Detected Temperature Sensors" FontWeight="SemiBold"
+                                    <TextBlock Text="{DynamicResource SecDetectedSensors}" FontWeight="SemiBold"
                                                FontSize="12" Margin="0,16,0,6"/>
                                     <ItemsControl ItemsSource="{Binding DataContext.AvailableSensors, RelativeSource={RelativeSource AncestorType=UserControl}}">
                                         <ItemsControl.ItemTemplate>

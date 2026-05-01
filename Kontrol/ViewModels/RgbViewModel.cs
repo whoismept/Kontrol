@@ -14,7 +14,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     private readonly AppSettings _settings;
     private bool _disposed;
 
-    [ObservableProperty] private string _statusText = "Ready";
+    [ObservableProperty] private string _statusText = "";
     [ObservableProperty] private RgbDevice? _selectedDevice;
     [ObservableProperty] private Color _selectedColor = Colors.Red;
     [ObservableProperty] private string? _selectedProfile;
@@ -59,7 +59,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
 
     private void Initialize()
     {
-        StatusText = "Scanning RGB devices...";
+        StatusText = Loc.Get("StatRGBScanning");
 
         try
         {
@@ -67,7 +67,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            StatusText = $"Startup error: {ex.Message}";
+            StatusText = Loc.Format("StatRGBStartupError", ex.Message);
         }
 
         BuildInitLogText();
@@ -82,10 +82,10 @@ public partial class RgbViewModel : ObservableObject, IDisposable
 
         var okNames = ok.Select(l => l.Replace("[OK] ", "")).ToList();
         var detail = okNames.Count > 0
-            ? $"Active: {string.Join(", ", okNames)}"
-            : "No provider is active";
+            ? Loc.Format("StatInitLogActive", string.Join(", ", okNames), skip.Count)
+            : Loc.Get("StatInitLogNoProvider");
 
-        InitLogText = $"{detail} | {skip.Count} provider skipped";
+        InitLogText = detail;
     }
 
     [RelayCommand]
@@ -99,7 +99,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            StatusText = $"Device scan error: {ex.Message}";
+            StatusText = Loc.Format("StatRGBScanError", ex.Message);
         }
 
         HasDevices = Devices.Count > 0;
@@ -109,11 +109,11 @@ public partial class RgbViewModel : ObservableObject, IDisposable
             SelectedDevice ??= Devices[0];
             int lampCount = Devices.Count(d => d.Backend == RgbBackend.LampArray);
             int sdkCount = Devices.Count(d => d.Backend == RgbBackend.RgbNet);
-            StatusText = $"{Devices.Count} cihaz ({sdkCount} SDK · {lampCount} Native)";
+            StatusText = Loc.Format("StatRGBDevices", Devices.Count, sdkCount, lampCount);
         }
         else
         {
-            StatusText = "No device found";
+            StatusText = Loc.Get("StatRGBNoDevice");
         }
     }
 
@@ -129,7 +129,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     {
         if (SelectedDevice is null) return;
         _rgbService.SetDeviceColor(SelectedDevice, SelectedColor);
-        StatusText = $"{SelectedDevice.Name} — color applied";
+        StatusText = Loc.Format("StatRGBColorApplied", SelectedDevice.Name);
     }
 
     [RelayCommand]
@@ -137,7 +137,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     {
         if (Devices.Count == 0) return;
         _rgbService.SetAllDevicesColor(Devices, SelectedColor);
-        StatusText = $"{Devices.Count} devices color applied";
+        StatusText = Loc.Format("StatRGBAllApplied", Devices.Count);
     }
 
     [RelayCommand]
@@ -147,7 +147,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         var profile = _profileService.Load(SelectedProfile);
         if (profile is null)
         {
-            StatusText = "Profile could not be loaded";
+            StatusText = Loc.Get("StatRGBProfileError");
             return;
         }
 
@@ -158,7 +158,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
                 _rgbService.SetDeviceColor(device, entry.GetColor());
         }
 
-        StatusText = $"Profile loaded: {profile.Name}";
+        StatusText = Loc.Format("StatRGBProfileLoaded", profile.Name);
     }
 
     [RelayCommand]
@@ -177,7 +177,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         ReloadProfiles();
         NewProfileName = string.Empty;
         SelectedProfile = name;
-        StatusText = $"Profile saved: {name}";
+        StatusText = Loc.Format("StatRGBProfileSaved", name);
     }
 
     public void Dispose()

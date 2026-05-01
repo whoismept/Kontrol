@@ -13,6 +13,7 @@ public class AppSettings
     public bool TempAlertsEnabled { get; set; } = true;
     public float TempAlertThresholdC { get; set; } = 90f;
     public string Theme { get; set; } = "Dark"; // Dark, Light, System
+    public string Language { get; set; } = "en";
 
     public bool OpenRgbEnabled { get; set; } = false;
     public string OpenRgbHost { get; set; } = "127.0.0.1";

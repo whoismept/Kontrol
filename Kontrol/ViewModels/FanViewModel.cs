@@ -15,8 +15,8 @@ public partial class FanViewModel : ObservableObject, IDisposable
     private bool _disposed;
 
     [ObservableProperty] private bool _isLoading = true;
-    [ObservableProperty] private string _statusText = "Reading sensors...";
-    [ObservableProperty] private string _fanStatusText = "Ready";
+    [ObservableProperty] private string _statusText = "";
+    [ObservableProperty] private string _fanStatusText = "";
     [ObservableProperty] private int _pollingIntervalMs = 2000;
     [ObservableProperty] private bool _hasControllableFans;
 
@@ -37,10 +37,13 @@ public partial class FanViewModel : ObservableObject, IDisposable
         _fanControlService = fanControlService;
         _pollingIntervalMs = pollingIntervalMs;
 
+        StatusText = Loc.Get("StatReadingSensors");
+        FanStatusText = Loc.Get("StatReady");
+
         if (!hardwareService.IsAvailable)
         {
-            StatusText = $"Warning: Sensors cannot be read — {hardwareService.InitError ?? "Unknown error"}";
-            FanStatusText = "Hardware service failed to start";
+            StatusText = Loc.Format("StatSensorError", hardwareService.InitError ?? "Unknown error");
+            FanStatusText = Loc.Get("StatHWFailed");
             IsLoading = false;
         }
 
@@ -75,12 +78,12 @@ public partial class FanViewModel : ObservableObject, IDisposable
 
             UpdateLiveSummary(readings);
 
-            StatusText = $"Last update: {DateTime.Now:HH:mm:ss}";
+            StatusText = Loc.Format("StatLastUpdate", DateTime.Now.ToString("HH:mm:ss"));
             IsLoading = false;
         }
         catch (Exception ex)
         {
-            StatusText = $"Error: {ex.Message}";
+            StatusText = Loc.Format("StatError", ex.Message);
             IsLoading = false;
         }
     }
@@ -129,19 +132,19 @@ public partial class FanViewModel : ObservableObject, IDisposable
                 fan.OnSpeedChanged = (f, percent) =>
                 {
                     _fanControlService.SetSpeed(f, percent);
-                    FanStatusText = $"{f.Name} → %{percent:F0}";
+                    FanStatusText = Loc.Format("StatFanPercent", f.Name, percent);
                 };
                 fan.OnModeChanged = (f, manual) =>
                 {
                     if (manual)
                     {
                         _fanControlService.SetSpeed(f, f.CurrentSpeed);
-                        FanStatusText = $"{f.Name} manual";
+                        FanStatusText = Loc.Format("StatFanManual", f.Name);
                     }
                     else
                     {
                         _fanControlService.SetAuto(f);
-                        FanStatusText = $"{f.Name} automatic";
+                        FanStatusText = Loc.Format("StatFanAuto", f.Name);
                     }
                 };
 
@@ -151,12 +154,12 @@ public partial class FanViewModel : ObservableObject, IDisposable
 
             HasControllableFans = ControllableFans.Count > 0;
             FanStatusText = HasControllableFans
-                ? $"{ControllableFans.Count} controllable fans"
-                : "No controllable fans";
+                ? Loc.Format("StatControllableFans", ControllableFans.Count)
+                : Loc.Get("StatNoControllableFans");
         }
         catch (Exception ex)
         {
-            FanStatusText = $"Scan error: {ex.Message}";
+            FanStatusText = Loc.Format("StatScanError", ex.Message);
         }
     }
 

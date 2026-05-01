@@ -15,13 +15,15 @@ public partial class FanControlViewModel : ObservableObject
     private readonly FanControllerService _controller;
     private readonly HardwareService _hardwareService;
 
-    [ObservableProperty] private string _statusText = "Ready";
+    [ObservableProperty] private string _statusText = "";
     [ObservableProperty] private FanAssignmentViewModel? _selectedFan;
     [ObservableProperty] private FanCurve? _selectedCurve;
     [ObservableProperty] private TempSource? _selectedTempSource;
     [ObservableProperty] private bool _showHiddenFans = false;
 
-    public string ShowHiddenButtonText => ShowHiddenFans ? "Hide Hidden" : "Show Hidden";
+    public string ShowHiddenButtonText => ShowHiddenFans
+        ? Loc.Get("FanCtrlHideHidden")
+        : Loc.Get("FanCtrlShowHidden");
 
     partial void OnShowHiddenFansChanged(bool value) => OnPropertyChanged(nameof(ShowHiddenButtonText));
 
@@ -69,9 +71,8 @@ public partial class FanControlViewModel : ObservableObject
 
         SyncFanAssignments(config);
 
-        int visible = FanAssignments.Count(a => !a.IsHidden);
         int hidden = FanAssignments.Count(a => a.IsHidden);
-        StatusText = $"{FanAssignments.Count} fans ({hidden} hidden) · {Curves.Count} curves · {TempSources.Count} sources";
+        StatusText = Loc.Format("StatFanCount", FanAssignments.Count, hidden, Curves.Count, TempSources.Count);
     }
 
     private void SyncFanAssignments(FanConfig config)
@@ -112,7 +113,7 @@ public partial class FanControlViewModel : ObservableObject
         _controller.DiscoverFans();
         LoadFromConfig();
         RefreshAvailableSensors();
-        StatusText = $"{FanAssignments.Count} fans found";
+        StatusText = Loc.Format("StatFansFound", FanAssignments.Count);
     }
 
     [RelayCommand]
@@ -120,7 +121,7 @@ public partial class FanControlViewModel : ObservableObject
     {
         ApplyViewModelsToConfig();
         _controller.SaveConfig();
-        StatusText = $"Saved {DateTime.Now:HH:mm:ss}";
+        StatusText = Loc.Format("StatSaved", DateTime.Now.ToString("HH:mm:ss"));
     }
 
     [RelayCommand]
@@ -131,7 +132,7 @@ public partial class FanControlViewModel : ObservableObject
     {
         var curve = new FanCurve
         {
-            Name = $"New Curve {Curves.Count + 1}",
+            Name = Loc.Format("StatNewCurve", Curves.Count + 1),
             Points = new()
             {
                 new() { TempC = 30, Percent = 25 },
@@ -159,7 +160,7 @@ public partial class FanControlViewModel : ObservableObject
     {
         var source = new TempSource
         {
-            Name = $"New Source {TempSources.Count + 1}",
+            Name = Loc.Format("StatNewSource", TempSources.Count + 1),
             SensorRefs = new() { new SensorRef { HardwareName = "*", SensorName = "*" } }
         };
         _controller.Config.TempSources.Add(source);
@@ -233,7 +234,7 @@ public partial class FanControlViewModel : ObservableObject
             ApplyViewModelsToConfig();
             var dialog = new SaveFileDialog
             {
-                Title = "Fan Profili Export",
+                Title = Loc.Get("DlgExportFanProfile"),
                 Filter = "JSON file (*.json)|*.json",
                 FileName = "kontrol_fan_profile.json"
             };
@@ -242,12 +243,12 @@ public partial class FanControlViewModel : ObservableObject
             {
                 var json = JsonSerializer.Serialize(_controller.Config, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(dialog.FileName, json);
-                StatusText = $"Profile exported: {Path.GetFileName(dialog.FileName)}";
+                StatusText = Loc.Format("StatProfileExported", Path.GetFileName(dialog.FileName));
             }
         }
         catch (Exception ex)
         {
-            StatusText = $"Export error: {ex.Message}";
+            StatusText = Loc.Format("StatExportError", ex.Message);
         }
     }
 
@@ -258,7 +259,7 @@ public partial class FanControlViewModel : ObservableObject
         {
             var dialog = new OpenFileDialog
             {
-                Title = "Fan Profili Import",
+                Title = Loc.Get("DlgImportFanProfile"),
                 Filter = "JSON file (*.json)|*.json"
             };
 
@@ -268,18 +269,18 @@ public partial class FanControlViewModel : ObservableObject
                 var config = JsonSerializer.Deserialize<FanConfig>(json);
                 if (config is null)
                 {
-                    StatusText = "Invalid profile file";
+                    StatusText = Loc.Get("StatImportInvalid");
                     return;
                 }
 
                 _controller.UpdateConfig(config);
                 LoadFromConfig();
-                StatusText = $"Profile imported: {Path.GetFileName(dialog.FileName)}";
+                StatusText = Loc.Format("StatProfileImported", Path.GetFileName(dialog.FileName));
             }
         }
         catch (Exception ex)
         {
-            StatusText = $"Import error: {ex.Message}";
+            StatusText = Loc.Format("StatImportError", ex.Message);
         }
     }
 
@@ -298,8 +299,6 @@ public partial class FanControlViewModel : ObservableObject
             config.Assignments.Add(vm.ToAssignment());
     }
 }
-<<<<<<< HEAD
-=======
 
 public partial class FanAssignmentViewModel : ObservableObject
 {
@@ -396,4 +395,3 @@ public partial class FanAssignmentViewModel : ObservableObject
     partial void OnMaxPercentChanged(float value) => NotifyChanged();
     partial void OnZeroRpmBelowCChanged(float? value) => NotifyChanged();
 }
->>>>>>> claude/strange-gagarin-b63c6b

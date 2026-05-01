@@ -7,6 +7,7 @@
 
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         <conv:ColorToSolidBrushConverter x:Key="ColorToBrush"/>
         <conv:RgbBackendLabelConverter x:Key="BackendLabel"/>
     </UserControl.Resources>
@@ -22,7 +23,7 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <ui:SymbolIcon Symbol="Color24" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="RGB Control" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="{DynamicResource PageRGBControl}" FontSize="24" FontWeight="SemiBold"/>
                     <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.55"/>
                 </StackPanel>
             </StackPanel>
@@ -31,51 +32,36 @@
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        Icon="{ui:SymbolIcon ArrowClockwise24}"
-                       ToolTip="Rescan"/>
+                       ToolTip="{DynamicResource TipRescan}"/>
         </Grid>
 
         <!-- Main content -->
         <Grid Grid.Row="1" Margin="32,0,32,24">
 
             <!-- No devices found -->
-<<<<<<< HEAD
-            <ui:Card Padding="24"
-                     Visibility="{Binding HasDevices, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
-                <StackPanel HorizontalAlignment="Center">
-                    <ui:SymbolIcon Symbol="Color24" FontSize="48" Opacity="0.5" HorizontalAlignment="Center"/>
-                    <TextBlock Text="No RGB devices found"
-                               FontSize="16" FontWeight="SemiBold"
-                               Margin="0,12,0,4" HorizontalAlignment="Center"/>
-                    <TextBlock TextAlignment="Center" Opacity="0.7" MaxWidth="500" TextWrapping="Wrap">
-                        <Run Text="Supported brands: ASUS Aura, Corsair iCUE, Cooler Master, Logitech, MSI, Razer Chroma, SteelSeries, Wooting."/>
-                        <LineBreak/>
-                        <Run Text="If your device is not listed, make sure the vendor SDK is installed, then click Rescan."/>
-                    </TextBlock>
-=======
             <ScrollViewer Visibility="{Binding HasDevices, Converter={StaticResource InvBoolToVis}}"
                           VerticalScrollBarVisibility="Auto">
                 <StackPanel MaxWidth="600" HorizontalAlignment="Left">
                     <ui:Card Padding="24" Margin="0,0,0,12">
                         <StackPanel>
                             <ui:SymbolIcon Symbol="Color24" FontSize="36" Opacity="0.35" HorizontalAlignment="Left" Margin="0,0,0,12"/>
-                            <TextBlock Text="No RGB devices found" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                            <TextBlock TextWrapping="Wrap" Opacity="0.7" LineHeight="20" FontSize="13">
-                                The app detects devices in two ways:<LineBreak/>
-                                <LineBreak/>
-                                <Run FontWeight="SemiBold">1. Windows Native (LampArray)</Run>
-                                <Run>— Requires no vendor SDK. Automatically discovers devices supporting HID LampArray.</Run>
-                                <LineBreak/>
-                                <LineBreak/>
-                                <Run FontWeight="SemiBold">2. Vendor SDK</Run>
-                                <Run>— Devices from the vendors below work when their software is installed.</Run>
-                            </TextBlock>
+                            <TextBlock Text="{DynamicResource RgbNoDevices}" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                            <TextBlock Text="{DynamicResource RgbDetectionIntro}" TextWrapping="Wrap" Opacity="0.7" FontSize="13" Margin="0,0,0,10"/>
+                            <StackPanel Margin="0,0,0,6">
+                                <TextBlock Text="{DynamicResource RgbLampArrayLabel}" FontWeight="SemiBold" FontSize="13" Opacity="0.85"/>
+                                <TextBlock Text="{DynamicResource RgbLampArrayDesc}" TextWrapping="Wrap" Opacity="0.65" FontSize="12" Margin="12,2,0,0"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource RgbVendorSDKLabel}" FontWeight="SemiBold" FontSize="13" Opacity="0.85"/>
+                                <TextBlock Text="{DynamicResource RgbVendorSDKDesc}" TextWrapping="Wrap" Opacity="0.65" FontSize="12" Margin="12,2,0,0"/>
+                            </StackPanel>
                         </StackPanel>
                     </ui:Card>
 
                     <!-- Vendor table -->
                     <ui:Card Padding="20" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="Supported Vendor SDKs" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
+                            <TextBlock Text="{DynamicResource RgbSupportedSDKs}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="130"/>
@@ -115,14 +101,12 @@
                     <!-- Init log -->
                     <ui:Card Padding="18">
                         <StackPanel>
-                            <TextBlock Text="Startup Summary" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                            <TextBlock Text="{DynamicResource RgbStartupSummary}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
                             <TextBlock Text="{Binding InitLogText}" FontSize="12" Opacity="0.7" Margin="0,0,0,6"/>
-                            <TextBlock FontSize="11" Opacity="0.55" TextWrapping="Wrap">
-                                Restart the app after installing vendor software.
-                            </TextBlock>
+                            <TextBlock Text="{DynamicResource HintRestartAfterSDK}"
+                                       FontSize="11" Opacity="0.55" TextWrapping="Wrap"/>
                         </StackPanel>
                     </ui:Card>
->>>>>>> claude/strange-gagarin-b63c6b
                 </StackPanel>
             </ScrollViewer>
 
@@ -138,7 +122,7 @@
                 <ui:Card Grid.Column="0" Padding="0">
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top"
-                                   Text="Devices" FontWeight="SemiBold" FontSize="13"
+                                   Text="{DynamicResource RgbDevices}" FontWeight="SemiBold" FontSize="13"
                                    Margin="16,14,16,8"/>
                         <Border DockPanel.Dock="Top" Height="1"
                                 Background="{DynamicResource DividerStrokeColorDefaultBrush}"
@@ -204,7 +188,7 @@
                                         </Border.Effect>
                                     </Border>
                                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                        <TextBlock Text="HEX" FontSize="10" Opacity="0.55" Margin="0,0,0,4"/>
+                                        <TextBlock Text="{DynamicResource LblHEX}" FontSize="10" Opacity="0.55" Margin="0,0,0,4"/>
                                         <ui:TextBox Text="{Binding HexColorText, UpdateSourceTrigger=LostFocus}"
                                                     FontSize="18" FontWeight="SemiBold"
                                                     FontFamily="Consolas"
@@ -256,7 +240,7 @@
                                 </Grid>
 
                                 <!-- Presets -->
-                                <TextBlock Text="Preset Colors" FontSize="11" Opacity="0.55" Margin="0,20,0,8"/>
+                                <TextBlock Text="{DynamicResource LblPresetColors}" FontSize="11" Opacity="0.55" Margin="0,20,0,8"/>
                                 <WrapPanel>
                                     <Button Click="OnPresetColorClick" Tag="#FF0000" Width="40" Height="40" Margin="3"
                                             Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand">
@@ -324,12 +308,12 @@
                                     <ui:Button Command="{Binding ApplyColorToDeviceCommand}"
                                                Appearance="Primary"
                                                Icon="{ui:SymbolIcon Lightbulb24}"
-                                               Content="Apply to Selected Device"
+                                               Content="{DynamicResource BtnApplySelected}"
                                                Margin="0,0,8,0"/>
                                     <ui:Button Command="{Binding ApplyColorToAllCommand}"
                                                Appearance="Secondary"
                                                Icon="{ui:SymbolIcon Lightbulb24}"
-                                               Content="Apply to All"/>
+                                               Content="{DynamicResource BtnApplyAll}"/>
                                 </StackPanel>
                             </StackPanel>
                         </ui:Card>
@@ -337,7 +321,7 @@
                         <!-- Profiles -->
                         <ui:Card Padding="20">
                             <StackPanel>
-                                <TextBlock Text="Profiles" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,12"/>
+                                <TextBlock Text="{DynamicResource LblProfiles}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,12"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                     <ComboBox ItemsSource="{Binding Profiles}"
                                               SelectedItem="{Binding SelectedProfile}"
@@ -345,16 +329,16 @@
                                     <ui:Button Command="{Binding LoadProfileCommand}"
                                                Appearance="Secondary"
                                                Icon="{ui:SymbolIcon FolderOpen24}"
-                                               Content="Load"/>
+                                               Content="{DynamicResource BtnLoad}"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:TextBox Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}"
-                                                PlaceholderText="New profile name"
+                                                PlaceholderText="{DynamicResource HintNewProfileName}"
                                                 Width="200" Margin="0,0,8,0"/>
                                     <ui:Button Command="{Binding SaveProfileCommand}"
                                                Appearance="Primary"
                                                Icon="{ui:SymbolIcon Save24}"
-                                               Content="Save"/>
+                                               Content="{DynamicResource BtnSave}"/>
                                 </StackPanel>
                             </StackPanel>
                         </ui:Card>

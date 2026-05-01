@@ -50,6 +50,7 @@ public partial class App : Application
             var settings = AppSettings.Load();
             WriteLog("Settings loaded");
 
+            Services.Loc.Load(settings.Language);
             ApplyStartupTheme(settings.Theme);
 
             HardwareServiceInstance = new HardwareService();

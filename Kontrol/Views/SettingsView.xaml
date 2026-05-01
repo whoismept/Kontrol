@@ -12,20 +12,20 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="32,24,32,16" VerticalAlignment="Center">
             <ui:SymbolIcon Symbol="Settings24" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
-            <TextBlock Text="Settings" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource PageSettings}" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,24">
             <StackPanel MaxWidth="640" HorizontalAlignment="Left">
 
                 <!-- Hardware monitoring -->
-                <TextBlock Text="Hardware Monitoring" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="{DynamicResource SecHardwareMonitoring}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock Text="Sensor Update Interval (ms)"
+                        <TextBlock Text="{DynamicResource LblSensorInterval}"
                                    FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
-                        <TextBlock Text="Lower values feel smoother but use more CPU."
+                        <TextBlock Text="{DynamicResource LblSensorIntervalHint}"
                                    FontSize="11" Opacity="0.7" Margin="0,0,0,12"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -45,7 +45,7 @@
                 </ui:Card>
 
                 <!-- App behavior -->
-                <TextBlock Text="Application Behavior" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="{DynamicResource SecAppBehavior}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
@@ -55,8 +55,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Minimize to tray" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Keep running in system tray when window is closed"
+                                <TextBlock Text="{DynamicResource LblMinimizeToTray}" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="{DynamicResource LblMinimizeToTrayHint}"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding MinimizeToTray}"/>
@@ -68,8 +68,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Start minimized" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Start in system tray when app launches"
+                                <TextBlock Text="{DynamicResource LblStartMinimized}" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="{DynamicResource LblStartMinimizedHint}"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding StartMinimized}"/>
@@ -81,8 +81,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Launch with Windows" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Run automatically at sign in"
+                                <TextBlock Text="{DynamicResource LblLaunchOnStartup}" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="{DynamicResource LblLaunchOnStartupHint}"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding LaunchOnWindowsStartup}"/>
@@ -91,7 +91,7 @@
                 </ui:Card>
 
                 <!-- Temp Alerts -->
-                <TextBlock Text="Temperature Alerts" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="{DynamicResource SecTempAlerts}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
@@ -101,14 +101,14 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Enable temperature alerts" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Show tray notification when threshold is exceeded"
+                                <TextBlock Text="{DynamicResource LblEnableAlerts}" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="{DynamicResource LblEnableAlertsHint}"
                                            FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding TempAlertsEnabled}"/>
                         </Grid>
 
-                        <TextBlock Text="Alert Threshold (°C)" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
+                        <TextBlock Text="{DynamicResource LblAlertThreshold}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -131,7 +131,7 @@
                 </ui:Card>
 
                 <!-- OpenRGB -->
-                <TextBlock Text="OpenRGB Integration" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="{DynamicResource SecOpenRGB}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <StackPanel>
@@ -141,8 +141,8 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="OpenRGB SDK Server" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock Text="Control all devices using OpenRGB SDK Server mode"
+                                <TextBlock Text="{DynamicResource LblOpenRGBServer}" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="{DynamicResource LblOpenRGBServerHint}"
                                            FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                             </StackPanel>
                             <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding OpenRgbEnabled}"/>
@@ -153,7 +153,7 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Host:" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="{DynamicResource LblServer}" FontSize="13" VerticalAlignment="Center"/>
                             <ui:TextBox Grid.Column="1"
                                         Text="{Binding OpenRgbHost, UpdateSourceTrigger=PropertyChanged}"
                                         PlaceholderText="127.0.0.1"/>
@@ -163,7 +163,7 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Port:" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="{DynamicResource LblPort}" FontSize="13" VerticalAlignment="Center"/>
                             <ui:TextBox Grid.Column="1"
                                         Text="{Binding OpenRgbPort, UpdateSourceTrigger=PropertyChanged}"
                                         PlaceholderText="6742" Width="120" HorizontalAlignment="Left"/>
@@ -173,19 +173,37 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Client:" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="{DynamicResource LblClient}" FontSize="13" VerticalAlignment="Center"/>
                             <ui:TextBox Grid.Column="1"
                                         Text="{Binding OpenRgbClientName, UpdateSourceTrigger=PropertyChanged}"
                                         PlaceholderText="Kontrol"/>
                         </Grid>
 
-                        <TextBlock Text="Note: Enable SDK Server in OpenRGB. Restart the app for changes to take effect."
+                        <TextBlock Text="{DynamicResource LblOpenRGBNote}"
                                    FontSize="11" Opacity="0.6" TextWrapping="Wrap" Margin="0,12,0,0"/>
                     </StackPanel>
                 </ui:Card>
 
                 <!-- Appearance -->
-                <TextBlock Text="Appearance" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <TextBlock Text="{DynamicResource SecAppearance}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <ui:Card Padding="20" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource LblTheme}" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock Text="{DynamicResource LblThemeHint}"
+                                       FontSize="11" Opacity="0.7"/>
+                        </StackPanel>
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding ThemeOptions}"
+                                  SelectedItem="{Binding SelectedTheme}"
+                                  Width="140"/>
+                    </Grid>
+                </ui:Card>
 
                 <ui:Card Padding="20" Margin="0,0,0,20">
                     <Grid>
@@ -194,14 +212,14 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Theme" FontWeight="SemiBold" FontSize="13"/>
-                            <TextBlock Text="Choose Dark, Light, or System theme"
+                            <TextBlock Text="{DynamicResource LblLanguage}" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock Text="{DynamicResource LblLanguageHint}"
                                        FontSize="11" Opacity="0.7"/>
                         </StackPanel>
                         <ComboBox Grid.Column="1"
-                                  ItemsSource="{Binding ThemeOptions}"
-                                  SelectedItem="{Binding SelectedTheme}"
-                                  Width="140"/>
+                                  ItemsSource="{Binding LanguageOptions}"
+                                  SelectedItem="{Binding SelectedLanguage}"
+                                  Width="160"/>
                     </Grid>
                 </ui:Card>
 
@@ -212,7 +230,7 @@
                     <ui:Button Command="{Binding SaveCommand}"
                                Appearance="Primary"
                                Icon="{ui:SymbolIcon Save24}"
-                               Content="Save"/>
+                               Content="{DynamicResource BtnSave}"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

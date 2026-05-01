@@ -92,14 +92,16 @@ public class FanModeDisplayConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return value is FanMode mode ? mode switch
+        if (value is not FanMode mode) return string.Empty;
+        var key = mode switch
         {
-            FanMode.Auto => "Automatic (BIOS)",
-            FanMode.ManualConstant => "Fixed Speed",
-            FanMode.Curve => "Curve (Temperature-Based)",
-            FanMode.Off => "Off",
-            _ => mode.ToString()
-        } : string.Empty;
+            FanMode.Auto => "FanModeAuto",
+            FanMode.ManualConstant => "FanModeFixed",
+            FanMode.Curve => "FanModeCurve",
+            FanMode.Off => "FanModeOff",
+            _ => null
+        };
+        return key is null ? mode.ToString() : Application.Current?.TryFindResource(key) as string ?? mode.ToString();
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -110,14 +112,16 @@ public class TempSourceModeDisplayConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return value is TempSourceMode mode ? mode switch
+        if (value is not TempSourceMode mode) return string.Empty;
+        var key = mode switch
         {
-            TempSourceMode.Single => "Single Sensor",
-            TempSourceMode.Max => "Maximum",
-            TempSourceMode.Average => "Average",
-            TempSourceMode.Min => "Minimum",
-            _ => mode.ToString()
-        } : string.Empty;
+            TempSourceMode.Single => "TempModeSingle",
+            TempSourceMode.Max => "TempModeMax",
+            TempSourceMode.Average => "TempModeAverage",
+            TempSourceMode.Min => "TempModeMin",
+            _ => null
+        };
+        return key is null ? mode.ToString() : Application.Current?.TryFindResource(key) as string ?? mode.ToString();
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -166,10 +170,28 @@ public class HiddenOpacityConverter : IValueConverter
 public class HideToggleTooltipConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is bool b && b ? "Show" : "Hide";
+    {
+        return value is bool b && b
+            ? Application.Current?.TryFindResource("TipShowFan") as string ?? "Show"
+            : Application.Current?.TryFindResource("TipHideFan") as string ?? "Hide";
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
+}
+
+public class LocalizedFormatMultiConverter : IMultiValueConverter
+{
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        var key = parameter as string ?? "";
+        var fmt = Application.Current?.TryFindResource(key) as string ?? "{0}";
+        try { return string.Format(fmt, values); }
+        catch { return string.Join(", ", values.Select(v => v?.ToString() ?? "")); }
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        => throw new NotSupportedException();
 }
 
 public class RgbBackendLabelConverter : IValueConverter
