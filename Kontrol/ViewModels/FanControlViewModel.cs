@@ -19,6 +19,11 @@ public partial class FanControlViewModel : ObservableObject
     [ObservableProperty] private FanAssignmentViewModel? _selectedFan;
     [ObservableProperty] private FanCurve? _selectedCurve;
     [ObservableProperty] private TempSource? _selectedTempSource;
+    [ObservableProperty] private bool _showHiddenFans = false;
+
+    public string ShowHiddenButtonText => ShowHiddenFans ? "Gizlileri Kapat" : "Gizlileri Göster";
+
+    partial void OnShowHiddenFansChanged(bool value) => OnPropertyChanged(nameof(ShowHiddenButtonText));
 
     public ObservableCollection<FanAssignmentViewModel> FanAssignments { get; } = new();
     public ObservableCollection<FanCurve> Curves { get; } = new();
@@ -41,17 +46,15 @@ public partial class FanControlViewModel : ObservableObject
         RefreshAvailableSensors();
     }
 
-    private void OnConfigChanged()
-    {
-        LoadFromConfig();
-    }
+    private void OnConfigChanged() => LoadFromConfig();
 
-    private void OnFanUpdated(string fanKey, float targetPercent, float tempC)
+    private void OnFanUpdated(string fanKey, float targetPercent, float tempC, float currentRpm)
     {
         var vm = FanAssignments.FirstOrDefault(a => a.FanKey == fanKey);
         if (vm is null) return;
         vm.CurrentTargetPercent = targetPercent;
         vm.CurrentTempC = tempC;
+        vm.CurrentRpm = currentRpm;
     }
 
     private void LoadFromConfig()
@@ -66,7 +69,9 @@ public partial class FanControlViewModel : ObservableObject
 
         SyncFanAssignments(config);
 
-        StatusText = $"{FanAssignments.Count} fan, {Curves.Count} eğri, {TempSources.Count} kaynak";
+        int visible = FanAssignments.Count(a => !a.IsHidden);
+        int hidden = FanAssignments.Count(a => a.IsHidden);
+        StatusText = $"{FanAssignments.Count} fan ({hidden} gizli) · {Curves.Count} eğri · {TempSources.Count} kaynak";
     }
 
     private void SyncFanAssignments(FanConfig config)
@@ -93,8 +98,7 @@ public partial class FanControlViewModel : ObservableObject
             }
             else
             {
-                var vm = new FanAssignmentViewModel(assignment, fan, this);
-                newList.Add(vm);
+                newList.Add(new FanAssignmentViewModel(assignment, fan, this));
             }
         }
 
@@ -118,6 +122,9 @@ public partial class FanControlViewModel : ObservableObject
         _controller.SaveConfig();
         StatusText = $"Kaydedildi {DateTime.Now:HH:mm:ss}";
     }
+
+    [RelayCommand]
+    private void ToggleShowHidden() => ShowHiddenFans = !ShowHiddenFans;
 
     [RelayCommand]
     private void AddCurve()
@@ -179,7 +186,6 @@ public partial class FanControlViewModel : ObservableObject
             TempC = (last?.TempC ?? 30) + 10,
             Percent = Math.Min((last?.Percent ?? 50) + 15, 100)
         });
-        OnPropertyChanged(nameof(SelectedCurve));
     }
 
     [RelayCommand]
@@ -188,7 +194,6 @@ public partial class FanControlViewModel : ObservableObject
         if (SelectedCurve is null || point is null) return;
         if (SelectedCurve.Points.Count <= 2) return;
         SelectedCurve.Points.Remove(point);
-        OnPropertyChanged(nameof(SelectedCurve));
     }
 
     [RelayCommand]
@@ -215,9 +220,7 @@ public partial class FanControlViewModel : ObservableObject
         {
             var readings = _hardwareService.GetAllReadings();
             foreach (var r in readings.Where(r => r.Category == SensorCategory.Temperature))
-            {
                 AvailableSensors.Add($"{r.HardwareName} → {r.SensorName}");
-            }
         }
         catch { }
     }
@@ -280,10 +283,11 @@ public partial class FanControlViewModel : ObservableObject
         }
     }
 
-    internal void OnAssignmentChanged()
+    internal void OnAssignmentChanged(string fanKey)
     {
         ApplyViewModelsToConfig();
         _controller.SaveConfig();
+        _controller.ForceApplyNow(fanKey);
     }
 
     private void ApplyViewModelsToConfig()
@@ -291,9 +295,7 @@ public partial class FanControlViewModel : ObservableObject
         var config = _controller.Config;
         config.Assignments.Clear();
         foreach (var vm in FanAssignments)
-        {
             config.Assignments.Add(vm.ToAssignment());
-        }
     }
 }
 
@@ -303,9 +305,15 @@ public partial class FanAssignmentViewModel : ObservableObject
     private FanControl _fan;
 
     public string FanKey { get; private set; }
-    public string FanName => _fan.Name;
     public string HardwareName => _fan.HardwareName;
+    public string FanName => _fan.Name;
 
+    // DisplayName prefers CustomName when set
+    public string DisplayName => string.IsNullOrWhiteSpace(CustomName) ? FanName : CustomName;
+
+    [ObservableProperty] private string? _customName;
+    [ObservableProperty] private bool _isHidden;
+    [ObservableProperty] private bool _isRenaming;
     [ObservableProperty] private FanMode _mode;
     [ObservableProperty] private float _manualPercent;
     [ObservableProperty] private string? _curveId;
@@ -322,6 +330,8 @@ public partial class FanAssignmentViewModel : ObservableObject
         _parent = parent;
         _fan = fan;
         FanKey = assignment.FanKey;
+        _customName = assignment.CustomName;
+        _isHidden = assignment.IsHidden;
         _mode = assignment.Mode;
         _manualPercent = assignment.ManualPercent;
         _curveId = assignment.CurveId;
@@ -334,14 +344,19 @@ public partial class FanAssignmentViewModel : ObservableObject
     public void UpdateFrom(FanAssignment assignment, FanControl fan)
     {
         _fan = fan;
+        CustomName = assignment.CustomName;
+        IsHidden = assignment.IsHidden;
         OnPropertyChanged(nameof(FanName));
         OnPropertyChanged(nameof(HardwareName));
+        OnPropertyChanged(nameof(DisplayName));
         CurrentRpm = fan.CurrentRpm;
     }
 
     public FanAssignment ToAssignment() => new()
     {
         FanKey = FanKey,
+        CustomName = string.IsNullOrWhiteSpace(CustomName) ? null : CustomName.Trim(),
+        IsHidden = IsHidden,
         Mode = Mode,
         ManualPercent = ManualPercent,
         CurveId = CurveId,
@@ -351,11 +366,31 @@ public partial class FanAssignmentViewModel : ObservableObject
         ZeroRpmBelowC = ZeroRpmBelowC
     };
 
-    partial void OnModeChanged(FanMode value) => _parent.OnAssignmentChanged();
-    partial void OnManualPercentChanged(float value) => _parent.OnAssignmentChanged();
-    partial void OnCurveIdChanged(string? value) => _parent.OnAssignmentChanged();
-    partial void OnTempSourceIdChanged(string? value) => _parent.OnAssignmentChanged();
-    partial void OnMinPercentChanged(float value) => _parent.OnAssignmentChanged();
-    partial void OnMaxPercentChanged(float value) => _parent.OnAssignmentChanged();
-    partial void OnZeroRpmBelowCChanged(float? value) => _parent.OnAssignmentChanged();
+    [RelayCommand]
+    private void StartRename() => IsRenaming = true;
+
+    [RelayCommand]
+    private void ConfirmRename()
+    {
+        IsRenaming = false;
+        OnPropertyChanged(nameof(DisplayName));
+        NotifyChanged();
+    }
+
+    [RelayCommand]
+    private void ToggleHidden()
+    {
+        IsHidden = !IsHidden;
+        NotifyChanged();
+    }
+
+    private void NotifyChanged() => _parent.OnAssignmentChanged(FanKey);
+
+    partial void OnModeChanged(FanMode value) => NotifyChanged();
+    partial void OnManualPercentChanged(float value) => NotifyChanged();
+    partial void OnCurveIdChanged(string? value) => NotifyChanged();
+    partial void OnTempSourceIdChanged(string? value) => NotifyChanged();
+    partial void OnMinPercentChanged(float value) => NotifyChanged();
+    partial void OnMaxPercentChanged(float value) => NotifyChanged();
+    partial void OnZeroRpmBelowCChanged(float? value) => NotifyChanged();
 }

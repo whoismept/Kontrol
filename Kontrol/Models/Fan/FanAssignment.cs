@@ -11,6 +11,8 @@ public enum FanMode
 public class FanAssignment
 {
     public string FanKey { get; set; } = string.Empty;
+    public string? CustomName { get; set; }
+    public bool IsHidden { get; set; } = false;
     public FanMode Mode { get; set; } = FanMode.Auto;
     public float ManualPercent { get; set; } = 50f;
     public string? CurveId { get; set; }

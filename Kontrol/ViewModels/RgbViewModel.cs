@@ -47,9 +47,22 @@ public partial class RgbViewModel : ObservableObject, IDisposable
             StatusText = $"Başlatma hatası: {ex.Message}";
         }
 
-        InitLogText = string.Join("\n", _rgbService.InitLog);
+        BuildInitLogText();
         LoadDevices();
         ReloadProfiles();
+    }
+
+    private void BuildInitLogText()
+    {
+        var ok = _rgbService.InitLog.Where(l => l.StartsWith("[OK]")).ToList();
+        var skip = _rgbService.InitLog.Where(l => l.StartsWith("[SKIP]")).ToList();
+
+        var okNames = ok.Select(l => l.Replace("[OK] ", "")).ToList();
+        var detail = okNames.Count > 0
+            ? $"Aktif: {string.Join(", ", okNames)}"
+            : "Hiçbir provider aktif değil";
+
+        InitLogText = $"{detail} | {skip.Count} provider atlandı";
     }
 
     [RelayCommand]
@@ -71,11 +84,13 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         if (HasDevices)
         {
             SelectedDevice ??= Devices[0];
-            StatusText = $"{Devices.Count} cihaz bulundu";
+            int lampCount = Devices.Count(d => d.Backend == RgbBackend.LampArray);
+            int sdkCount = Devices.Count(d => d.Backend == RgbBackend.RgbNet);
+            StatusText = $"{Devices.Count} cihaz ({sdkCount} SDK · {lampCount} Native)";
         }
         else
         {
-            StatusText = "Cihaz bulunamadı — desteklenen marka/SDK gerekli";
+            StatusText = "Cihaz bulunamadı";
         }
     }
 
@@ -91,7 +106,7 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     {
         if (SelectedDevice is null) return;
         _rgbService.SetDeviceColor(SelectedDevice, SelectedColor);
-        StatusText = $"{SelectedDevice.Name} cihazına renk uygulandı";
+        StatusText = $"{SelectedDevice.Name} — renk uygulandı";
     }
 
     [RelayCommand]

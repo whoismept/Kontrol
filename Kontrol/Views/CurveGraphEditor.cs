@@ -1,4 +1,5 @@
 using Kontrol.Models.Fan;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -36,8 +37,19 @@ public class CurveGraphEditor : Canvas
 
     private static void OnCurveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is CurveGraphEditor editor) editor.Redraw();
+        if (d is not CurveGraphEditor editor) return;
+
+        if (e.OldValue is FanCurve old)
+            old.Points.CollectionChanged -= editor.OnPointsCollectionChanged;
+
+        if (e.NewValue is FanCurve newCurve)
+            newCurve.Points.CollectionChanged += editor.OnPointsCollectionChanged;
+
+        editor.Redraw();
     }
+
+    private void OnPointsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => Redraw();
 
     protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
     {
@@ -70,23 +82,13 @@ public class CurveGraphEditor : Canvas
         for (int t = 0; t <= 100; t += 20)
         {
             double x = left + (right - left) * t / 100.0;
-            var line = new Line
-            {
-                X1 = x, Y1 = top, X2 = x, Y2 = bottom,
-                Stroke = gridBrush, StrokeThickness = 1
-            };
-            Children.Add(line);
+            Children.Add(new Line { X1 = x, Y1 = top, X2 = x, Y2 = bottom, Stroke = gridBrush, StrokeThickness = 1 });
         }
 
         for (int p = 0; p <= 100; p += 20)
         {
             double y = bottom - (bottom - top) * p / 100.0;
-            var line = new Line
-            {
-                X1 = left, Y1 = y, X2 = right, Y2 = y,
-                Stroke = gridBrush, StrokeThickness = 1
-            };
-            Children.Add(line);
+            Children.Add(new Line { X1 = left, Y1 = y, X2 = right, Y2 = y, Stroke = gridBrush, StrokeThickness = 1 });
         }
     }
 
@@ -117,39 +119,30 @@ public class CurveGraphEditor : Canvas
         }
 
         var gradient = new LinearGradientBrush(
-            Color.FromRgb(76, 175, 80),
-            Color.FromRgb(244, 67, 54),
+            Color.FromRgb(76, 175, 80), Color.FromRgb(244, 67, 54),
             new Point(0, 0), new Point(1, 0));
 
-        var path = new Path
+        Children.Add(new Path
         {
             Data = new PathGeometry(new[] { pathFigure }),
             Stroke = gradient,
             StrokeThickness = 2.5,
             StrokeLineJoin = PenLineJoin.Round
-        };
-        Children.Add(path);
+        });
 
         var fillFigure = new PathFigure { StartPoint = pathFigure.StartPoint };
         foreach (var seg in pathFigure.Segments) fillFigure.Segments.Add(seg.Clone());
-
-        double lastX = left + (right - left);
-        double firstX = left;
-        fillFigure.Segments.Add(new LineSegment(new Point(lastX, bottom), true));
-        fillFigure.Segments.Add(new LineSegment(new Point(firstX, bottom), true));
+        fillFigure.Segments.Add(new LineSegment(new Point(left + (right - left), bottom), true));
+        fillFigure.Segments.Add(new LineSegment(new Point(left, bottom), true));
         fillFigure.IsClosed = true;
 
-        var fillGradient = new LinearGradientBrush(
-            Color.FromArgb(40, 76, 175, 80),
-            Color.FromArgb(40, 244, 67, 54),
-            new Point(0, 0), new Point(1, 0));
-
-        var fillPath = new Path
+        Children.Add(new Path
         {
             Data = new PathGeometry(new[] { fillFigure }),
-            Fill = fillGradient
-        };
-        Children.Add(fillPath);
+            Fill = new LinearGradientBrush(
+                Color.FromArgb(40, 76, 175, 80), Color.FromArgb(40, 244, 67, 54),
+                new Point(0, 0), new Point(1, 0))
+        });
     }
 
     private void DrawPoints(double left, double right, double top, double bottom)
@@ -203,12 +196,7 @@ public class CurveGraphEditor : Canvas
         for (int t = 0; t <= 100; t += 20)
         {
             double x = left + (right - left) * t / 100.0;
-            var tb = new TextBlock
-            {
-                Text = $"{t}°",
-                FontSize = 10,
-                Foreground = brush
-            };
+            var tb = new TextBlock { Text = $"{t}°", FontSize = 10, Foreground = brush };
             SetLeft(tb, x - 10);
             SetTop(tb, bottom + 4);
             Children.Add(tb);
@@ -217,12 +205,7 @@ public class CurveGraphEditor : Canvas
         for (int p = 0; p <= 100; p += 20)
         {
             double y = bottom - (bottom - top) * p / 100.0;
-            var tb = new TextBlock
-            {
-                Text = $"{p}%",
-                FontSize = 10,
-                Foreground = brush
-            };
+            var tb = new TextBlock { Text = $"{p}%", FontSize = 10, Foreground = brush };
             SetLeft(tb, 2);
             SetTop(tb, y - 8);
             Children.Add(tb);

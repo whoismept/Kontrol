@@ -19,8 +19,11 @@ public class FanControllerService : IDisposable
 
     public FanConfig Config => _config;
     public IReadOnlyList<FanControl> Fans => _fans;
+
     public event Action? ConfigChanged;
-    public event Action<string, float, float>? FanUpdated; // fanKey, targetPercent, tempC
+
+    // fanKey, targetPercent, tempC, currentRpm
+    public event Action<string, float, float, float>? FanUpdated;
 
     public FanControllerService(
         HardwareService hardwareService,
@@ -46,25 +49,15 @@ public class FanControllerService : IDisposable
         _timer.Start();
     }
 
-    public void Stop()
-    {
-        _timer.Stop();
-    }
+    public void Stop() => _timer.Stop();
 
     public void SetPollingInterval(int ms)
-    {
-        _timer.Interval = TimeSpan.FromMilliseconds(ms);
-    }
+        => _timer.Interval = TimeSpan.FromMilliseconds(ms);
 
     public void DiscoverFans()
-    {
-        _fans = _fanControlService.DiscoverControllableFans(_hardwareService.GetHardwareList());
-    }
+        => _fans = _fanControlService.DiscoverControllableFans(_hardwareService.GetHardwareList());
 
-    public string GetFanKey(FanControl fan)
-    {
-        return $"{fan.HardwareName}|{fan.Name}";
-    }
+    public string GetFanKey(FanControl fan) => $"{fan.HardwareName}|{fan.Name}";
 
     public void UpdateConfig(FanConfig config)
     {
@@ -74,9 +67,28 @@ public class FanControllerService : IDisposable
         ConfigChanged?.Invoke();
     }
 
-    public void SaveConfig()
+    public void SaveConfig() => _configService.Save(_config);
+
+    // Applies a single assignment immediately without waiting for the timer tick.
+    // Called when the user changes mode or speed in the UI.
+    public void ForceApplyNow(string fanKey)
     {
-        _configService.Save(_config);
+        var fan = _fans.FirstOrDefault(f => GetFanKey(f) == fanKey);
+        if (fan is null) return;
+
+        try
+        {
+            _hardwareService.UpdateAll();
+            _fanControlService.RefreshFanState(fan);
+
+            var assignment = _config.Assignments.FirstOrDefault(a => a.FanKey == fanKey);
+            if (assignment is not null)
+            {
+                var readings = _hardwareService.GetAllReadings();
+                ApplyAssignment(fan, assignment, readings);
+            }
+        }
+        catch { }
     }
 
     private void Tick()
@@ -108,11 +120,12 @@ public class FanControllerService : IDisposable
         {
             case FanMode.Auto:
                 _fanControlService.SetAuto(fan);
+                FanUpdated?.Invoke(fanKey, fan.CurrentSpeed, 0, fan.CurrentRpm);
                 break;
 
             case FanMode.ManualConstant:
                 _fanControlService.SetSpeed(fan, assignment.ManualPercent);
-                FanUpdated?.Invoke(fanKey, assignment.ManualPercent, 0);
+                FanUpdated?.Invoke(fanKey, assignment.ManualPercent, 0, fan.CurrentRpm);
                 break;
 
             case FanMode.Curve:
@@ -121,7 +134,7 @@ public class FanControllerService : IDisposable
 
             case FanMode.Off:
                 _fanControlService.SetSpeed(fan, 0);
-                FanUpdated?.Invoke(fanKey, 0, 0);
+                FanUpdated?.Invoke(fanKey, 0, 0, fan.CurrentRpm);
                 break;
         }
     }
@@ -139,14 +152,13 @@ public class FanControllerService : IDisposable
 
         var fanKey = assignment.FanKey;
         float rawPercent = _curveEvaluator.Evaluate(curve, tempC.Value, fanKey);
-
         float clamped = Math.Clamp(rawPercent, assignment.MinPercent, assignment.MaxPercent);
 
         if (assignment.ZeroRpmBelowC.HasValue && tempC.Value < assignment.ZeroRpmBelowC.Value)
             clamped = 0;
 
         _fanControlService.SetSpeed(fan, clamped);
-        FanUpdated?.Invoke(fanKey, clamped, tempC.Value);
+        FanUpdated?.Invoke(fanKey, clamped, tempC.Value, fan.CurrentRpm);
     }
 
     public void Dispose()
@@ -154,7 +166,6 @@ public class FanControllerService : IDisposable
         if (_disposed) return;
         _disposed = true;
         _timer.Stop();
-
         foreach (var fan in _fans)
         {
             try { _fanControlService.SetAuto(fan); } catch { }

@@ -2,12 +2,14 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-             xmlns:conv="clr-namespace:Kontrol.Converters">
+             xmlns:conv="clr-namespace:Kontrol.Converters"
+             xmlns:models="clr-namespace:Kontrol.Models">
 
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         <conv:ColorToSolidBrushConverter x:Key="ColorToBrush"/>
+        <conv:RgbBackendLabelConverter x:Key="BackendLabel"/>
     </UserControl.Resources>
 
     <Grid>
@@ -23,7 +25,7 @@
                 <ui:SymbolIcon Symbol="Color24" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="RGB Kontrolü" FontSize="28" FontWeight="SemiBold"/>
-                    <TextBlock Text="Tüm RGB cihazlar doğrudan native protokol ile kontrol edilir"
+                    <TextBlock Text="Native LampArray + vendor SDK destekli çok-katmanlı RGB kontrolü"
                                FontSize="12" Opacity="0.7"/>
                 </StackPanel>
             </StackPanel>
@@ -39,20 +41,86 @@
         <Grid Grid.Row="1" Margin="32,0,32,16">
 
             <!-- No devices found -->
-            <ui:Card Padding="24"
-                     Visibility="{Binding HasDevices, Converter={StaticResource InvBoolToVis}}">
-                <StackPanel HorizontalAlignment="Center">
-                    <ui:SymbolIcon Symbol="Color24" FontSize="48" Opacity="0.5" HorizontalAlignment="Center"/>
-                    <TextBlock Text="RGB cihaz bulunamadı"
-                               FontSize="16" FontWeight="SemiBold"
-                               Margin="0,12,0,4" HorizontalAlignment="Center"/>
-                    <TextBlock TextAlignment="Center" Opacity="0.7" MaxWidth="500" TextWrapping="Wrap">
-                        <Run Text="Desteklenen markalar: ASUS Aura, Corsair iCUE, Cooler Master, Logitech, MSI, Razer Chroma, SteelSeries, Wooting."/>
-                        <LineBreak/>
-                        <Run Text="Cihazınız listelenmiyorsa: ilgili üreticinin SDK'sının yüklü olduğundan emin olun, sonra Yeniden Tara'ya basın."/>
-                    </TextBlock>
+            <ScrollViewer Visibility="{Binding HasDevices, Converter={StaticResource InvBoolToVis}}"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel MaxWidth="640" HorizontalAlignment="Left">
+                    <ui:Card Padding="24" Margin="0,0,0,16">
+                        <StackPanel>
+                            <ui:SymbolIcon Symbol="Color24" FontSize="40" Opacity="0.4" HorizontalAlignment="Left" Margin="0,0,0,12"/>
+                            <TextBlock Text="RGB cihaz bulunamadı" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                            <TextBlock TextWrapping="Wrap" Opacity="0.75" LineHeight="20">
+                                Uygulama iki yöntemle cihazları tanır:<LineBreak/>
+                                <LineBreak/>
+                                <Run FontWeight="SemiBold">1. Windows Native (LampArray)</Run>
+                                <Run>— Herhangi bir SDK gerektirmez. HID LampArray protokolünü destekleyen cihazları otomatik bulur.</Run>
+                                <LineBreak/>
+                                <LineBreak/>
+                                <Run FontWeight="SemiBold">2. Vendor SDK</Run>
+                                <Run>— Aşağıdaki markalara ait cihazlar ilgili yazılım yüklüyse çalışır:</Run>
+                            </TextBlock>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <!-- Vendor table -->
+                    <ui:Card Padding="20" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="Desteklenen Vendor SDK'ları" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,12"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="140"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Text="ASUS" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="Armoury Crate / Aura Sync" Opacity="0.7" Margin="0,4"/>
+
+                                <TextBlock Grid.Row="1" Text="Corsair" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="iCUE" Opacity="0.7" Margin="0,4"/>
+
+                                <TextBlock Grid.Row="2" Text="CoolerMaster" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="MasterPlus+" Opacity="0.7" Margin="0,4"/>
+
+                                <TextBlock Grid.Row="3" Text="Logitech" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="G HUB" Opacity="0.7" Margin="0,4"/>
+
+                                <TextBlock Grid.Row="4" Text="MSI" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="MSI Center / Dragon Center" Opacity="0.7" Margin="0,4"/>
+
+                                <TextBlock Grid.Row="5" Text="Razer" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="Razer Synapse" Opacity="0.7" Margin="0,4"/>
+
+                                <TextBlock Grid.Row="6" Text="SteelSeries" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="SteelSeries GG" Opacity="0.7" Margin="0,4"/>
+
+                                <TextBlock Grid.Row="7" Text="Wooting" FontWeight="SemiBold" Margin="0,4"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="Direkt HID (yazılım gerekmez)" Opacity="0.7" Margin="0,4"/>
+                            </Grid>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <!-- Init log summary -->
+                    <ui:Card Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="Başlatma Özeti" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,8"/>
+                            <TextBlock Text="{Binding InitLogText}" FontSize="12" Opacity="0.75" Margin="0,0,0,8"/>
+                            <TextBlock FontSize="11" Opacity="0.6" TextWrapping="Wrap">
+                                Yeniden Tara düğmesine basarak cihazları tekrar tarayabilirsiniz.
+                                Vendor yazılımını yükledikten sonra uygulamayı yeniden başlatın.
+                            </TextBlock>
+                        </StackPanel>
+                    </ui:Card>
                 </StackPanel>
-            </ui:Card>
+            </ScrollViewer>
 
             <!-- Devices + ColorPicker -->
             <Grid Visibility="{Binding HasDevices, Converter={StaticResource BoolToVis}}">
@@ -89,9 +157,10 @@
                                                        TextTrimming="CharacterEllipsis"/>
                                             <TextBlock FontSize="11" Opacity="0.7" TextTrimming="CharacterEllipsis">
                                                 <TextBlock.Text>
-                                                    <MultiBinding StringFormat="{}{0} • {1} LED">
+                                                    <MultiBinding StringFormat="{}{0} · {1} LED · {2}">
                                                         <Binding Path="Type"/>
                                                         <Binding Path="LedCount"/>
+                                                        <Binding Path="Backend" Converter="{StaticResource BackendLabel}"/>
                                                     </MultiBinding>
                                                 </TextBlock.Text>
                                             </TextBlock>
@@ -149,22 +218,19 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="R" Foreground="#F44336"
-                                               FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Text="R" Foreground="#F44336" FontWeight="Bold" VerticalAlignment="Center"/>
                                     <Slider Grid.Row="0" Grid.Column="1" Value="{Binding SelectedColor.R}"
                                             Minimum="0" Maximum="255" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding SelectedColor.R}"
                                                VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12"/>
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="G" Foreground="#4CAF50"
-                                               FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Text="G" Foreground="#4CAF50" FontWeight="Bold" VerticalAlignment="Center"/>
                                     <Slider Grid.Row="2" Grid.Column="1" Value="{Binding SelectedColor.G}"
                                             Minimum="0" Maximum="255" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding SelectedColor.G}"
                                                VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12"/>
 
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="B" Foreground="#2196F3"
-                                               FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="4" Text="B" Foreground="#2196F3" FontWeight="Bold" VerticalAlignment="Center"/>
                                     <Slider Grid.Row="4" Grid.Column="1" Value="{Binding SelectedColor.B}"
                                             Minimum="0" Maximum="255" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding SelectedColor.B}"
@@ -270,9 +336,8 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.7"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <TextBlock FontSize="11" Opacity="0.7"
-                               Text="{Binding InitLogText}" ToolTipService.ToolTip="{Binding InitLogText}"
-                               TextTrimming="CharacterEllipsis" MaxWidth="300" Margin="0,0,12,0"/>
+                    <TextBlock FontSize="11" Opacity="0.5" Margin="0,0,12,0"
+                               Text="{Binding InitLogText}"/>
                     <TextBlock FontSize="11" Opacity="0.7">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} cihaz">
