@@ -14,7 +14,8 @@ public class BoolToVisibilityConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         bool invert = parameter is string s && s == "invert";
-        bool boolValue = value is bool b && b;
+        bool boolValue = value is bool b ? b
+                       : value is not null && !ReferenceEquals(value, DependencyProperty.UnsetValue);
         if (invert) boolValue = !boolValue;
         return boolValue ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -61,7 +62,11 @@ public class InverseBoolToVisibilityConverter : IValueConverter
     public static readonly InverseBoolToVisibilityConverter Instance = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is bool b && b ? Visibility.Collapsed : Visibility.Visible;
+    {
+        bool boolValue = value is bool b ? b
+                       : value is not null && !ReferenceEquals(value, DependencyProperty.UnsetValue);
+        return boolValue ? Visibility.Collapsed : Visibility.Visible;
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
@@ -194,6 +199,21 @@ public class LocalizedFormatMultiConverter : IMultiValueConverter
         => throw new NotSupportedException();
 }
 
+public class TempDisplayConverter : IValueConverter
+{
+    public static readonly TempDisplayConverter Instance = new();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is float f && f > 0)
+            return $"{f:F0}°";
+        return "—";
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
 public class RgbBackendLabelConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -203,6 +223,22 @@ public class RgbBackendLabelConverter : IValueConverter
             RgbBackend.RgbNet => "SDK",
             _ => backend.ToString()
         } : string.Empty;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+public class FanModeTempLabelConverter : IValueConverter
+{
+    public static readonly FanModeTempLabelConverter Instance = new();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is not FanMode mode) return "—";
+
+        var key = mode == FanMode.Curve ? "LblTempSource" : "LblMaxTemp";
+        return Application.Current?.TryFindResource(key) as string ?? (mode == FanMode.Curve ? "Src °C" : "Max °C");
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();

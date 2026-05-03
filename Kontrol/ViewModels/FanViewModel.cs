@@ -50,34 +50,45 @@ public partial class FanViewModel : ObservableObject, IDisposable
         DiscoverFans();
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(pollingIntervalMs) };
-        _timer.Tick += (_, _) => Tick();
+        _timer.Tick += async (_, _) => await TickAsync();
         _timer.Start();
 
-        RefreshReadings();
+        _ = RefreshReadings();
     }
 
     partial void OnPollingIntervalMsChanged(int value)
         => _timer.Interval = TimeSpan.FromMilliseconds(value);
 
-    private void Tick()
-    {
-        RefreshReadings();
-        RefreshFanStates();
-    }
-
-    [RelayCommand]
-    private void RefreshReadings()
+    private async Task TickAsync()
     {
         try
         {
-            var readings = _hardwareService.GetAllReadings();
-
+            var readings = await Task.Run(() => _hardwareService.GetAllReadings());
             UpdateGroups(TemperatureGroups, readings.Where(r => r.Category == SensorCategory.Temperature));
             UpdateGroups(FanGroups, readings.Where(r => r.Category == SensorCategory.FanSpeed));
             UpdateGroups(LoadGroups, readings.Where(r => r.Category == SensorCategory.Load));
-
             UpdateLiveSummary(readings);
+            StatusText = Loc.Format("StatLastUpdate", DateTime.Now.ToString("HH:mm:ss"));
+            IsLoading = false;
+            RefreshFanStates();
+        }
+        catch (Exception ex)
+        {
+            StatusText = Loc.Format("StatError", ex.Message);
+            IsLoading = false;
+        }
+    }
 
+    [RelayCommand]
+    private async Task RefreshReadings()
+    {
+        try
+        {
+            var readings = await Task.Run(() => _hardwareService.GetAllReadings());
+            UpdateGroups(TemperatureGroups, readings.Where(r => r.Category == SensorCategory.Temperature));
+            UpdateGroups(FanGroups, readings.Where(r => r.Category == SensorCategory.FanSpeed));
+            UpdateGroups(LoadGroups, readings.Where(r => r.Category == SensorCategory.Load));
+            UpdateLiveSummary(readings);
             StatusText = Loc.Format("StatLastUpdate", DateTime.Now.ToString("HH:mm:ss"));
             IsLoading = false;
         }

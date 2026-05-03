@@ -3,7 +3,6 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:views="clr-namespace:Kontrol.Views"
-                 xmlns:conv="clr-namespace:Kontrol.Converters"
                  Title="Kontrol"
                  Width="1280" Height="800"
                  MinWidth="960" MinHeight="580"
@@ -13,46 +12,6 @@
                  WindowCornerPreference="Round"
                  Icon="/Resources/app.ico"
                  TextElement.Foreground="{DynamicResource TextFillColorPrimaryBrush}">
-
-    <Window.Resources>
-        <conv:TemperatureToColorConverter x:Key="TempColor"/>
-
-        <Style x:Key="NavButton" TargetType="RadioButton">
-            <Setter Property="Margin" Value="4,1"/>
-            <Setter Property="Padding" Value="14,10"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="GroupName" Value="MainNav"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="Bg" CornerRadius="8"
-                                Background="Transparent"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background"
-                                        Value="{DynamicResource AccentFillColorDefaultBrush}"/>
-                                <Setter TargetName="Bg" Property="TextElement.Foreground"
-                                        Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsChecked" Value="False"/>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="Bg" Property="Background"
-                                        Value="{DynamicResource SubtleFillColorSecondaryBrush}"/>
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -70,110 +29,66 @@
             </ui:TitleBar.Header>
         </ui:TitleBar>
 
-        <!-- Sidebar + Content -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="232"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <!-- NavigationView -->
+        <ui:NavigationView x:Name="MainNav"
+                           Grid.Row="1"
+                           IsBackButtonVisible="Collapsed"
+                           IsPaneToggleVisible="False"
+                           PaneDisplayMode="LeftFluent"
+                           OpenPaneLength="220">
 
-            <!-- Sidebar -->
-            <DockPanel Grid.Column="0" Margin="0,0,0,0">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="{DynamicResource NavHardware}"
+                                       Icon="{ui:SymbolIcon Gauge24}"
+                                       TargetPageType="{x:Type views:FanView}"/>
+                <ui:NavigationViewItem Content="{DynamicResource NavFanControl}"
+                                       Icon="{ui:SymbolIcon WeatherBlowingSnow24}"
+                                       TargetPageType="{x:Type views:FanControlView}"/>
+                <ui:NavigationViewItem Content="{DynamicResource NavRGB}"
+                                       Icon="{ui:SymbolIcon Color24}"
+                                       TargetPageType="{x:Type views:RgbView}"/>
+            </ui:NavigationView.MenuItems>
 
-                <!-- Bottom: settings + live stats -->
-                <StackPanel DockPanel.Dock="Bottom" Margin="12,0,12,12">
-                    <!-- Settings nav -->
-                    <RadioButton x:Name="SettingsNav" Style="{StaticResource NavButton}"
-                                 Tag="3" Checked="OnNavChecked" Margin="4,0,4,8">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Settings24" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="{DynamicResource NavSettings}" VerticalAlignment="Center" FontSize="13"/>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem Content="{DynamicResource NavSettings}"
+                                       Icon="{ui:SymbolIcon Settings24}"
+                                       TargetPageType="{x:Type views:SettingsView}"/>
+            </ui:NavigationView.FooterMenuItems>
+
+            <ui:NavigationView.PaneFooter>
+                <ui:Card Margin="8,0,8,8" Padding="14,10">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <ui:SymbolIcon Symbol="Temperature24" FontSize="12" Margin="0,0,6,0"
+                                           VerticalAlignment="Center" Opacity="0.6"/>
+                            <TextBlock Text="{DynamicResource StatCpu}" FontSize="10" Opacity="0.6"
+                                       VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding Fan.MaxCpuTempText}" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
-                    </RadioButton>
-
-                    <!-- Live mini-stats card -->
-                    <Border CornerRadius="8" Padding="14,10"
-                            Background="{DynamicResource ControlFillColorDefaultBrush}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="6"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="6"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <!-- CPU -->
-                            <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Temperature24" FontSize="12" Margin="0,0,6,0"
-                                               VerticalAlignment="Center" Opacity="0.6"/>
-                                <TextBlock Text="CPU" FontSize="10" Opacity="0.6" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock Text="{Binding Fan.MaxCpuTempText}" FontSize="13" FontWeight="SemiBold"
-                                           Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
-                            </StackPanel>
-
-                            <!-- GPU -->
-                            <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Temperature24" FontSize="12" Margin="0,0,6,0"
-                                               VerticalAlignment="Center" Opacity="0.6"/>
-                                <TextBlock Text="GPU" FontSize="10" Opacity="0.6" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock Text="{Binding Fan.MaxGpuTempText}" FontSize="13" FontWeight="SemiBold"
-                                           Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
-                            </StackPanel>
-
-                            <!-- Fan -->
-                            <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="WeatherBlowingSnow24" FontSize="12" Margin="0,0,6,0"
-                                               VerticalAlignment="Center" Opacity="0.6"/>
-                                <TextBlock Text="Fan" FontSize="10" Opacity="0.6" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock Text="{Binding Fan.MaxFanRpmText}" FontSize="13" FontWeight="SemiBold"
-                                           Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </StackPanel>
-
-                <!-- Top nav items -->
-                <StackPanel Margin="12,12,12,0">
-                    <RadioButton x:Name="HardwareNav" Style="{StaticResource NavButton}"
-                                 Tag="0" IsChecked="True" Checked="OnNavChecked">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Gauge24" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="{DynamicResource NavHardware}" VerticalAlignment="Center" FontSize="13"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <ui:SymbolIcon Symbol="Temperature24" FontSize="12" Margin="0,0,6,0"
+                                           VerticalAlignment="Center" Opacity="0.6"/>
+                            <TextBlock Text="{DynamicResource StatGpu}" FontSize="10" Opacity="0.6"
+                                       VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding Fan.MaxGpuTempText}" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="FansNav" Style="{StaticResource NavButton}"
-                                 Tag="1" Checked="OnNavChecked">
                         <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="WeatherBlowingSnow24" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="{DynamicResource NavFanControl}" VerticalAlignment="Center" FontSize="13"/>
+                            <ui:SymbolIcon Symbol="WeatherBlowingSnow24" FontSize="12" Margin="0,0,6,0"
+                                           VerticalAlignment="Center" Opacity="0.6"/>
+                            <TextBlock Text="{DynamicResource StatFan}" FontSize="10" Opacity="0.6"
+                                       VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding Fan.MaxFanRpmText}" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="RgbNav" Style="{StaticResource NavButton}"
-                                 Tag="2" Checked="OnNavChecked">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Color24" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="{DynamicResource NavRGB}" VerticalAlignment="Center" FontSize="13"/>
-                        </StackPanel>
-                    </RadioButton>
-                </StackPanel>
-            </DockPanel>
+                    </StackPanel>
+                </ui:Card>
+            </ui:NavigationView.PaneFooter>
 
-            <!-- Thin separator between sidebar and content -->
-            <Border Grid.Column="0" Width="1" HorizontalAlignment="Right"
-                    Background="{DynamicResource DividerStrokeColorDefaultBrush}"/>
-
-            <!-- Content panels -->
-            <Grid Grid.Column="1">
-                <views:FanView x:Name="HardwareViewPanel" DataContext="{Binding Fan}"/>
-                <views:FanControlView x:Name="FansViewPanel" DataContext="{Binding FanConfig}" Visibility="Collapsed"/>
-                <views:RgbView x:Name="RgbViewPanel" DataContext="{Binding Rgb}" Visibility="Collapsed"/>
-                <views:SettingsView x:Name="SettingsViewPanel" DataContext="{Binding Settings}" Visibility="Collapsed"/>
-            </Grid>
-        </Grid>
+        </ui:NavigationView>
     </Grid>
 </ui:FluentWindow>

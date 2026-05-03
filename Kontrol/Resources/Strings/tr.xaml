@@ -35,9 +35,13 @@
     <sys:String x:Key="LblResponse">Yanıt:</sys:String>
     <sys:String x:Key="LblRPM">RPM</sys:String>
     <sys:String x:Key="LblTarget">Hedef</sys:String>
-    <sys:String x:Key="LblTemperature">Sıcaklık</sys:String>
+    <sys:String x:Key="LblTemperature">Temperature</sys:String>
+    <sys:String x:Key="LblMaxTemp">Max °C</sys:String>
+    <sys:String x:Key="LblTempSource">Src °C</sys:String>
     <sys:String x:Key="LblHidden">Gizli</sys:String>
     <sys:String x:Key="LblTempC">Sıcaklık (°C)</sys:String>
+    <sys:String x:Key="LblTempSource">Kaynak °C</sys:String>
+    <sys:String x:Key="LblMaxTemp">Maks °C</sys:String>
     <sys:String x:Key="LblSpeedPct">Hız (%)</sys:String>
     <sys:String x:Key="LblHEX">HEX</sys:String>
     <sys:String x:Key="LblPresetColors">Hazır Renkler</sys:String>
@@ -171,5 +175,10 @@
     <sys:String x:Key="StatRGBProfileSaved">Profil kaydedildi: {0}</sys:String>
     <sys:String x:Key="StatInitLogNoProvider">Aktif sağlayıcı yok</sys:String>
     <sys:String x:Key="StatInitLogActive">Aktif: {0} | {1} sağlayıcı atlandı</sys:String>
+
+    <!-- Kenar çubuğu istatistik etiketleri -->
+    <sys:String x:Key="StatCpu">CPU</sys:String>
+    <sys:String x:Key="StatGpu">GPU</sys:String>
+    <sys:String x:Key="StatFan">Fan</sys:String>
 
 </ResourceDictionary>

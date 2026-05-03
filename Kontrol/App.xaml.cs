@@ -1,6 +1,7 @@
 using Hardcodet.Wpf.TaskbarNotification;
 using Kontrol.Models;
 using Kontrol.Services;
+using Kontrol.ViewModels;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +21,7 @@ public partial class App : Application
     public static HardwareService? HardwareServiceInstance { get; private set; }
     public static FanControlService? FanControlServiceInstance { get; private set; }
     public static FanControllerService? FanControllerInstance { get; private set; }
+    public static MainViewModel? MainVm { get; internal set; }
 
     public App()
     {

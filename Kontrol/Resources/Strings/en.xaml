@@ -23,19 +23,27 @@
     <sys:String x:Key="BtnApplyAll">Apply to All</sys:String>
 
     <!-- Common labels -->
-    <sys:String x:Key="LblName">Name:</sys:String>
-    <sys:String x:Key="LblMode">Mode:</sys:String>
-    <sys:String x:Key="LblType">Type:</sys:String>
-    <sys:String x:Key="LblSpeed">Speed:</sys:String>
-    <sys:String x:Key="LblCurve">Curve:</sys:String>
-    <sys:String x:Key="LblSource">Source:</sys:String>
-    <sys:String x:Key="LblMinMax">Min/Max:</sys:String>
-    <sys:String x:Key="LblLive">Live:</sys:String>
-    <sys:String x:Key="LblHysteresis">Hysteresis:</sys:String>
-    <sys:String x:Key="LblResponse">Response:</sys:String>
+    <!-- Ortak etiketler -->
+    <sys:String x:Key="LblName">Ad:</sys:String>
+    <sys:String x:Key="LblMode">Mod:</sys:String>
+    <sys:String x:Key="LblType">Tür:</sys:String>
+    <sys:String x:Key="LblSpeed">Hız:</sys:String>
+    <sys:String x:Key="LblCurve">Eğri:</sys:String>
+    <sys:String x:Key="LblSource">Kaynak:</sys:String>
+    <sys:String x:Key="LblMinMax">Min/Maks:</sys:String>
+    <sys:String x:Key="LblLive">Anlık:</sys:String>
+    <sys:String x:Key="LblHysteresis">Histerezis:</sys:String>
+    <sys:String x:Key="LblResponse">Yanıt:</sys:String>
     <sys:String x:Key="LblRPM">RPM</sys:String>
-    <sys:String x:Key="LblTarget">Target</sys:String>
-    <sys:String x:Key="LblTemperature">Temperature</sys:String>
+    <sys:String x:Key="LblTarget">Hedef</sys:String>
+    <sys:String x:Key="LblTemperature">Sıcaklık</sys:String>
+    <sys:String x:Key="LblTempSource">Kaynak °C</sys:String>
+    <sys:String x:Key="LblMaxTemp">Maks °C</sys:String>
+    <sys:String x:Key="LblHidden">Gizli</sys:String>
+    <sys:String x:Key="LblTempSource">Kaynak °C</sys:String>
+    <sys:String x:Key="LblMaxTemp">Max °C</sys:String>
+    <sys:String x:Key="LblTempSource">Src °C</sys:String>
+    <sys:String x:Key="LblMaxTemp">Max °C</sys:String>
     <sys:String x:Key="LblHidden">Hidden</sys:String>
     <sys:String x:Key="LblTempC">Temperature (°C)</sys:String>
     <sys:String x:Key="LblSpeedPct">Speed (%)</sys:String>
@@ -171,5 +179,10 @@
     <sys:String x:Key="StatRGBProfileSaved">Profile saved: {0}</sys:String>
     <sys:String x:Key="StatInitLogNoProvider">No provider is active</sys:String>
     <sys:String x:Key="StatInitLogActive">Active: {0} | {1} provider(s) skipped</sys:String>
+
+    <!-- Sidebar stats labels -->
+    <sys:String x:Key="StatCpu">CPU</sys:String>
+    <sys:String x:Key="StatGpu">GPU</sys:String>
+    <sys:String x:Key="StatFan">Fan</sys:String>
 
 </ResourceDictionary>

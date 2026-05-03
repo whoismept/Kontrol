@@ -13,6 +13,7 @@ public class FanControllerService : IDisposable
     private readonly FanCurveEvaluator _curveEvaluator;
     private readonly DispatcherTimer _timer;
     private bool _disposed;
+    private bool _ticking;
 
     private FanConfig _config;
     private List<FanControl> _fans = new();
@@ -40,7 +41,13 @@ public class FanControllerService : IDisposable
         _config = configService.Load();
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(pollingIntervalMs) };
-        _timer.Tick += (_, _) => Tick();
+        _timer.Tick += async (_, _) =>
+        {
+            if (_ticking) return;
+            _ticking = true;
+            try { await TickAsync(); }
+            finally { _ticking = false; }
+        };
     }
 
     public void Start()
@@ -91,40 +98,45 @@ public class FanControllerService : IDisposable
         catch { }
     }
 
-    private void Tick()
+    private async Task TickAsync()
     {
         try
         {
-            var readings = _hardwareService.GetAllReadings();
-
+            var readings = await Task.Run(() => _hardwareService.GetAllReadings());
             foreach (var fan in _fans)
             {
                 _fanControlService.RefreshFanState(fan);
-
                 var fanKey = GetFanKey(fan);
                 var assignment = _config.Assignments.FirstOrDefault(a => a.FanKey == fanKey);
                 if (assignment is null) continue;
-
                 ApplyAssignment(fan, assignment, readings);
             }
         }
         catch { }
     }
 
+    private float GetMaxTemp(List<SensorReading> readings)
+        => readings
+            .Where(r => r.Category == SensorCategory.Temperature)
+            .Select(r => r.Value)
+            .DefaultIfEmpty(0f)
+            .Max();
+
     private void ApplyAssignment(FanControl fan, FanAssignment assignment, List<SensorReading> readings)
     {
         var fanKey = assignment.FanKey;
+        float currentTemp = GetMaxTemp(readings);
 
         switch (assignment.Mode)
         {
             case FanMode.Auto:
                 _fanControlService.SetAuto(fan);
-                FanUpdated?.Invoke(fanKey, fan.CurrentSpeed, 0, fan.CurrentRpm);
+                FanUpdated?.Invoke(fanKey, fan.CurrentSpeed, currentTemp, fan.CurrentRpm);
                 break;
 
             case FanMode.ManualConstant:
                 _fanControlService.SetSpeed(fan, assignment.ManualPercent);
-                FanUpdated?.Invoke(fanKey, assignment.ManualPercent, 0, fan.CurrentRpm);
+                FanUpdated?.Invoke(fanKey, assignment.ManualPercent, currentTemp, fan.CurrentRpm);
                 break;
 
             case FanMode.Curve:
@@ -133,7 +145,7 @@ public class FanControllerService : IDisposable
 
             case FanMode.Off:
                 _fanControlService.SetSpeed(fan, 0);
-                FanUpdated?.Invoke(fanKey, 0, 0, fan.CurrentRpm);
+                FanUpdated?.Invoke(fanKey, 0, currentTemp, fan.CurrentRpm);
                 break;
         }
     }

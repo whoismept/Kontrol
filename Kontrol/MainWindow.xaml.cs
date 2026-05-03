@@ -1,7 +1,7 @@
-﻿using Kontrol.Models;
+using Kontrol.Models;
 using Kontrol.ViewModels;
+using Kontrol.Views;
 using System.Windows;
-using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
 namespace Kontrol;
@@ -16,24 +16,10 @@ public partial class MainWindow : FluentWindow
         InitializeComponent();
         _settings = settings;
         _vm = new MainViewModel(_settings);
+        App.MainVm = _vm;
         DataContext = _vm;
-    }
 
-    private void OnNavChecked(object sender, RoutedEventArgs e)
-    {
-        if (HardwareViewPanel is null) return;
-        if (sender is not RadioButton btn) return;
-        if (!int.TryParse(btn.Tag?.ToString(), out var index)) return;
-
-        ShowPanel(index);
-    }
-
-    private void ShowPanel(int index)
-    {
-        HardwareViewPanel.Visibility = index == 0 ? Visibility.Visible : Visibility.Collapsed;
-        FansViewPanel.Visibility     = index == 1 ? Visibility.Visible : Visibility.Collapsed;
-        RgbViewPanel.Visibility      = index == 2 ? Visibility.Visible : Visibility.Collapsed;
-        SettingsViewPanel.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
+        Loaded += (_, _) => MainNav.Navigate(typeof(FanView));
     }
 
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -61,6 +47,5 @@ public partial class MainWindow : FluentWindow
     {
         try { _vm?.Fan?.Dispose(); } catch { }
         try { _vm?.Rgb?.Dispose(); } catch { }
-        // HardwareService and FanControllerService are owned by App — not disposed here
     }
 }

@@ -70,9 +70,28 @@ public partial class FanControlViewModel : ObservableObject
         foreach (var s in config.TempSources) TempSources.Add(s);
 
         SyncFanAssignments(config);
+        SetInitialTemps();
 
         int hidden = FanAssignments.Count(a => a.IsHidden);
         StatusText = Loc.Format("StatFanCount", FanAssignments.Count, hidden, Curves.Count, TempSources.Count);
+    }
+
+    private void SetInitialTemps()
+    {
+        try
+        {
+            var readings = _hardwareService.GetAllReadings();
+            float maxTemp = readings
+                .Where(r => r.Category == SensorCategory.Temperature)
+                .Select(r => r.Value)
+                .DefaultIfEmpty(0f)
+                .Max();
+
+            foreach (var vm in FanAssignments)
+                if (vm.CurrentTempC == 0)
+                    vm.CurrentTempC = maxTemp;
+        }
+        catch { }
     }
 
     private void SyncFanAssignments(FanConfig config)
