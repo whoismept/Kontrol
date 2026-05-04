@@ -44,17 +44,34 @@ public class RgbService : IDisposable
         if (settings?.OpenRgbEnabled == true)
             TryLoadOpenRgb(settings);
 
-        // ── Windows native LampArray (no vendor software needed) ────────────
-        // Run async enumeration synchronously; small timeout to avoid blocking startup.
-        try
+        // NOT: LampArray InitializeAsync() ile async başlatılmalı
+        // Sync çağrılmasın — deadlock riski var
+
+        _initialized = true;
+    }
+
+    public async Task InitializeAsync(AppSettings? settings = null)
+    {
+        if (_initialized) return;
+
+        // ── RGB.NET vendor providers (sync — vendor SDK'lar sync yüklenir) ────
+        await Task.Run(() =>
         {
-            var lampTask = LoadLampArrayDevicesAsync();
-            lampTask.Wait(TimeSpan.FromSeconds(3));
-        }
-        catch (Exception ex)
-        {
-            _initLog.Add($"[SKIP] LampArray: {ex.Message.Split('\n')[0]}");
-        }
+            TryLoad("ASUS Aura", () => _surface.Load(AsusDeviceProvider.Instance, RGBDeviceType.All, false));
+            TryLoad("Corsair iCUE", () => _surface.Load(CorsairDeviceProvider.Instance, RGBDeviceType.All, false));
+            TryLoad("CoolerMaster", () => _surface.Load(CoolerMasterDeviceProvider.Instance, RGBDeviceType.All, false));
+            TryLoad("Logitech", () => _surface.Load(LogitechDeviceProvider.Instance, RGBDeviceType.All, false));
+            TryLoad("MSI", () => _surface.Load(MsiDeviceProvider.Instance, RGBDeviceType.All, false));
+            TryLoad("Razer Chroma", () => _surface.Load(RazerDeviceProvider.Instance, RGBDeviceType.All, false));
+            TryLoad("SteelSeries", () => _surface.Load(SteelSeriesDeviceProvider.Instance, RGBDeviceType.All, false));
+            TryLoad("Wooting", () => _surface.Load(WootingDeviceProvider.Instance, RGBDeviceType.All, false));
+
+            if (settings?.OpenRgbEnabled == true)
+                TryLoadOpenRgb(settings);
+        });
+
+        // ── Windows native LampArray (WinRT async — await ile çağrılmalı) ──────
+        await LoadLampArrayDevicesAsync();
 
         _initialized = true;
     }

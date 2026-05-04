@@ -21,6 +21,9 @@ public partial class RgbViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _newProfileName = string.Empty;
     [ObservableProperty] private bool _hasDevices;
     [ObservableProperty] private string _initLogText = string.Empty;
+    [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] private bool _hasError;
+    [ObservableProperty] private string _errorMessage = string.Empty;
 
     public string HexColorText
     {
@@ -54,25 +57,29 @@ public partial class RgbViewModel : ObservableObject, IDisposable
         _profileService = profileService;
         _settings = settings;
 
-        Initialize();
+        _ = InitializeAsync();
     }
 
-    private void Initialize()
+    private async Task InitializeAsync()
     {
+        IsLoading = true;
         StatusText = Loc.Get("StatRGBScanning");
 
         try
         {
-            _rgbService.Initialize(_settings);
+            await _rgbService.InitializeAsync(_settings);
         }
         catch (Exception ex)
         {
-            StatusText = Loc.Format("StatRGBStartupError", ex.Message);
+            HasError = true;
+            ErrorMessage = Loc.Format("StatRGBStartupError", ex.Message);
+            StatusText = ErrorMessage;
         }
 
         BuildInitLogText();
         LoadDevices();
         ReloadProfiles();
+        IsLoading = false;
     }
 
     private void BuildInitLogText()

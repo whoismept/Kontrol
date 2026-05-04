@@ -35,13 +35,11 @@
     <sys:String x:Key="LblResponse">Yanıt:</sys:String>
     <sys:String x:Key="LblRPM">RPM</sys:String>
     <sys:String x:Key="LblTarget">Hedef</sys:String>
-    <sys:String x:Key="LblTemperature">Temperature</sys:String>
-    <sys:String x:Key="LblMaxTemp">Max °C</sys:String>
-    <sys:String x:Key="LblTempSource">Src °C</sys:String>
-    <sys:String x:Key="LblHidden">Gizli</sys:String>
-    <sys:String x:Key="LblTempC">Sıcaklık (°C)</sys:String>
+    <sys:String x:Key="LblTemperature">Sıcaklık</sys:String>
     <sys:String x:Key="LblTempSource">Kaynak °C</sys:String>
     <sys:String x:Key="LblMaxTemp">Maks °C</sys:String>
+    <sys:String x:Key="LblHidden">Gizli</sys:String>
+    <sys:String x:Key="LblTempC">Sıcaklık (°C)</sys:String>
     <sys:String x:Key="LblSpeedPct">Hız (%)</sys:String>
     <sys:String x:Key="LblHEX">HEX</sys:String>
     <sys:String x:Key="LblPresetColors">Hazır Renkler</sys:String>
@@ -139,6 +137,7 @@
     <sys:String x:Key="RgbSupportedSDKs">Desteklenen Satıcı SDK'ları</sys:String>
     <sys:String x:Key="RgbStartupSummary">Başlangıç Özeti</sys:String>
     <sys:String x:Key="RgbDevices">Cihazlar</sys:String>
+    <sys:String x:Key="RgbErrorTitle">RGB Hatası</sys:String>
 
     <!-- Durum / ViewModel format stringleri -->
     <sys:String x:Key="StatReady">Hazır</sys:String>

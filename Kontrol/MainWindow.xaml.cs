@@ -14,6 +14,7 @@ public partial class MainWindow : FluentWindow
     public MainWindow(AppSettings settings)
     {
         InitializeComponent();
+        App.SnackbarPresenter = null;
         _settings = settings;
         _vm = new MainViewModel(_settings);
         App.MainVm = _vm;

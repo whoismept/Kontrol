@@ -5,6 +5,7 @@ using Kontrol.ViewModels;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Wpf.Ui.Controls;
 
 namespace Kontrol;
 
@@ -22,6 +23,7 @@ public partial class App : Application
     public static FanControlService? FanControlServiceInstance { get; private set; }
     public static FanControllerService? FanControllerInstance { get; private set; }
     public static MainViewModel? MainVm { get; internal set; }
+    public static SnackbarPresenter? SnackbarPresenter { get; internal set; }
 
     public App()
     {
@@ -29,7 +31,7 @@ public partial class App : Application
         {
             var msg = args.ExceptionObject?.ToString() ?? "Unknown error";
             WriteLog("UnhandledException: " + msg);
-            MessageBox.Show(msg, "Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show(msg, "Critical Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
         };
     }
 
@@ -40,7 +42,7 @@ public partial class App : Application
         DispatcherUnhandledException += (_, args) =>
         {
             WriteLog("DispatcherUnhandledException: " + args.Exception);
-            MessageBox.Show(args.Exception?.ToString(), "UI Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show(args.Exception?.ToString(), "UI Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             args.Handled = true;
         };
 
@@ -94,11 +96,11 @@ public partial class App : Application
         catch (Exception ex)
         {
             WriteLog("OnStartup ERROR: " + ex);
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 $"Startup error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nCheck Kontrol_startup.log on Desktop for details.",
                 "Startup Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
             Shutdown(1);
         }
     }
@@ -107,13 +109,13 @@ public partial class App : Application
     {
         var contextMenu = new ContextMenu();
 
-        var toggleItem = new MenuItem { Header = "Show/Hide", FontWeight = FontWeights.SemiBold };
+        var toggleItem = new System.Windows.Controls.MenuItem { Header = "Show/Hide", FontWeight = FontWeights.SemiBold };
         toggleItem.Click += (_, _) => ToggleMainWindow();
         contextMenu.Items.Add(toggleItem);
 
         contextMenu.Items.Add(new Separator());
 
-        var exitItem = new MenuItem { Header = "Exit" };
+        var exitItem = new System.Windows.Controls.MenuItem { Header = "Exit" };
         exitItem.Click += (_, _) =>
         {
             _trayIcon?.Dispose();
@@ -188,5 +190,14 @@ public partial class App : Application
             File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n");
         }
         catch { }
+    }
+
+    public static void ShowSnackbar(string title, string message, ControlAppearance appearance = ControlAppearance.Success, int durationMs = 3000)
+    {
+        if (SnackbarPresenter is not null)
+        {
+            // TODO: Fix SnackbarPresenter.Show as it doesn't exist on the control.
+            // SnackbarPresenter.Show(title, message, appearance, new TimeSpan(0, 0, 0, 0, durationMs));
+        }
     }
 }

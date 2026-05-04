@@ -88,7 +88,6 @@
                     </StackPanel>
                 </ui:Card>
             </ui:NavigationView.PaneFooter>
-
         </ui:NavigationView>
     </Grid>
 </ui:FluentWindow>
