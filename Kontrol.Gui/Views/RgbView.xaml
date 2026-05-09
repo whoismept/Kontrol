@@ -1,0 +1,300 @@
+<Page x:Class="Kontrol.Views.RgbView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:conv="using:Kontrol.Converters">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+        <conv:ColorToSolidBrushConverter x:Key="ColorToBrush"/>
+        <conv:RgbBackendLabelConverter x:Key="BackendLabel"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="32,24,32,16">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE790;" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="PageTitle" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.55"/>
+                </StackPanel>
+            </StackPanel>
+            <Button x:Name="RescanBtn"
+                    Command="{Binding LoadDevicesCommand}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE72C;"/>
+            </Button>
+        </Grid>
+
+        <!-- Loading indicator -->
+        <ProgressRing Grid.Row="1"
+                      IsActive="{Binding IsLoading}"
+                      Width="32" Height="32"
+                      VerticalAlignment="Top" HorizontalAlignment="Center"
+                      Margin="0,24,0,0"
+                      Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+
+        <!-- Error banner -->
+        <InfoBar Grid.Row="1"
+                 IsOpen="{Binding HasError}"
+                 Severity="Error"
+                 x:Name="ErrorBanner"
+                 Message="{Binding ErrorMessage}"
+                 IsClosable="True"
+                 Margin="32,8,32,0"
+                 VerticalAlignment="Top"/>
+
+        <!-- Main content -->
+        <Grid Grid.Row="1" Margin="32,48,32,24"
+              Visibility="{Binding IsLoading, Converter={StaticResource InvBoolToVis}}">
+
+            <!-- No devices found -->
+            <ScrollViewer Visibility="{Binding HasDevices, Converter={StaticResource InvBoolToVis}}"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel MaxWidth="600" HorizontalAlignment="Left">
+                    <Border Padding="24" Margin="0,0,0,12" CornerRadius="8"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                        <StackPanel>
+                            <FontIcon Glyph="&#xE790;" FontSize="36" Opacity="0.35" HorizontalAlignment="Left" Margin="0,0,0,12"/>
+                            <TextBlock x:Name="RgbNoDevicesText" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                            <TextBlock x:Name="RgbDetectionIntroText" TextWrapping="Wrap" Opacity="0.7" FontSize="13" Margin="0,0,0,10"/>
+                            <StackPanel Margin="0,0,0,6">
+                                <TextBlock x:Name="RgbLampArrayLbl" FontWeight="SemiBold" FontSize="13" Opacity="0.85"/>
+                                <TextBlock x:Name="RgbLampArrayDescText" TextWrapping="Wrap" Opacity="0.65" FontSize="12" Margin="12,2,0,0"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock x:Name="RgbVendorSDKLbl" FontWeight="SemiBold" FontSize="13" Opacity="0.85"/>
+                                <TextBlock x:Name="RgbVendorSDKDescText" TextWrapping="Wrap" Opacity="0.65" FontSize="12" Margin="12,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Init log -->
+                    <Border Padding="18" CornerRadius="8"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock x:Name="RgbStartupSummaryText" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                            <TextBlock Text="{Binding InitLogText}" FontSize="12" Opacity="0.7" Margin="0,0,0,6"/>
+                            <TextBlock x:Name="RgbRestartHintText" FontSize="11" Opacity="0.55" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Devices + Color editor -->
+            <Grid Visibility="{Binding HasDevices, Converter={StaticResource BoolToVis}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="260" MinWidth="200"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Device list -->
+                <Border Grid.Column="0" CornerRadius="8" Padding="0"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock x:Name="RgbDevicesText" FontWeight="SemiBold" FontSize="13"
+                                   Margin="16,14,16,8"/>
+                        <Border Height="1"
+                                Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                Margin="0,0,0,4"/>
+                        <ListView ItemsSource="{Binding Devices}"
+                                  SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Margin="6,0,6,8">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="4,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Width="14" Height="14" CornerRadius="7"
+                                                VerticalAlignment="Center"
+                                                Background="{Binding CurrentColor, Converter={StaticResource ColorToBrush}}"/>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontWeight="SemiBold" FontSize="12"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding DeviceInfoText}"
+                                                       FontSize="10" Opacity="0.6" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+
+                <!-- Color editor -->
+                <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <!-- Color picker card -->
+                        <Border Padding="20" Margin="0,0,0,12" CornerRadius="8"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                            <StackPanel>
+                                <!-- Preview + hex -->
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="80" Height="80" CornerRadius="12"
+                                            Background="{Binding SelectedColorBrush}"/>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                        <TextBlock x:Name="LblHexText" FontSize="10" Opacity="0.55" Margin="0,0,0,4"/>
+                                        <TextBox Text="{Binding HexColorText, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                 FontSize="18" FontWeight="SemiBold"
+                                                 FontFamily="Consolas"
+                                                 PlaceholderText="#RRGGBB"/>
+                                        <TextBlock Text="{Binding ColorRgbText}"
+                                                   FontSize="10" Opacity="0.45" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- RGB sliders -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Text="R" Foreground="#EF5350" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <Slider Grid.Row="0" Grid.Column="1"
+                                            Value="{Binding SelectedColorR, Mode=TwoWay}"
+                                            Minimum="0" Maximum="255" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding SelectedColorR}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
+
+                                    <TextBlock Grid.Row="2" Text="G" Foreground="#66BB6A" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <Slider Grid.Row="2" Grid.Column="1"
+                                            Value="{Binding SelectedColorG, Mode=TwoWay}"
+                                            Minimum="0" Maximum="255" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding SelectedColorG}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
+
+                                    <TextBlock Grid.Row="4" Text="B" Foreground="#42A5F5" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <Slider Grid.Row="4" Grid.Column="1"
+                                            Value="{Binding SelectedColorB, Mode=TwoWay}"
+                                            Minimum="0" Maximum="255" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding SelectedColorB}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" FontWeight="SemiBold"/>
+                                </Grid>
+
+                                <!-- Preset colors -->
+                                <TextBlock x:Name="LblPresetsText" FontSize="11" Opacity="0.55" Margin="0,20,0,8"/>
+                                <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
+                                    <Button Tag="#FF0000" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#FF0000"/>
+                                    </Button>
+                                    <Button Tag="#FF6600" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#FF6600"/>
+                                    </Button>
+                                    <Button Tag="#FFFF00" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#FFFF00"/>
+                                    </Button>
+                                    <Button Tag="#00FF00" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#00FF00"/>
+                                    </Button>
+                                    <Button Tag="#00FFFF" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#00FFFF"/>
+                                    </Button>
+                                    <Button Tag="#0000FF" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#0000FF"/>
+                                    </Button>
+                                    <Button Tag="#FF00FF" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#FF00FF"/>
+                                    </Button>
+                                    <Button Tag="#FFFFFF" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#FFFFFF"
+                                                BorderBrush="#66888888" BorderThickness="1.5"/>
+                                    </Button>
+                                    <Button Tag="#888888" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#888888"/>
+                                    </Button>
+                                    <Button Tag="#000000" Click="OnPresetColorClick" Padding="0" Width="36" Height="36">
+                                        <Border Width="28" Height="28" CornerRadius="14" Background="#000000"
+                                                BorderBrush="#66888888" BorderThickness="1.5"/>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Apply buttons -->
+                                <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Margin="0,20,0,16"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Command="{Binding ApplyColorToDeviceCommand}"
+                                            Style="{StaticResource AccentButtonStyle}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon Glyph="&#xE82F;" FontSize="14"/>
+                                            <TextBlock x:Name="BtnApplySelText"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding ApplyColorToAllCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon Glyph="&#xE82F;" FontSize="14"/>
+                                            <TextBlock x:Name="BtnApplyAllText"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Profiles -->
+                        <Border Padding="20" CornerRadius="8"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock x:Name="LblProfilesText" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,12"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,10">
+                                    <ComboBox ItemsSource="{Binding Profiles}"
+                                              SelectedItem="{Binding SelectedProfile, Mode=TwoWay}"
+                                              Width="200"/>
+                                    <Button Command="{Binding LoadProfileCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon Glyph="&#xE8DA;" FontSize="14"/>
+                                            <TextBlock x:Name="BtnLoadText"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBox Text="{Binding NewProfileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             x:Name="NewProfileBox"
+                                             Width="200"/>
+                                    <Button Command="{Binding SaveProfileCommand}"
+                                            Style="{StaticResource AccentButtonStyle}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon Glyph="&#xE74E;" FontSize="14"/>
+                                            <TextBlock x:Name="BtnSaveText"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

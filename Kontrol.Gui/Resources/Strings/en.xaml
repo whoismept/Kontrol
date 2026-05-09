@@ -1,0 +1,197 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Navigation -->
+    <x:String x:Key="NavDashboard">Dashboard</x:String>
+    <x:String x:Key="NavHardware">Hardware</x:String>
+    <x:String x:Key="NavFanControl">Fan Control</x:String>
+    <x:String x:Key="NavRGB">RGB</x:String>
+    <x:String x:Key="NavSettings">Settings</x:String>
+
+    <!-- Common buttons -->
+    <x:String x:Key="BtnSave">Save</x:String>
+    <x:String x:Key="BtnAdd">Add</x:String>
+    <x:String x:Key="BtnDelete">Delete</x:String>
+    <x:String x:Key="BtnImport">Import</x:String>
+    <x:String x:Key="BtnExport">Export</x:String>
+    <x:String x:Key="BtnRescan">Rescan</x:String>
+    <x:String x:Key="BtnLoad">Load</x:String>
+    <x:String x:Key="BtnRefresh">Refresh</x:String>
+    <x:String x:Key="BtnAddPoint">Add Point</x:String>
+    <x:String x:Key="BtnAddFilter">Add Filter</x:String>
+    <x:String x:Key="BtnApplySelected">Apply to Selected Device</x:String>
+    <x:String x:Key="BtnApplyAll">Apply to All</x:String>
+
+    <!-- Common labels -->
+    <x:String x:Key="LblName">Name:</x:String>
+    <x:String x:Key="LblMode">Mode:</x:String>
+    <x:String x:Key="LblType">Type:</x:String>
+    <x:String x:Key="LblSpeed">Speed:</x:String>
+    <x:String x:Key="LblCurve">Curve:</x:String>
+    <x:String x:Key="LblSource">Source:</x:String>
+    <x:String x:Key="LblMinMax">Min/Max:</x:String>
+    <x:String x:Key="LblLive">Live:</x:String>
+    <x:String x:Key="LblHysteresis">Hysteresis:</x:String>
+    <x:String x:Key="LblResponse">Response:</x:String>
+    <x:String x:Key="LblRPM">RPM</x:String>
+    <x:String x:Key="LblTarget">Target</x:String>
+    <x:String x:Key="LblTemperature">Temperature</x:String>
+    <x:String x:Key="LblTempSource">Src °C</x:String>
+    <x:String x:Key="LblMaxTemp">Max °C</x:String>
+    <x:String x:Key="LblHidden">Hidden</x:String>
+    <x:String x:Key="LblTempC">Temperature (°C)</x:String>
+    <x:String x:Key="LblSpeedPct">Speed (%)</x:String>
+    <x:String x:Key="LblHEX">HEX</x:String>
+    <x:String x:Key="LblPresetColors">Preset Colors</x:String>
+    <x:String x:Key="LblProfiles">Profiles</x:String>
+    <x:String x:Key="LblTheme">Theme</x:String>
+    <x:String x:Key="LblThemeHint">Choose Dark, Light, or System theme</x:String>
+    <x:String x:Key="LblLanguage">Language</x:String>
+    <x:String x:Key="LblLanguageHint">Select interface language · Restart required</x:String>
+    <x:String x:Key="LblServer">Server:</x:String>
+    <x:String x:Key="LblPort">Port:</x:String>
+    <x:String x:Key="LblClient">Client:</x:String>
+    <x:String x:Key="LblSensorInterval">Sensor Update Interval (ms)</x:String>
+    <x:String x:Key="LblSensorIntervalHint">Lower value is smoother but uses more CPU.</x:String>
+    <x:String x:Key="LblMinimizeToTray">Minimize to Tray</x:String>
+    <x:String x:Key="LblMinimizeToTrayHint">Stay in system tray when window is closed</x:String>
+    <x:String x:Key="LblStartMinimized">Start Minimized</x:String>
+    <x:String x:Key="LblStartMinimizedHint">Start from system tray when app opens</x:String>
+    <x:String x:Key="LblLaunchOnStartup">Launch on Windows Startup</x:String>
+    <x:String x:Key="LblLaunchOnStartupHint">Auto-run when user signs in</x:String>
+    <x:String x:Key="LblEnableAlerts">Enable Temperature Alerts</x:String>
+    <x:String x:Key="LblEnableAlertsHint">Show a notification when threshold is exceeded</x:String>
+    <x:String x:Key="LblAlertThreshold">Alert Threshold (°C)</x:String>
+    <x:String x:Key="LblOpenRGBServer">OpenRGB SDK Server</x:String>
+    <x:String x:Key="LblOpenRGBServerHint">Control all devices using OpenRGB SDK Server mode</x:String>
+    <x:String x:Key="LblOpenRGBNote">Note: Enable SDK Server in OpenRGB. Restart the app for changes to take effect.</x:String>
+
+    <!-- Tooltips -->
+    <x:String x:Key="TipRename">Rename</x:String>
+    <x:String x:Key="TipConfirm">Confirm</x:String>
+    <x:String x:Key="TipShowHide">Show/hide hidden fans</x:String>
+    <x:String x:Key="TipDeletePoint">Delete point</x:String>
+    <x:String x:Key="TipDeleteFilter">Delete filter</x:String>
+    <x:String x:Key="TipRescan">Rescan</x:String>
+    <x:String x:Key="TipShowFan">Show</x:String>
+    <x:String x:Key="TipHideFan">Hide</x:String>
+
+    <!-- Hints / placeholders -->
+    <x:String x:Key="HintFanNameEmpty">If left empty, original name is used</x:String>
+    <x:String x:Key="HintSelectCurve">Select a curve from the left list or add a new one.</x:String>
+    <x:String x:Key="HintFanOff">Fan is off — if your hardware does not support 0 RPM, it may spin at minimum speed.</x:String>
+    <x:String x:Key="HintWildcardSupport">Supports wildcards: *CPU*, *GPU*, * (all)</x:String>
+    <x:String x:Key="HintHardwareName">Hardware name (*CPU*)</x:String>
+    <x:String x:Key="HintSensorName">Sensor name (*)</x:String>
+    <x:String x:Key="HintRestartAfterSDK">Restart the app after installing vendor software.</x:String>
+    <x:String x:Key="HintNewProfileName">New profile name</x:String>
+
+    <!-- Page titles -->
+    <x:String x:Key="PageDashboard">Dashboard</x:String>
+    <x:String x:Key="PageHardwareMonitoring">Hardware Monitoring</x:String>
+    <x:String x:Key="PageFanControl">Fan Control</x:String>
+    <x:String x:Key="PageRGBControl">RGB Control</x:String>
+    <x:String x:Key="PageSettings">Settings</x:String>
+
+    <!-- Section headers -->
+    <x:String x:Key="SecTemperatures">TEMPERATURES</x:String>
+    <x:String x:Key="SecFanSpeeds">FAN SPEEDS</x:String>
+    <x:String x:Key="SecLoad">LOAD</x:String>
+    <x:String x:Key="SecFans">Fans</x:String>
+    <x:String x:Key="SecCurves">Curves</x:String>
+    <x:String x:Key="SecTempSources">Temperature Sources</x:String>
+    <x:String x:Key="SecCurvePoints">Curve Points</x:String>
+    <x:String x:Key="SecSensorFilters">Sensor Filters</x:String>
+    <x:String x:Key="SecDetectedSensors">Detected Temperature Sensors</x:String>
+    <x:String x:Key="SecHardwareMonitoring">Hardware Monitoring</x:String>
+    <x:String x:Key="SecAppBehavior">App Behavior</x:String>
+    <x:String x:Key="SecTempAlerts">Temperature Alerts</x:String>
+    <x:String x:Key="SecOpenRGB">OpenRGB Integration</x:String>
+    <x:String x:Key="SecAppearance">Appearance</x:String>
+
+    <!-- Fan control specific -->
+    <x:String x:Key="FanCtrlShowHidden">Show Hidden</x:String>
+    <x:String x:Key="FanCtrlHideHidden">Hide Hidden</x:String>
+    <x:String x:Key="DlgExportFanProfile">Export Fan Profile</x:String>
+    <x:String x:Key="DlgImportFanProfile">Import Fan Profile</x:String>
+    <x:String x:Key="FmtCurveItem">{0} pts · {1}</x:String>
+
+    <!-- Fan mode display -->
+    <x:String x:Key="FanModeAuto">Automatic (BIOS)</x:String>
+    <x:String x:Key="FanModeFixed">Fixed Speed</x:String>
+    <x:String x:Key="FanModeCurve">Curve (Temperature-Based)</x:String>
+    <x:String x:Key="FanModeOff">Off</x:String>
+
+    <!-- Temp source mode display -->
+    <x:String x:Key="TempModeSingle">Single Sensor</x:String>
+    <x:String x:Key="TempModeMax">Maximum</x:String>
+    <x:String x:Key="TempModeAverage">Average</x:String>
+    <x:String x:Key="TempModeMin">Minimum</x:String>
+
+    <!-- RGB -->
+    <x:String x:Key="RgbNoDevices">No RGB devices found</x:String>
+    <x:String x:Key="RgbDetectionIntro">The app detects devices in two ways:</x:String>
+    <x:String x:Key="RgbLampArrayLabel">1. Windows Native (LampArray)</x:String>
+    <x:String x:Key="RgbLampArrayDesc">Requires no vendor SDK. Automatically discovers devices supporting HID LampArray.</x:String>
+    <x:String x:Key="RgbVendorSDKLabel">2. Vendor SDK</x:String>
+    <x:String x:Key="RgbVendorSDKDesc">Devices from the vendors below work when their software is installed.</x:String>
+    <x:String x:Key="RgbSupportedSDKs">Supported Vendor SDKs</x:String>
+    <x:String x:Key="RgbStartupSummary">Startup Summary</x:String>
+    <x:String x:Key="RgbDevices">Devices</x:String>
+    <x:String x:Key="RgbErrorTitle">RGB Error</x:String>
+
+    <!-- Status / ViewModel format strings -->
+    <x:String x:Key="StatReady">Ready</x:String>
+    <x:String x:Key="StatReadingSensors">Reading sensors...</x:String>
+    <x:String x:Key="StatSaved">Saved {0}</x:String>
+    <x:String x:Key="StatLastUpdate">Last update: {0}</x:String>
+    <x:String x:Key="StatError">Error: {0}</x:String>
+    <x:String x:Key="StatSensorError">Warning: Sensors cannot be read — {0}</x:String>
+    <x:String x:Key="StatHWFailed">Hardware service failed to start</x:String>
+    <x:String x:Key="StatFanPercent">{0} → {1:F0}%</x:String>
+    <x:String x:Key="StatFanManual">{0} — manual</x:String>
+    <x:String x:Key="StatFanAuto">{0} — auto</x:String>
+    <x:String x:Key="StatControllableFans">{0} controllable fans</x:String>
+    <x:String x:Key="StatNoControllableFans">No controllable fans</x:String>
+    <x:String x:Key="StatScanError">Scan error: {0}</x:String>
+    <x:String x:Key="StatFanCount">{0} fans ({1} hidden) · {2} curves · {3} sources</x:String>
+    <x:String x:Key="StatFansFound">{0} fans found</x:String>
+    <x:String x:Key="StatProfileExported">Profile exported: {0}</x:String>
+    <x:String x:Key="StatExportError">Export error: {0}</x:String>
+    <x:String x:Key="StatImportInvalid">Invalid profile file</x:String>
+    <x:String x:Key="StatProfileImported">Profile imported: {0}</x:String>
+    <x:String x:Key="StatImportError">Import error: {0}</x:String>
+    <x:String x:Key="StatNewCurve">New Curve {0}</x:String>
+    <x:String x:Key="StatNewSource">New Source {0}</x:String>
+    <x:String x:Key="StatRGBScanning">Scanning RGB devices...</x:String>
+    <x:String x:Key="StatRGBStartupError">Startup error: {0}</x:String>
+    <x:String x:Key="StatRGBScanError">Device scan error: {0}</x:String>
+    <x:String x:Key="StatRGBDevices">{0} devices ({1} SDK · {2} Native)</x:String>
+    <x:String x:Key="StatRGBNoDevice">No device found</x:String>
+    <x:String x:Key="StatRGBColorApplied">{0} — color applied</x:String>
+    <x:String x:Key="StatRGBAllApplied">{0} devices — color applied</x:String>
+    <x:String x:Key="StatRGBProfileError">Profile could not be loaded</x:String>
+    <x:String x:Key="StatRGBProfileLoaded">Profile loaded: {0}</x:String>
+    <x:String x:Key="StatRGBProfileSaved">Profile saved: {0}</x:String>
+    <x:String x:Key="StatInitLogNoProvider">No provider is active</x:String>
+    <x:String x:Key="StatInitLogActive">Active: {0} | {1} provider(s) skipped</x:String>
+
+    <!-- Tray icon -->
+    <x:String x:Key="TrayShowHide">Show / Hide</x:String>
+    <x:String x:Key="TrayExit">Exit</x:String>
+
+    <!-- Dashboard -->
+    <x:String x:Key="DashSecFans">FAN SUMMARY</x:String>
+    <x:String x:Key="DashSecRgb">RGB DEVICES</x:String>
+    <x:String x:Key="DashCpu">CPU</x:String>
+    <x:String x:Key="DashGpu">GPU</x:String>
+    <x:String x:Key="DashMaxRpm">MAX RPM</x:String>
+    <x:String x:Key="DashFans">FANS</x:String>
+    <x:String x:Key="DashNoRgb">No RGB devices detected</x:String>
+
+    <!-- Sidebar stats labels -->
+    <x:String x:Key="StatCpu">CPU</x:String>
+    <x:String x:Key="StatGpu">GPU</x:String>
+    <x:String x:Key="StatFan">Fan</x:String>
+
+</ResourceDictionary>

@@ -1,0 +1,243 @@
+<Page x:Class="Kontrol.Views.SettingsView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="32,24,32,16" VerticalAlignment="Center">
+            <FontIcon Glyph="&#xE713;" FontSize="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+            <TextBlock x:Name="PageTitle" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,24">
+            <StackPanel MaxWidth="640" HorizontalAlignment="Left">
+
+                <!-- Hardware monitoring -->
+                <TextBlock x:Name="SecHardwareText" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <Border Padding="20" Margin="0,0,0,20" CornerRadius="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock x:Name="LblSensorIntervalText" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="LblSensorIntervalHintText" FontSize="11" Opacity="0.7" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Value="{Binding PollingIntervalMs, Mode=TwoWay}"
+                                    Minimum="500" Maximum="10000"
+                                    TickFrequency="500" SnapsTo="Ticks"
+                                    VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding PollingIntervalMs}"
+                                       VerticalAlignment="Center" HorizontalAlignment="Right"
+                                       FontWeight="SemiBold"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- App behavior -->
+                <TextBlock x:Name="SecAppBehaviorText" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <Border Padding="20" Margin="0,0,0,20" CornerRadius="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock x:Name="LblMinimizeToTrayText" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock x:Name="LblMinimizeToTrayHintText" FontSize="11" Opacity="0.7"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsOn="{Binding MinimizeToTray, Mode=TwoWay}"
+                                         OnContent="" OffContent=""/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock x:Name="LblStartMinimizedText" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock x:Name="LblStartMinimizedHintText" FontSize="11" Opacity="0.7"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsOn="{Binding StartMinimized, Mode=TwoWay}"
+                                         OnContent="" OffContent=""/>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock x:Name="LblLaunchOnStartupText" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock x:Name="LblLaunchOnStartupHintText" FontSize="11" Opacity="0.7"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsOn="{Binding LaunchOnWindowsStartup, Mode=TwoWay}"
+                                         OnContent="" OffContent=""/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Temp Alerts -->
+                <TextBlock x:Name="SecTempAlertsText" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <Border Padding="20" Margin="0,0,0,20" CornerRadius="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock x:Name="LblEnableAlertsText" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock x:Name="LblEnableAlertsHintText" FontSize="11" Opacity="0.7"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsOn="{Binding TempAlertsEnabled, Mode=TwoWay}"
+                                         OnContent="" OffContent=""/>
+                        </Grid>
+
+                        <TextBlock x:Name="LblAlertThresholdText" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Value="{Binding TempAlertThresholdC, Mode=TwoWay}"
+                                    Minimum="50" Maximum="110"
+                                    TickFrequency="5" SnapsTo="Ticks"
+                                    VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                       Text="{Binding ThresholdText}" FontWeight="SemiBold"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- OpenRGB -->
+                <TextBlock x:Name="SecOpenRGBText" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <Border Padding="20" Margin="0,0,0,20" CornerRadius="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock x:Name="LblOpenRGBServerText" FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock x:Name="LblOpenRGBServerHintText" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsOn="{Binding OpenRgbEnabled, Mode=TwoWay}"
+                                         OnContent="" OffContent=""/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="LblServerText" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding OpenRgbHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     PlaceholderText="127.0.0.1"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="LblPortText" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding OpenRgbPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     PlaceholderText="6742" Width="120" HorizontalAlignment="Left"/>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="LblClientText" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding OpenRgbClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     PlaceholderText="Kontrol"/>
+                        </Grid>
+
+                        <TextBlock x:Name="LblOpenRGBNoteText"
+                                   FontSize="11" Opacity="0.6" TextWrapping="Wrap" Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Appearance -->
+                <TextBlock x:Name="SecAppearanceText" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <Border Padding="20" Margin="0,0,0,12" CornerRadius="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock x:Name="LblThemeText" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock x:Name="LblThemeHintText" FontSize="11" Opacity="0.7"/>
+                        </StackPanel>
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding ThemeOptions}"
+                                  SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                                  Width="140"/>
+                    </Grid>
+                </Border>
+
+                <Border Padding="20" Margin="0,0,0,20" CornerRadius="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock x:Name="LblLanguageText" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock x:Name="LblLanguageHintText" FontSize="11" Opacity="0.7"/>
+                        </StackPanel>
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding LanguageOptions}"
+                                  SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                                  Width="160"/>
+                    </Grid>
+                </Border>
+
+                <!-- Save -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding SaveStatusText}" FontSize="12" Opacity="0.6"
+                               VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <Button Command="{Binding SaveCommand}"
+                            Style="{StaticResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE74E;" FontSize="14"/>
+                            <TextBlock x:Name="BtnSaveText"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

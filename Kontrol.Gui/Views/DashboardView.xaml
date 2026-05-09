@@ -1,0 +1,160 @@
+<Page x:Class="Kontrol.Views.DashboardView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:conv="using:Kontrol.Converters"
+      xmlns:vm="using:Kontrol.ViewModels">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+        <conv:ColorToSolidBrushConverter x:Key="ColorToBrush"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="32,24,32,16">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE80F;" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="PageTitle" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Fan.StatusText}" FontSize="11" Opacity="0.55"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,24">
+            <StackPanel>
+
+                <!-- Fan / Hardware Summary -->
+                <TextBlock x:Name="SecFans" FontSize="11" FontWeight="SemiBold"
+                           Opacity="0.5" Margin="0,8,0,10"/>
+
+                <!--
+                    x:DataType enables x:Bind on RotateTransform.Angle.
+                    RotateTransform is not a FrameworkElement so {Binding} cannot
+                    reach it; compiled x:Bind bypasses DataContext inheritance.
+                -->
+                <ItemsControl ItemsSource="{Binding Fan.DashDevices}" Margin="0,0,0,28">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DashboardDeviceItem">
+                            <Border Margin="0,0,12,12" Padding="20,18" CornerRadius="8"
+                                    MinWidth="200" MaxWidth="260"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1">
+                                <StackPanel>
+
+                                    <!-- Type label: CPU / GPU -->
+                                    <TextBlock Text="{x:Bind TypeLabel}"
+                                               FontSize="11" FontWeight="SemiBold" Opacity="0.55"/>
+
+                                    <!-- Device model name -->
+                                    <TextBlock Text="{x:Bind Name}"
+                                               FontSize="12" FontWeight="SemiBold"
+                                               TextWrapping="Wrap"
+                                               Opacity="0.85" Margin="0,2,0,0"/>
+
+                                    <!-- Max temperature (large) -->
+                                    <TextBlock Text="{x:Bind MaxTempText, Mode=OneWay}"
+                                               FontSize="38" FontWeight="Bold" Margin="0,6,0,0"/>
+
+                                    <!-- Spinning fan icon from fan.svg (viewBox 122.88×122.07).
+                                         F1 = evenodd fill rule (matches SVG fill-rule:evenodd).
+                                         x:Bind required because RotateTransform has no DataContext. -->
+                                    <Path Width="72" Height="72"
+                                          Stretch="Uniform"
+                                          HorizontalAlignment="Center"
+                                          Margin="0,16,0,16"
+                                          Fill="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                          RenderTransformOrigin="0.5,0.5"
+                                          Data="F1 M67.29,82.9c-.11,1.3-.26,2.6-.47,3.9-1.43,9-5.79,14.34-8.08,22.17C56,118.45,65.32,122.53,73.27,122A37.63,37.63,0,0,0,85,119a45,45,0,0,0,9.32-5.36c20.11-14.8,16-34.9-6.11-46.36a15,15,0,0,0-4.14-1.4,22,22,0,0,1-6,11.07l0,0A22.09,22.09,0,0,1,67.29,82.9ZM62.4,44.22a17.1,17.1,0,1,1-17.1,17.1,17.1,17.1,0,0,1,17.1-17.1ZM84.06,56.83c1.26.05,2.53.14,3.79.29,9.06,1,14.58,5.16,22.5,7.1,9.6,2.35,13.27-7.17,12.41-15.09a37.37,37.37,0,0,0-3.55-11.57,45.35,45.35,0,0,0-5.76-9.08C97.77,9,77.88,14,67.4,36.63a14.14,14.14,0,0,0-1,2.94A22,22,0,0,1,78,45.68l0,0a22.07,22.07,0,0,1,6,11.13Zm-26.9-17c0-1.6.13-3.21.31-4.81,1-9.07,5.12-14.6,7-22.52C66.86,2.89,57.32-.75,49.41.13A37.4,37.4,0,0,0,37.84,3.7a44.58,44.58,0,0,0-9.06,5.78C9.37,25.2,14.39,45.08,37,55.51a14.63,14.63,0,0,0,3.76,1.14A22.12,22.12,0,0,1,57.16,39.83ZM40.66,65.42a52.11,52.11,0,0,1-5.72-.24c-9.08-.88-14.67-4.92-22.62-6.73C2.68,56.25-.83,65.84.16,73.74A37.45,37.45,0,0,0,3.9,85.25a45.06,45.06,0,0,0,5.91,9c16,19.17,35.8,13.87,45.91-8.91a15.93,15.93,0,0,0,.88-2.66A22.15,22.15,0,0,1,40.66,65.42Z">
+                                        <Path.RenderTransform>
+                                            <RotateTransform Angle="{x:Bind FanAngle, Mode=OneWay}"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+
+                                    <!-- Fan stats row -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{StaticResource DashMaxRpm}"
+                                                       FontSize="10" Opacity="0.5"/>
+                                            <TextBlock Text="{x:Bind FanRpmText, Mode=OneWay}"
+                                                       FontSize="13" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{StaticResource DashFans}"
+                                                       FontSize="10" Opacity="0.5"/>
+                                            <TextBlock Text="{x:Bind FanCount, Mode=OneWay}"
+                                                       FontSize="13" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- RGB Devices -->
+                <TextBlock x:Name="SecRgb" FontSize="11" FontWeight="SemiBold"
+                           Opacity="0.5" Margin="0,0,0,10"/>
+
+                <ProgressRing IsActive="{Binding Rgb.IsLoading}"
+                              Width="24" Height="24"
+                              HorizontalAlignment="Left"
+                              Margin="0,0,0,8"
+                              Visibility="{Binding Rgb.IsLoading, Converter={StaticResource BoolToVis}}"/>
+
+                <TextBlock x:Name="NoRgbText"
+                           FontSize="13" Opacity="0.55"
+                           Margin="0,0,0,8"
+                           Visibility="{Binding Rgb.HasDevices, Converter={StaticResource InvBoolToVis}}"/>
+
+                <ItemsControl ItemsSource="{Binding Rgb.Devices}"
+                              Visibility="{Binding Rgb.HasDevices, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,10,10" Padding="16,14" CornerRadius="8"
+                                    Width="200"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="13" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding DeviceInfoText}"
+                                               FontSize="11" Opacity="0.55"
+                                               Margin="0,2,0,10"
+                                               TextWrapping="Wrap"/>
+                                    <Border CornerRadius="4" Height="24"
+                                            Background="{Binding CurrentColor, Converter={StaticResource ColorToBrush}}"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

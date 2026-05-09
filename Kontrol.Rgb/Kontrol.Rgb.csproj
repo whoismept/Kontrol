@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
+    <RootNamespace>Kontrol.Rgb</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="RGB.NET.Core" Version="3.2.0" />
+    <PackageReference Include="RGB.NET.Devices.Asus" Version="3.2.0" />
+    <PackageReference Include="RGB.NET.Devices.Corsair" Version="3.2.0" />
+    <PackageReference Include="RGB.NET.Devices.Logitech" Version="3.2.0" />
+    <PackageReference Include="RGB.NET.Devices.OpenRGB" Version="3.2.0" />
+    <PackageReference Include="RGB.NET.Devices.Razer" Version="3.2.0" />
+  </ItemGroup>
+</Project>

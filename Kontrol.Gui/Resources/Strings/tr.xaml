@@ -1,0 +1,197 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Navigasyon -->
+    <x:String x:Key="NavDashboard">Gösterge Paneli</x:String>
+    <x:String x:Key="NavHardware">Donanım</x:String>
+    <x:String x:Key="NavFanControl">Fan Kontrolü</x:String>
+    <x:String x:Key="NavRGB">RGB</x:String>
+    <x:String x:Key="NavSettings">Ayarlar</x:String>
+
+    <!-- Ortak butonlar -->
+    <x:String x:Key="BtnSave">Kaydet</x:String>
+    <x:String x:Key="BtnAdd">Ekle</x:String>
+    <x:String x:Key="BtnDelete">Sil</x:String>
+    <x:String x:Key="BtnImport">İçe Aktar</x:String>
+    <x:String x:Key="BtnExport">Dışa Aktar</x:String>
+    <x:String x:Key="BtnRescan">Yeniden Tara</x:String>
+    <x:String x:Key="BtnLoad">Yükle</x:String>
+    <x:String x:Key="BtnRefresh">Yenile</x:String>
+    <x:String x:Key="BtnAddPoint">Nokta Ekle</x:String>
+    <x:String x:Key="BtnAddFilter">Filtre Ekle</x:String>
+    <x:String x:Key="BtnApplySelected">Seçili Cihaza Uygula</x:String>
+    <x:String x:Key="BtnApplyAll">Tümüne Uygula</x:String>
+
+    <!-- Ortak etiketler -->
+    <x:String x:Key="LblName">Ad:</x:String>
+    <x:String x:Key="LblMode">Mod:</x:String>
+    <x:String x:Key="LblType">Tür:</x:String>
+    <x:String x:Key="LblSpeed">Hız:</x:String>
+    <x:String x:Key="LblCurve">Eğri:</x:String>
+    <x:String x:Key="LblSource">Kaynak:</x:String>
+    <x:String x:Key="LblMinMax">Min/Maks:</x:String>
+    <x:String x:Key="LblLive">Anlık:</x:String>
+    <x:String x:Key="LblHysteresis">Histerezis:</x:String>
+    <x:String x:Key="LblResponse">Yanıt:</x:String>
+    <x:String x:Key="LblRPM">RPM</x:String>
+    <x:String x:Key="LblTarget">Hedef</x:String>
+    <x:String x:Key="LblTemperature">Sıcaklık</x:String>
+    <x:String x:Key="LblTempSource">Kaynak °C</x:String>
+    <x:String x:Key="LblMaxTemp">Maks °C</x:String>
+    <x:String x:Key="LblHidden">Gizli</x:String>
+    <x:String x:Key="LblTempC">Sıcaklık (°C)</x:String>
+    <x:String x:Key="LblSpeedPct">Hız (%)</x:String>
+    <x:String x:Key="LblHEX">HEX</x:String>
+    <x:String x:Key="LblPresetColors">Hazır Renkler</x:String>
+    <x:String x:Key="LblProfiles">Profiller</x:String>
+    <x:String x:Key="LblTheme">Tema</x:String>
+    <x:String x:Key="LblThemeHint">Koyu, Açık veya Sistem temasını seçin</x:String>
+    <x:String x:Key="LblLanguage">Dil</x:String>
+    <x:String x:Key="LblLanguageHint">Arayüz dilini seçin · Yeniden başlatma gerekir</x:String>
+    <x:String x:Key="LblServer">Sunucu:</x:String>
+    <x:String x:Key="LblPort">Port:</x:String>
+    <x:String x:Key="LblClient">İstemci:</x:String>
+    <x:String x:Key="LblSensorInterval">Sensör Güncelleme Aralığı (ms)</x:String>
+    <x:String x:Key="LblSensorIntervalHint">Düşük değer daha akıcı ama daha çok CPU kullanır.</x:String>
+    <x:String x:Key="LblMinimizeToTray">Tepsiye Küçült</x:String>
+    <x:String x:Key="LblMinimizeToTrayHint">Pencere kapatıldığında sistem tepsisinde kal</x:String>
+    <x:String x:Key="LblStartMinimized">Küçültülmüş Başlat</x:String>
+    <x:String x:Key="LblStartMinimizedHint">Uygulama açıldığında sistem tepsisinden başlasın</x:String>
+    <x:String x:Key="LblLaunchOnStartup">Windows ile Başlat</x:String>
+    <x:String x:Key="LblLaunchOnStartupHint">Oturum açıldığında otomatik çalıştır</x:String>
+    <x:String x:Key="LblEnableAlerts">Sıcaklık Uyarılarını Etkinleştir</x:String>
+    <x:String x:Key="LblEnableAlertsHint">Eşik aşıldığında bildirim göster</x:String>
+    <x:String x:Key="LblAlertThreshold">Uyarı Eşiği (°C)</x:String>
+    <x:String x:Key="LblOpenRGBServer">OpenRGB SDK Sunucusu</x:String>
+    <x:String x:Key="LblOpenRGBServerHint">OpenRGB SDK Sunucusu aracılığıyla tüm cihazları kontrol et</x:String>
+    <x:String x:Key="LblOpenRGBNote">Not: OpenRGB uygulamasında SDK Sunucusu'nu etkinleştirin. Değişiklik için uygulamayı yeniden başlatın.</x:String>
+
+    <!-- İpuçları -->
+    <x:String x:Key="TipRename">Yeniden Adlandır</x:String>
+    <x:String x:Key="TipConfirm">Onayla</x:String>
+    <x:String x:Key="TipShowHide">Gizli fanları göster/gizle</x:String>
+    <x:String x:Key="TipDeletePoint">Noktayı sil</x:String>
+    <x:String x:Key="TipDeleteFilter">Filtreyi sil</x:String>
+    <x:String x:Key="TipRescan">Yeniden Tara</x:String>
+    <x:String x:Key="TipShowFan">Göster</x:String>
+    <x:String x:Key="TipHideFan">Gizle</x:String>
+
+    <!-- İpuçları / yer tutucular -->
+    <x:String x:Key="HintFanNameEmpty">Boş bırakılırsa orijinal isim kullanılır</x:String>
+    <x:String x:Key="HintSelectCurve">Sol listeden bir eğri seçin veya yeni bir tane ekleyin.</x:String>
+    <x:String x:Key="HintFanOff">Fan kapalı — donanımınız 0 RPM'i desteklemiyorsa minimum hızda dönebilir.</x:String>
+    <x:String x:Key="HintWildcardSupport">Joker karakter desteklenir: *CPU*, *GPU*, * (tümü)</x:String>
+    <x:String x:Key="HintHardwareName">Donanım adı (*CPU*)</x:String>
+    <x:String x:Key="HintSensorName">Sensör adı (*)</x:String>
+    <x:String x:Key="HintRestartAfterSDK">Satıcı yazılımını yükledikten sonra uygulamayı yeniden başlatın.</x:String>
+    <x:String x:Key="HintNewProfileName">Yeni profil adı</x:String>
+
+    <!-- Sayfa başlıkları -->
+    <x:String x:Key="PageDashboard">Gösterge Paneli</x:String>
+    <x:String x:Key="PageHardwareMonitoring">Donanım İzleme</x:String>
+    <x:String x:Key="PageFanControl">Fan Kontrolü</x:String>
+    <x:String x:Key="PageRGBControl">RGB Kontrolü</x:String>
+    <x:String x:Key="PageSettings">Ayarlar</x:String>
+
+    <!-- Bölüm başlıkları -->
+    <x:String x:Key="SecTemperatures">SICAKLIKLAR</x:String>
+    <x:String x:Key="SecFanSpeeds">FAN HIZLARI</x:String>
+    <x:String x:Key="SecLoad">YÜK</x:String>
+    <x:String x:Key="SecFans">Fanlar</x:String>
+    <x:String x:Key="SecCurves">Eğriler</x:String>
+    <x:String x:Key="SecTempSources">Sıcaklık Kaynakları</x:String>
+    <x:String x:Key="SecCurvePoints">Eğri Noktaları</x:String>
+    <x:String x:Key="SecSensorFilters">Sensör Filtreleri</x:String>
+    <x:String x:Key="SecDetectedSensors">Algılanan Sıcaklık Sensörleri</x:String>
+    <x:String x:Key="SecHardwareMonitoring">Donanım İzleme</x:String>
+    <x:String x:Key="SecAppBehavior">Uygulama Davranışı</x:String>
+    <x:String x:Key="SecTempAlerts">Sıcaklık Uyarıları</x:String>
+    <x:String x:Key="SecOpenRGB">OpenRGB Entegrasyonu</x:String>
+    <x:String x:Key="SecAppearance">Görünüm</x:String>
+
+    <!-- Fan kontrolü özeli -->
+    <x:String x:Key="FanCtrlShowHidden">Gizlileri Göster</x:String>
+    <x:String x:Key="FanCtrlHideHidden">Gizlileri Kapat</x:String>
+    <x:String x:Key="DlgExportFanProfile">Fan Profilini Dışa Aktar</x:String>
+    <x:String x:Key="DlgImportFanProfile">Fan Profilini İçe Aktar</x:String>
+    <x:String x:Key="FmtCurveItem">{0} nokta · {1}</x:String>
+
+    <!-- Fan modu görünümü -->
+    <x:String x:Key="FanModeAuto">Otomatik (BIOS)</x:String>
+    <x:String x:Key="FanModeFixed">Sabit Hız</x:String>
+    <x:String x:Key="FanModeCurve">Eğri (Sıcaklık Tabanlı)</x:String>
+    <x:String x:Key="FanModeOff">Kapalı</x:String>
+
+    <!-- Sıcaklık kaynak modu görünümü -->
+    <x:String x:Key="TempModeSingle">Tekli Sensör</x:String>
+    <x:String x:Key="TempModeMax">Maksimum</x:String>
+    <x:String x:Key="TempModeAverage">Ortalama</x:String>
+    <x:String x:Key="TempModeMin">Minimum</x:String>
+
+    <!-- RGB -->
+    <x:String x:Key="RgbNoDevices">RGB cihazı bulunamadı</x:String>
+    <x:String x:Key="RgbDetectionIntro">Uygulama cihazları iki şekilde algılar:</x:String>
+    <x:String x:Key="RgbLampArrayLabel">1. Windows Native (LampArray)</x:String>
+    <x:String x:Key="RgbLampArrayDesc">Satıcı SDK'sı gerektirmez. HID LampArray destekleyen cihazları otomatik bulur.</x:String>
+    <x:String x:Key="RgbVendorSDKLabel">2. Satıcı SDK</x:String>
+    <x:String x:Key="RgbVendorSDKDesc">Aşağıdaki markaların yazılımı kuruluysa cihazlar tanınır.</x:String>
+    <x:String x:Key="RgbSupportedSDKs">Desteklenen Satıcı SDK'ları</x:String>
+    <x:String x:Key="RgbStartupSummary">Başlangıç Özeti</x:String>
+    <x:String x:Key="RgbDevices">Cihazlar</x:String>
+    <x:String x:Key="RgbErrorTitle">RGB Hatası</x:String>
+
+    <!-- Durum / ViewModel format stringleri -->
+    <x:String x:Key="StatReady">Hazır</x:String>
+    <x:String x:Key="StatReadingSensors">Sensörler okunuyor...</x:String>
+    <x:String x:Key="StatSaved">Kaydedildi {0}</x:String>
+    <x:String x:Key="StatLastUpdate">Son güncelleme: {0}</x:String>
+    <x:String x:Key="StatError">Hata: {0}</x:String>
+    <x:String x:Key="StatSensorError">Uyarı: Sensörler okunamıyor — {0}</x:String>
+    <x:String x:Key="StatHWFailed">Donanım servisi başlatılamadı</x:String>
+    <x:String x:Key="StatFanPercent">{0} → {1:F0}%</x:String>
+    <x:String x:Key="StatFanManual">{0} — manuel</x:String>
+    <x:String x:Key="StatFanAuto">{0} — otomatik</x:String>
+    <x:String x:Key="StatControllableFans">{0} kontrol edilebilir fan</x:String>
+    <x:String x:Key="StatNoControllableFans">Kontrol edilebilir fan yok</x:String>
+    <x:String x:Key="StatScanError">Tarama hatası: {0}</x:String>
+    <x:String x:Key="StatFanCount">{0} fan ({1} gizli) · {2} eğri · {3} kaynak</x:String>
+    <x:String x:Key="StatFansFound">{0} fan bulundu</x:String>
+    <x:String x:Key="StatProfileExported">Profil dışa aktarıldı: {0}</x:String>
+    <x:String x:Key="StatExportError">Dışa aktarma hatası: {0}</x:String>
+    <x:String x:Key="StatImportInvalid">Geçersiz profil dosyası</x:String>
+    <x:String x:Key="StatProfileImported">Profil içe aktarıldı: {0}</x:String>
+    <x:String x:Key="StatImportError">İçe aktarma hatası: {0}</x:String>
+    <x:String x:Key="StatNewCurve">Yeni Eğri {0}</x:String>
+    <x:String x:Key="StatNewSource">Yeni Kaynak {0}</x:String>
+    <x:String x:Key="StatRGBScanning">RGB cihazları taranıyor...</x:String>
+    <x:String x:Key="StatRGBStartupError">Başlangıç hatası: {0}</x:String>
+    <x:String x:Key="StatRGBScanError">Cihaz tarama hatası: {0}</x:String>
+    <x:String x:Key="StatRGBDevices">{0} cihaz ({1} SDK · {2} Native)</x:String>
+    <x:String x:Key="StatRGBNoDevice">Cihaz bulunamadı</x:String>
+    <x:String x:Key="StatRGBColorApplied">{0} — renk uygulandı</x:String>
+    <x:String x:Key="StatRGBAllApplied">{0} cihaza renk uygulandı</x:String>
+    <x:String x:Key="StatRGBProfileError">Profil yüklenemedi</x:String>
+    <x:String x:Key="StatRGBProfileLoaded">Profil yüklendi: {0}</x:String>
+    <x:String x:Key="StatRGBProfileSaved">Profil kaydedildi: {0}</x:String>
+    <x:String x:Key="StatInitLogNoProvider">Aktif sağlayıcı yok</x:String>
+    <x:String x:Key="StatInitLogActive">Aktif: {0} | {1} sağlayıcı atlandı</x:String>
+
+    <!-- Tepsi simgesi -->
+    <x:String x:Key="TrayShowHide">Göster / Gizle</x:String>
+    <x:String x:Key="TrayExit">Çıkış</x:String>
+
+    <!-- Dashboard -->
+    <x:String x:Key="DashSecFans">FAN ÖZETİ</x:String>
+    <x:String x:Key="DashSecRgb">RGB CİHAZLAR</x:String>
+    <x:String x:Key="DashCpu">İŞLEMCİ</x:String>
+    <x:String x:Key="DashGpu">EKRAN KARTI</x:String>
+    <x:String x:Key="DashMaxRpm">MAK. RPM</x:String>
+    <x:String x:Key="DashFans">FANLAR</x:String>
+    <x:String x:Key="DashNoRgb">RGB cihaz bulunamadı</x:String>
+
+    <!-- Kenar çubuğu istatistik etiketleri -->
+    <x:String x:Key="StatCpu">CPU</x:String>
+    <x:String x:Key="StatGpu">GPU</x:String>
+    <x:String x:Key="StatFan">Fan</x:String>
+
+</ResourceDictionary>

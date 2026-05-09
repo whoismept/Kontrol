@@ -1,0 +1,50 @@
+<Window x:Class="Kontrol.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Kontrol">
+
+    <Grid>
+        <NavigationView x:Name="MainNav"
+                        IsBackButtonVisible="Collapsed"
+                        IsPaneToggleButtonVisible="True"
+                        IsSettingsVisible="True"
+                        PaneDisplayMode="Left"
+                        OpenPaneLength="220"
+                        SelectionChanged="OnNavSelectionChanged">
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="NavDashboard" Tag="DashboardView">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE80F;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavFanControl" Tag="FanControlView">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE9CA;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavRgb" Tag="RgbView">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE790;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavHardware" Tag="FanView">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE950;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <!--
+            <navigationview.footermenuıtems>
+                <navigationviewıtem x:name="navsettings" tag="settingsview">
+                    <navigationviewıtem.ıcon>
+                        <fontıcon glyph="&#xe713;"/>
+                    </navigationviewıtem.ıcon>
+                </navigationviewıtem>
+            </navigationview.footermenuıtems>
+            -->
+            <Frame x:Name="ContentFrame"/>
+        </NavigationView>
+    </Grid>
+</Window>
