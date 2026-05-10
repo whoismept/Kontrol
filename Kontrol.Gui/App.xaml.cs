@@ -50,7 +50,7 @@ public partial class App : Application
             _fanController.Start();
             WriteLog("FanControllerService started");
 
-            _tempAlertService = new TempAlertService(HardwareServiceInstance, settings);
+            _tempAlertService = new TempAlertService(_fanController, settings);
             _tempAlertService.AlertTriggered += OnAlertTriggered;
             _tempAlertService.Start();
             WriteLog("TempAlertService started");
@@ -81,6 +81,7 @@ public partial class App : Application
     private void OnAlertTriggered(string title, string message)
     {
         try { _trayService?.ShowNotification(title, message); } catch { }
+        MainVm?.ShowGlobalAlert(title, message);
     }
 
     private void SetupTrayIcon()

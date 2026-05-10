@@ -35,16 +35,22 @@
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
-            <!--
-            <navigationview.footermenuıtems>
-                <navigationviewıtem x:name="navsettings" tag="settingsview">
-                    <navigationviewıtem.ıcon>
-                        <fontıcon glyph="&#xe713;"/>
-                    </navigationviewıtem.ıcon>
-                </navigationviewıtem>
-            </navigationview.footermenuıtems>
-            -->
-            <Frame x:Name="ContentFrame"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <InfoBar Grid.Row="0"
+                         IsOpen="{Binding HasGlobalAlert, Mode=TwoWay}"
+                         Severity="Error"
+                         Title="{Binding GlobalAlertTitle}"
+                         Message="{Binding GlobalAlertMessage}"
+                         IsClosable="True"
+                         Margin="32,16,32,0"/>
+
+                <Frame x:Name="ContentFrame" Grid.Row="1"/>
+            </Grid>
         </NavigationView>
     </Grid>
 </Window>

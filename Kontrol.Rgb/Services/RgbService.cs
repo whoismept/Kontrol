@@ -1,189 +1,147 @@
-using RGB.NET.Core;
-using RGB.NET.Devices.Asus;
-using RGB.NET.Devices.Corsair;
-using RGB.NET.Devices.Logitech;
-using RGB.NET.Devices.OpenRGB;
-using RGB.NET.Devices.Razer;
-using Windows.Devices.Enumeration;
-using Windows.Devices.Lights;
-using Windows.UI;
-using NetColor = RGB.NET.Core.Color;
+using Kontrol.Rgb.Backends;
+using WinColor = Windows.UI.Color;
 
 namespace Kontrol.Rgb;
 
+/// <summary>
+/// Coordinates all RGB backends (LampArray + HID).
+/// Has no dependency on OpenRGB; no external software is required.
+/// </summary>
 public class RgbService : IDisposable
 {
-    private readonly RGBSurface _surface = new();
-    private readonly List<LampArray> _lampArrays = new();
-    private readonly List<string> _initLog = new();
+    private readonly List<ILedBackend> _backends;
+    private readonly List<string> _initLog = [];
     private bool _initialized;
     private bool _disposed;
 
     public IReadOnlyList<string> InitLog => _initLog;
 
-    public async Task InitializeAsync(IOpenRgbSettings? settings = null)
+    /// <summary>Total number of discovered devices across all backends.</summary>
+    public int DeviceCount { get; private set; }
+
+    public RgbService()
     {
-        if (_initialized) return;
-
-        await Task.Run(() =>
-        {
-            TryLoad("ASUS Aura", () => _surface.Load(AsusDeviceProvider.Instance, RGBDeviceType.All, false));
-            TryLoad("Corsair iCUE", () => _surface.Load(CorsairDeviceProvider.Instance, RGBDeviceType.All, false));
-            TryLoad("Logitech", () => _surface.Load(LogitechDeviceProvider.Instance, RGBDeviceType.All, false));
-            TryLoad("Razer Chroma", () => _surface.Load(RazerDeviceProvider.Instance, RGBDeviceType.All, false));
-
-            if (settings?.OpenRgbEnabled == true)
-                TryLoadOpenRgb(settings);
-        });
-
-        await LoadLampArrayDevicesAsync();
-
-        _initialized = true;
+        _backends =
+        [
+            new LampArrayBackend(),
+            new HidBackend(),
+        ];
     }
 
-    private async Task LoadLampArrayDevicesAsync()
+    /// <summary>Constructor for testing or custom backend injection.</summary>
+    public RgbService(IEnumerable<ILedBackend> backends)
     {
-        string selector = LampArray.GetDeviceSelector();
-        var deviceInfos = await DeviceInformation.FindAllAsync(selector);
+        _backends = [.. backends];
+    }
 
-        if (deviceInfos.Count == 0)
-        {
-            _initLog.Add("[SKIP] LampArray: no device");
-            return;
-        }
+    /// <summary>
+    /// Initializes all backends and discovers devices.
+    /// Safe to call multiple times; only the first call is active.
+    /// </summary>
+    public async Task InitializeAsync()
+    {
+        if (_initialized) return;
+        _initialized = true;
 
-        foreach (var di in deviceInfos)
+        _initLog.Add($"[INFO] RGB service starting ({_backends.Count} backend(s))...");
+
+        foreach (var backend in _backends)
         {
             try
             {
-                var lamp = await LampArray.FromIdAsync(di.Id);
-                _lampArrays.Add(lamp);
-                _initLog.Add($"[OK] LampArray: {di.Name} ({lamp.LampCount} LED)");
+                var devices = await backend.DiscoverDevicesAsync();
+                DeviceCount += devices.Count;
+
+                if (devices.Count > 0)
+                {
+                    _initLog.Add($"[OK] {backend.Name}: {devices.Count} device(s) found");
+                    foreach (var d in devices)
+                    {
+                        var zoneInfo = d.Zones.Count > 0 ? $", {d.Zones.Count} zone(s)" : "";
+                        _initLog.Add($"  · {d.Name} ({d.LedCount} LED{zoneInfo}, {d.BackendName})");
+                    }
+                }
+                else
+                {
+                    _initLog.Add($"[--] {backend.Name}: no devices found");
+                }
             }
             catch (Exception ex)
             {
-                _initLog.Add($"[SKIP] LampArray/{di.Name}: {ex.Message.Split('\n')[0]}");
+                _initLog.Add($"[FAIL] {backend.Name}: {ex.Message.Split('\n')[0]}");
             }
         }
+
+        _initLog.Add($"[INFO] Total: {DeviceCount} RGB device(s)");
     }
 
-    private void TryLoadOpenRgb(IOpenRgbSettings settings)
+    /// <summary>Returns the device list from all backends.</summary>
+    public async Task<List<RgbDevice>> GetDevicesAsync()
     {
-        TryLoad("OpenRGB", () =>
-        {
-            var provider = OpenRGBDeviceProvider.Instance;
-            provider.DeviceDefinitions.Add(new OpenRGBServerDefinition
-            {
-                Ip = settings.OpenRgbHost,
-                Port = settings.OpenRgbPort,
-                ClientName = settings.OpenRgbClientName
-            });
-            _surface.Load(provider, RGBDeviceType.All, false);
-        });
-    }
-
-    private void TryLoad(string providerName, Action loadAction)
-    {
-        try
-        {
-            loadAction();
-            _initLog.Add($"[OK] {providerName}");
-        }
-        catch (Exception ex)
-        {
-            _initLog.Add($"[SKIP] {providerName}: {ex.Message.Split('\n')[0]}");
-        }
-    }
-
-    public List<RgbDevice> GetDevices()
-    {
-        var devices = new List<RgbDevice>();
-
-        foreach (var d in _surface.Devices)
-        {
-            devices.Add(new RgbDevice
-            {
-                Backend = RgbBackend.RgbNet,
-                Device = d,
-                Name = d.DeviceInfo.DeviceName ?? "Unknown",
-                Type = d.DeviceInfo.DeviceType.ToString(),
-                Manufacturer = d.DeviceInfo.Manufacturer ?? string.Empty,
-                LedCount = d.Count()
-            });
-        }
-
-        foreach (var lamp in _lampArrays)
-        {
-            devices.Add(new RgbDevice
-            {
-                Backend = RgbBackend.LampArray,
-                LampArray = lamp,
-                Name = $"LampArray ({lamp.LampCount} LED)",
-                Type = "LampArray",
-                Manufacturer = "Windows Native",
-                LedCount = lamp.LampCount
-            });
-        }
-
-        return devices;
-    }
-
-    public void SetDeviceColor(RgbDevice device, Windows.UI.Color color)
-    {
-        try
-        {
-            if (device.Backend == RgbBackend.RgbNet && device.Device is not null)
-            {
-                var nc = ToNetColor(color);
-                foreach (var led in device.Device) led.Color = nc;
-                _surface.Update();
-            }
-            else if (device.Backend == RgbBackend.LampArray && device.LampArray is not null)
-            {
-                device.LampArray.SetColor(color);
-            }
-
-            device.CurrentColor = color;
-        }
-        catch { }
-    }
-
-    public void SetAllDevicesColor(IEnumerable<RgbDevice> devices, Windows.UI.Color color)
-    {
-        var nc = ToNetColor(color);
-        bool anyRgbNet = false;
-
-        foreach (var d in devices)
+        var result = new List<RgbDevice>();
+        foreach (var backend in _backends)
         {
             try
             {
-                if (d.Backend == RgbBackend.RgbNet && d.Device is not null)
-                {
-                    foreach (var led in d.Device) led.Color = nc;
-                    anyRgbNet = true;
-                }
-                else if (d.Backend == RgbBackend.LampArray && d.LampArray is not null)
-                {
-                    d.LampArray.SetColor(color);
-                }
-
-                d.CurrentColor = color;
+                var devices = await backend.DiscoverDevicesAsync();
+                result.AddRange(devices);
             }
             catch { }
         }
-
-        if (anyRgbNet)
-        {
-            try { _surface.Update(); } catch { }
-        }
+        return result;
     }
 
-    private static NetColor ToNetColor(Windows.UI.Color c) => new(c.R, c.G, c.B);
+    /// <summary>Restarts all backends (e.g. after a settings change or device reconnect).</summary>
+    public async Task ReconnectAsync()
+    {
+        _initialized = false;
+        _initLog.Clear();
+        DeviceCount = 0;
+
+        foreach (var backend in _backends)
+            try { backend.Dispose(); } catch { }
+
+        _backends.Clear();
+        _backends.Add(new LampArrayBackend());
+        _backends.Add(new HidBackend());
+
+        await InitializeAsync();
+    }
+
+    /// <summary>Sets all LEDs of a device to a single color.</summary>
+    public void SetDeviceColor(RgbDevice device, WinColor color)
+    {
+        var backend = FindBackend(device);
+        backend?.SetColor(device, color);
+    }
+
+    /// <summary>Sets a specific zone of a device to a color.</summary>
+    public void SetDeviceZoneColor(RgbDevice device, RgbZone zone, WinColor color)
+    {
+        var backend = FindBackend(device);
+        backend?.SetZoneColor(device, zone, color);
+    }
+
+    /// <summary>Sets multiple devices to the same color.</summary>
+    public void SetAllDevicesColor(IEnumerable<RgbDevice> devices, WinColor color)
+    {
+        foreach (var device in devices)
+            SetDeviceColor(device, color);
+    }
+
+    private ILedBackend? FindBackend(RgbDevice device)
+    {
+        // BackendName format: "HID-AuraUSB" → prefix is "HID" | "LampArray"
+        var backendKey = device.BackendName.Split('-')[0];
+        return _backends.FirstOrDefault(b =>
+            b.Name.Equals(backendKey, StringComparison.OrdinalIgnoreCase));
+    }
 
     public void Dispose()
     {
         if (_disposed) return;
         _disposed = true;
-        try { _surface.Dispose(); } catch { }
+        foreach (var backend in _backends)
+            try { backend.Dispose(); } catch { }
     }
 }

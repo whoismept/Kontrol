@@ -11,7 +11,7 @@ public partial class FanViewModel : ObservableObject, IDisposable
 {
     private readonly HardwareService _hardwareService;
     private readonly FanControlService _fanControlService;
-    private readonly DispatcherQueueTimer _timer;
+    private readonly FanControllerService _fanController;
     private bool _disposed;
 
     [ObservableProperty] private bool _isLoading = true;
@@ -34,10 +34,11 @@ public partial class FanViewModel : ObservableObject, IDisposable
 
     private bool _dashDevicesInitialized;
 
-    public FanViewModel(HardwareService hardwareService, FanControlService fanControlService, int pollingIntervalMs = 2000)
+    public FanViewModel(HardwareService hardwareService, FanControlService fanControlService, FanControllerService fanController, int pollingIntervalMs = 2000)
     {
         _hardwareService = hardwareService;
         _fanControlService = fanControlService;
+        _fanController = fanController;
         _pollingIntervalMs = pollingIntervalMs;
 
         StatusText = Loc.Get("StatReadingSensors");
@@ -52,37 +53,37 @@ public partial class FanViewModel : ObservableObject, IDisposable
 
         DiscoverFans();
 
-        var queue = DispatcherQueue.GetForCurrentThread();
-        _timer = queue.CreateTimer();
-        _timer.Interval = TimeSpan.FromMilliseconds(pollingIntervalMs);
-        _timer.IsRepeating = true;
-        _timer.Tick += async (_, _) => await TickAsync();
-        _timer.Start();
-
+        _fanController.ReadingsUpdated += OnReadingsUpdated;
         _ = RefreshReadings();
     }
 
     partial void OnPollingIntervalMsChanged(int value)
-        => _timer.Interval = TimeSpan.FromMilliseconds(value);
-
-    private async Task TickAsync()
     {
-        try
+        // Polling interval is now solely managed by FanControllerService backend
+    }
+
+    private void OnReadingsUpdated(List<SensorReading> readings)
+    {
+        var queue = DispatcherQueue.GetForCurrentThread();
+        if (queue is null) return;
+        queue.TryEnqueue(() =>
         {
-            var readings = await Task.Run(() => _hardwareService.GetAllReadings());
-            UpdateGroups(TemperatureGroups, readings.Where(r => r.Category == SensorCategory.Temperature));
-            UpdateGroups(FanGroups, readings.Where(r => r.Category == SensorCategory.FanSpeed));
-            UpdateGroups(LoadGroups, readings.Where(r => r.Category == SensorCategory.Load));
-            UpdateLiveSummary(readings);
-            StatusText = Loc.Format("StatLastUpdate", DateTime.Now.ToString("HH:mm:ss"));
-            IsLoading = false;
-            RefreshFanStates();
-        }
-        catch (Exception ex)
-        {
-            StatusText = Loc.Format("StatError", ex.Message);
-            IsLoading = false;
-        }
+            try
+            {
+                UpdateGroups(TemperatureGroups, readings.Where(r => r.Category == SensorCategory.Temperature));
+                UpdateGroups(FanGroups, readings.Where(r => r.Category == SensorCategory.FanSpeed));
+                UpdateGroups(LoadGroups, readings.Where(r => r.Category == SensorCategory.Load));
+                UpdateLiveSummary(readings);
+                StatusText = Loc.Format("StatLastUpdate", DateTime.Now.ToString("HH:mm:ss"));
+                IsLoading = false;
+                RefreshFanStates();
+            }
+            catch (Exception ex)
+            {
+                StatusText = Loc.Format("StatError", ex.Message);
+                IsLoading = false;
+            }
+        });
     }
 
     [RelayCommand]
@@ -273,6 +274,6 @@ public partial class FanViewModel : ObservableObject, IDisposable
     {
         if (_disposed) return;
         _disposed = true;
-        _timer.Stop();
+        _fanController.ReadingsUpdated -= OnReadingsUpdated;
     }
 }

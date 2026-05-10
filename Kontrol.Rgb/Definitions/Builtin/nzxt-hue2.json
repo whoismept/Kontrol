@@ -1,0 +1,122 @@
+{
+  "devices": [
+    {
+      "id": "nzxt-hue2",
+      "name": "NZXT Hue 2",
+      "vendor": "NZXT",
+      "type": "Fan/RGB Controller",
+      "vid": 7793,
+      "pids": [8193],
+      "protocol": "NzxtHue2",
+      "ledCount": 40,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Channel 1", "ledStart": 0, "ledCount": 40, "channel": 0 }
+      ]
+    },
+    {
+      "id": "nzxt-hue2-ambient",
+      "name": "NZXT Hue 2 Ambient",
+      "vendor": "NZXT",
+      "type": "Fan/RGB Controller",
+      "vid": 7793,
+      "pids": [8194],
+      "protocol": "NzxtHue2",
+      "ledCount": 40,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Channel 1", "ledStart": 0, "ledCount": 40, "channel": 0 },
+        { "name": "Channel 2", "ledStart": 40, "ledCount": 40, "channel": 1 }
+      ]
+    },
+    {
+      "id": "nzxt-hue2-motherboard",
+      "name": "NZXT Motherboard RGB Device",
+      "vendor": "NZXT",
+      "type": "Motherboard",
+      "vid": 7793,
+      "pids": [8197, 8203],
+      "protocol": "NzxtHue2",
+      "ledCount": 20,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Channel 1", "ledStart": 0, "ledCount": 20, "channel": 0 }
+      ]
+    },
+    {
+      "id": "nzxt-smart-device-v2",
+      "name": "NZXT Smart Device V2",
+      "vendor": "NZXT",
+      "type": "Fan/RGB Controller",
+      "vid": 7793,
+      "pids": [8198, 8205, 8207],
+      "protocol": "NzxtHue2",
+      "ledCount": 40,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Channel 1", "ledStart": 0, "ledCount": 40, "channel": 0 },
+        { "name": "Channel 2", "ledStart": 40, "ledCount": 40, "channel": 1 }
+      ]
+    },
+    {
+      "id": "nzxt-kraken-x3",
+      "name": "NZXT Kraken X3 Series",
+      "vendor": "NZXT",
+      "type": "AIO Cooler",
+      "vid": 7793,
+      "pids": [8199, 8212],
+      "protocol": "NzxtHue2",
+      "ledCount": 16,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Ring LEDs", "ledStart": 0, "ledCount": 16, "channel": 0 }
+      ]
+    },
+    {
+      "id": "nzxt-kraken-2024-elite",
+      "name": "NZXT Kraken 2024 Elite Series RGB",
+      "vendor": "NZXT",
+      "type": "AIO Cooler",
+      "vid": 7793,
+      "pids": [12306],
+      "protocol": "NzxtHue2",
+      "ledCount": 16,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Ring LEDs",  "ledStart": 0, "ledCount": 16, "channel": 0 },
+        { "name": "Pump LEDs",  "ledStart": 16, "ledCount": 8, "channel": 1 }
+      ]
+    },
+    {
+      "id": "nzxt-rgb-fan-controller",
+      "name": "NZXT RGB & Fan Controller",
+      "vendor": "NZXT",
+      "type": "Fan/RGB Controller",
+      "vid": 7793,
+      "pids": [8201, 8208, 8206, 8209, 8217, 8224, 8223, 8226, 8219],
+      "protocol": "NzxtHue2",
+      "ledCount": 40,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Channel 1", "ledStart": 0,  "ledCount": 40, "channel": 0 },
+        { "name": "Channel 2", "ledStart": 40, "ledCount": 40, "channel": 1 }
+      ]
+    },
+    {
+      "id": "nzxt-rgb-controller",
+      "name": "NZXT RGB Controller",
+      "vendor": "NZXT",
+      "type": "Fan/RGB Controller",
+      "vid": 7793,
+      "pids": [8210, 8225],
+      "protocol": "NzxtHue2",
+      "ledCount": 40,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "Channel 1", "ledStart": 0,  "ledCount": 40, "channel": 0 },
+        { "name": "Channel 2", "ledStart": 40, "ledCount": 40, "channel": 1 },
+        { "name": "Channel 3", "ledStart": 80, "ledCount": 40, "channel": 2 }
+      ]
+    }
+  ]
+}

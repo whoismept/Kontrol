@@ -1,0 +1,64 @@
+{
+  "devices": [
+    {
+      "id": "msi-mystic-light-64-byte",
+      "name": "MSI Mystic Light (64-byte protocol)",
+      "vendor": "MSI",
+      "type": "Motherboard",
+      "vid": 5218,
+      "pids": [5474, 5475, 5476],
+      "protocol": "MsiMystic",
+      "ledCount": 2,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "D_LED1", "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "D_LED2", "ledStart": 1, "ledCount": 1, "channel": 1 }
+      ]
+    },
+    {
+      "id": "msi-mystic-light-z370-z390",
+      "name": "MSI Mystic Light (Z370/Z390/B360 serisi)",
+      "vendor": "MSI",
+      "type": "Motherboard",
+      "vid": 5218,
+      "pids": [5920, 31506, 31510, 31511, 31512, 31568, 31621, 31634, 31635],
+      "protocol": "MsiMystic",
+      "ledCount": 2,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "D_LED1", "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "D_LED2", "ledStart": 1, "ledCount": 1, "channel": 1 }
+      ]
+    },
+    {
+      "id": "msi-mystic-light-z490-z590",
+      "name": "MSI Mystic Light (Z490/B460/Z590/B560 serisi)",
+      "vendor": "MSI",
+      "type": "Motherboard",
+      "vid": 5218,
+      "pids": [31746, 31796, 31797, 31798, 31799, 31830, 31833, 31840, 31847, 31857, 31859, 31861, 31862, 31863, 31865],
+      "protocol": "MsiMystic",
+      "ledCount": 2,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "D_LED1", "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "D_LED2", "ledStart": 1, "ledCount": 1, "channel": 1 }
+      ]
+    },
+    {
+      "id": "msi-mystic-light-z690-z790",
+      "name": "MSI Mystic Light (Z690/B660/Z790/B760 serisi)",
+      "vendor": "MSI",
+      "type": "Motherboard",
+      "vid": 5218,
+      "pids": [31872, 31873, 31874, 31875, 31876, 31878, 31879, 31888, 31889],
+      "protocol": "MsiMystic",
+      "ledCount": 2,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "D_LED1", "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "D_LED2", "ledStart": 1, "ledCount": 1, "channel": 1 }
+      ]
+    }
+  ]
+}

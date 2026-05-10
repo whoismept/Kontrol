@@ -1,0 +1,38 @@
+{
+  "devices": [
+    {
+      "id": "asrock-polychrome-mb",
+      "name": "ASRock Polychrome USB Anakart",
+      "vendor": "ASRock",
+      "type": "Motherboard",
+      "vid": 9934,
+      "pids": [418],
+      "protocol": "ASRockPoly",
+      "ledCount": 8,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "RGB LED 1 Header",    "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "RGB LED 2 Header",    "ledStart": 1, "ledCount": 1, "channel": 1 },
+        { "name": "Addressable Header 1","ledStart": 2, "ledCount": 1, "channel": 2 },
+        { "name": "Addressable Header 2","ledStart": 3, "ledCount": 1, "channel": 3 },
+        { "name": "PCH",                 "ledStart": 4, "ledCount": 1, "channel": 4 },
+        { "name": "IO Cover",            "ledStart": 5, "ledCount": 1, "channel": 5 },
+        { "name": "PCB",                 "ledStart": 6, "ledCount": 1, "channel": 6 }
+      ]
+    },
+    {
+      "id": "asrock-deskmini-argb",
+      "name": "ASRock Deskmini Addressable LED Strip",
+      "vendor": "ASRock",
+      "type": "Accessory",
+      "vid": 9934,
+      "pids": [422],
+      "protocol": "ASRockPoly",
+      "ledCount": 30,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "ARGB Strip", "ledStart": 0, "ledCount": 30, "channel": 0 }
+      ]
+    }
+  ]
+}

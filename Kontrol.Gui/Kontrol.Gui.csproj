@@ -9,6 +9,8 @@
     <NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
     <UseWinUI>true</UseWinUI>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyTitle>Kontrol</AssemblyTitle>

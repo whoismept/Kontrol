@@ -26,20 +26,9 @@
                     <StackPanel>
                         <TextBlock x:Name="LblSensorIntervalText" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
                         <TextBlock x:Name="LblSensorIntervalHintText" FontSize="11" Opacity="0.7" Margin="0,0,0,12"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="60"/>
-                            </Grid.ColumnDefinitions>
-                            <Slider Value="{Binding PollingIntervalMs, Mode=TwoWay}"
-                                    Minimum="500" Maximum="10000"
-                                    TickFrequency="500" SnapsTo="Ticks"
-                                    VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding PollingIntervalMs}"
-                                       VerticalAlignment="Center" HorizontalAlignment="Right"
-                                       FontWeight="SemiBold"/>
-                        </Grid>
+                        <NumberBox Value="{Binding PollingIntervalMs, Mode=TwoWay}"
+                                   Minimum="500" Maximum="10000" SmallChange="100" LargeChange="500"
+                                   SpinButtonPlacementMode="Compact" HorizontalAlignment="Left" Width="160" />
                     </StackPanel>
                 </Border>
 
@@ -112,74 +101,9 @@
                         </Grid>
 
                         <TextBlock x:Name="LblAlertThresholdText" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="60"/>
-                            </Grid.ColumnDefinitions>
-                            <Slider Value="{Binding TempAlertThresholdC, Mode=TwoWay}"
-                                    Minimum="50" Maximum="110"
-                                    TickFrequency="5" SnapsTo="Ticks"
-                                    VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"
-                                       Text="{Binding ThresholdText}" FontWeight="SemiBold"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- OpenRGB -->
-                <TextBlock x:Name="SecOpenRGBText" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-
-                <Border Padding="20" Margin="0,0,0,20" CornerRadius="8"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
-                    <StackPanel>
-                        <Grid Margin="0,0,0,16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel>
-                                <TextBlock x:Name="LblOpenRGBServerText" FontWeight="SemiBold" FontSize="13"/>
-                                <TextBlock x:Name="LblOpenRGBServerHintText" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
-                            </StackPanel>
-                            <ToggleSwitch Grid.Column="1" IsOn="{Binding OpenRgbEnabled, Mode=TwoWay}"
-                                         OnContent="" OffContent=""/>
-                        </Grid>
-
-                        <Grid Margin="0,0,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="LblServerText" FontSize="13" VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="1"
-                                     Text="{Binding OpenRgbHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     PlaceholderText="127.0.0.1"/>
-                        </Grid>
-                        <Grid Margin="0,0,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="LblPortText" FontSize="13" VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="1"
-                                     Text="{Binding OpenRgbPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     PlaceholderText="6742" Width="120" HorizontalAlignment="Left"/>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="LblClientText" FontSize="13" VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="1"
-                                     Text="{Binding OpenRgbClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     PlaceholderText="Kontrol"/>
-                        </Grid>
-
-                        <TextBlock x:Name="LblOpenRGBNoteText"
-                                   FontSize="11" Opacity="0.6" TextWrapping="Wrap" Margin="0,12,0,0"/>
+                        <NumberBox Value="{Binding TempAlertThresholdC, Mode=TwoWay}"
+                                   Minimum="50" Maximum="110" SmallChange="1" LargeChange="5"
+                                   SpinButtonPlacementMode="Compact" HorizontalAlignment="Left" Width="160" />
                     </StackPanel>
                 </Border>
 
@@ -221,6 +145,28 @@
                                   ItemsSource="{Binding LanguageOptions}"
                                   SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
                                   Width="160"/>
+                    </Grid>
+                </Border>
+
+                <!-- Advanced Mode -->
+                <TextBlock x:Name="SecAdvancedText" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <Border Padding="20" Margin="0,0,0,20" CornerRadius="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock x:Name="LblAdvancedModeText" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock x:Name="LblAdvancedModeHintText" FontSize="11" Opacity="0.7"
+                                       TextWrapping="Wrap" MaxWidth="380"/>
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1"
+                                      IsOn="{Binding IsAdvancedMode, Mode=TwoWay}"
+                                      OnContent="" OffContent=""/>
                     </Grid>
                 </Border>
 

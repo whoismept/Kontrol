@@ -110,7 +110,7 @@ public class CurveGraphEditor : Canvas
 
         for (float t = minT; t <= maxT; t += 0.5f)
         {
-            float pct = CurveInterpolator.Interpolate(points, t);
+            float pct = CurveInterpolator.Interpolate(points, t, Curve.Type);
             double x = left + (right - left) * (t - minT) / (maxT - minT);
             double y = bottom - (bottom - top) * pct / 100.0;
 

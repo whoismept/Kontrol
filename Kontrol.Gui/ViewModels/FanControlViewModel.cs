@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kontrol.Fan;
+using Kontrol.Models;
 using Kontrol.Services;
 using Microsoft.UI.Dispatching;
 using System.Collections.ObjectModel;
@@ -15,6 +16,8 @@ public partial class FanControlViewModel : ObservableObject
 {
     private readonly FanControllerService _controller;
     private readonly HardwareService _hardwareService;
+    private readonly FanProfileService _profileService;
+    private readonly AppSettings _settings;
     private readonly DispatcherQueue _dispatcher = DispatcherQueue.GetForCurrentThread();
 
     [ObservableProperty] private string _statusText = "";
@@ -22,6 +25,8 @@ public partial class FanControlViewModel : ObservableObject
     [ObservableProperty] private FanCurve? _selectedCurve;
     [ObservableProperty] private TempSource? _selectedTempSource;
     [ObservableProperty] private bool _showHiddenFans = false;
+    [ObservableProperty] private FanProfile? _activeProfile;
+    [ObservableProperty] private string _newFanProfileName = string.Empty;
 
     public bool HasSelectedCurve => SelectedCurve is not null;
     public bool HasSelectedTempSource => SelectedTempSource is not null;
@@ -46,20 +51,25 @@ public partial class FanControlViewModel : ObservableObject
     public ObservableCollection<FanCurve> Curves { get; } = new();
     public ObservableCollection<TempSource> TempSources { get; } = new();
     public ObservableCollection<string> AvailableSensors { get; } = new();
+    public ObservableCollection<FanProfile> FanProfiles { get; } = new();
 
     public static IReadOnlyList<FanMode> FanModes { get; } = Enum.GetValues<FanMode>();
     public static IReadOnlyList<TempSourceMode> TempSourceModes { get; } = Enum.GetValues<TempSourceMode>();
     public static IReadOnlyList<FanCurveType> CurveTypes { get; } = Enum.GetValues<FanCurveType>();
 
-    public FanControlViewModel(FanControllerService controller, HardwareService hardwareService)
+    public FanControlViewModel(FanControllerService controller, HardwareService hardwareService,
+                               FanProfileService profileService, AppSettings settings)
     {
-        _controller = controller;
+        _controller    = controller;
         _hardwareService = hardwareService;
+        _profileService = profileService;
+        _settings       = settings;
 
         _controller.ConfigChanged += OnConfigChanged;
         _controller.FanUpdated += OnFanUpdated;
 
         LoadFromConfig();
+        LoadFanProfiles();
         RefreshAvailableSensors();
     }
 
@@ -184,12 +194,26 @@ public partial class FanControlViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void DeleteCurve()
+    private async Task DeleteCurve()
     {
         if (SelectedCurve is null) return;
-        _controller.Config.Curves.Remove(SelectedCurve);
-        Curves.Remove(SelectedCurve);
-        SelectedCurve = Curves.FirstOrDefault();
+        
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = Loc.Get("DlgDeleteCurveTitle") ?? "Delete Curve",
+            Content = Loc.Format("DlgDeleteCurveMsg", SelectedCurve.Name),
+            PrimaryButtonText = Loc.Get("BtnDelete"),
+            CloseButtonText = Loc.Get("BtnCancel"),
+            XamlRoot = App.Window?.Content.XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            _controller.Config.Curves.Remove(SelectedCurve);
+            Curves.Remove(SelectedCurve);
+            SelectedCurve = Curves.FirstOrDefault();
+        }
     }
 
     [RelayCommand]
@@ -206,12 +230,26 @@ public partial class FanControlViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void DeleteTempSource()
+    private async Task DeleteTempSource()
     {
         if (SelectedTempSource is null) return;
-        _controller.Config.TempSources.Remove(SelectedTempSource);
-        TempSources.Remove(SelectedTempSource);
-        SelectedTempSource = TempSources.FirstOrDefault();
+        
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = Loc.Get("DlgDeleteSourceTitle") ?? "Delete Source",
+            Content = Loc.Format("DlgDeleteSourceMsg", SelectedTempSource.Name),
+            PrimaryButtonText = Loc.Get("BtnDelete"),
+            CloseButtonText = Loc.Get("BtnCancel"),
+            XamlRoot = App.Window?.Content.XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            _controller.Config.TempSources.Remove(SelectedTempSource);
+            TempSources.Remove(SelectedTempSource);
+            SelectedTempSource = TempSources.FirstOrDefault();
+        }
     }
 
     [RelayCommand]
@@ -328,6 +366,14 @@ public partial class FanControlViewModel : ObservableObject
         ApplyViewModelsToConfig();
         _controller.SaveConfig();
         _controller.ForceApplyNow(fanKey);
+
+        // Any manual change deactivates the active profile
+        if (ActiveProfile is not null)
+        {
+            ActiveProfile = null;
+            _settings.ActiveFanProfileId = string.Empty;
+            _settings.Save();
+        }
     }
 
     private void ApplyViewModelsToConfig()
@@ -336,6 +382,87 @@ public partial class FanControlViewModel : ObservableObject
         config.Assignments.Clear();
         foreach (var vm in FanAssignments)
             config.Assignments.Add(vm.ToAssignment());
+    }
+
+    // -------------------------------------------------------------------------
+    // Fan Profile Management
+    // -------------------------------------------------------------------------
+
+    private void LoadFanProfiles()
+    {
+        FanProfiles.Clear();
+        foreach (var preset in FanProfileService.Presets)
+            FanProfiles.Add(preset);
+        foreach (var custom in _profileService.LoadCustom())
+            FanProfiles.Add(custom);
+
+        if (!string.IsNullOrEmpty(_settings.ActiveFanProfileId))
+            ActiveProfile = FanProfiles.FirstOrDefault(p => p.Id == _settings.ActiveFanProfileId);
+    }
+
+    [RelayCommand]
+    private void ApplyFanProfile(FanProfile? profile)
+    {
+        if (profile is null) return;
+        ApplyViewModelsToConfig();
+        _controller.ApplyFanProfile(profile, _profileService);
+        ActiveProfile = profile;
+        _settings.ActiveFanProfileId = profile.Id;
+        _settings.Save();
+        StatusText = Loc.Format("StatFanProfileApplied", profile.Name);
+    }
+
+    [RelayCommand]
+    private void SaveFanProfile()
+    {
+        var name = NewFanProfileName.Trim();
+        if (string.IsNullOrWhiteSpace(name)) return;
+
+        ApplyViewModelsToConfig();
+        var profile = _profileService.CreateSnapshot(name, _controller.Config);
+        _profileService.Save(profile);
+
+        // Replace existing profile with same name if any
+        var existing = FanProfiles.FirstOrDefault(p => !p.IsPreset && p.Name == name);
+        if (existing is not null) FanProfiles.Remove(existing);
+        FanProfiles.Add(profile);
+
+        NewFanProfileName = string.Empty;
+        ActiveProfile = profile;
+        _settings.ActiveFanProfileId = profile.Id;
+        _settings.Save();
+        StatusText = Loc.Format("StatFanProfileSaved", name);
+    }
+
+    [RelayCommand]
+    private async Task DeleteFanProfile(FanProfile? profile)
+    {
+        if (profile is null || profile.IsPreset) return;
+
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = Loc.Get("DlgDeleteProfileTitle") ?? "Delete Profile",
+            Content = Loc.Format("DlgDeleteProfileMsg", profile.Name),
+            PrimaryButtonText = Loc.Get("BtnDelete"),
+            CloseButtonText = Loc.Get("BtnCancel"),
+            XamlRoot = App.Window?.Content.XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            _profileService.Delete(profile);
+            FanProfiles.Remove(profile);
+
+            if (ActiveProfile?.Id == profile.Id)
+            {
+                ActiveProfile = null;
+                _settings.ActiveFanProfileId = string.Empty;
+                _settings.Save();
+            }
+
+            StatusText = Loc.Format("StatFanProfileDeleted", profile.Name);
+        }
     }
 }
 

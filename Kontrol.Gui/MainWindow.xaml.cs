@@ -23,7 +23,15 @@ public sealed partial class MainWindow : Window
 
         SetupTitleBar();
         ApplyNavLabels();
+        UpdateAdvancedNavItems(_vm.IsAdvancedMode);
 
+        _vm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MainViewModel.IsAdvancedMode))
+                UpdateAdvancedNavItems(_vm.IsAdvancedMode);
+        };
+
+        Loc.LanguageChanged += OnLanguageChanged;
         Activated += OnActivated;
         AppWindow.Closing += OnAppWindowClosing;
     }
@@ -34,6 +42,7 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
 
         var root = (FrameworkElement)Content;
+        root.DataContext = _vm;
         root.ActualThemeChanged += (_, _) => ApplyTitleBarColors(root.ActualTheme);
         ApplyTitleBarColors(root.ActualTheme);
     }
@@ -63,11 +72,51 @@ public sealed partial class MainWindow : Window
 
     private void ApplyNavLabels()
     {
-        NavDashboard.Content = Loc.Get("NavDashboard");
-        NavHardware.Content  = Loc.Get("NavHardware");
+        NavDashboard.Content  = Loc.Get("NavDashboard");
         NavFanControl.Content = Loc.Get("NavFanControl");
-        NavRgb.Content       = Loc.Get("NavRGB");
-        // NavSettings.Content  = Loc.Get("NavSettings");
+        NavRgb.Content        = Loc.Get("NavRGB");
+        NavHardware.Content   = Loc.Get("NavHardware");
+    }
+
+    internal void UpdateAdvancedNavItems(bool isAdvanced)
+    {
+        var visibility = isAdvanced ? Visibility.Visible : Visibility.Collapsed;
+        NavFanControl.Visibility = visibility;
+        NavRgb.Visibility        = visibility;
+        NavHardware.Visibility   = visibility;
+
+        if (!isAdvanced && ContentFrame.CurrentSourcePageType is Type t &&
+            (t == typeof(FanControlView) || t == typeof(RgbView) || t == typeof(FanView)))
+        {
+            MainNav.SelectedItem = NavDashboard;
+            ContentFrame.Navigate(typeof(DashboardView));
+        }
+    }
+
+    internal void NavigateTo(Type pageType)
+    {
+        if (ContentFrame.CurrentSourcePageType != pageType)
+            ContentFrame.Navigate(pageType);
+
+        var item = pageType.Name switch
+        {
+            "DashboardView"  => NavDashboard,
+            "FanControlView" => NavFanControl,
+            "RgbView"        => NavRgb,
+            "FanView"        => NavHardware,
+            _ => null
+        };
+        if (item is not null) MainNav.SelectedItem = item;
+    }
+
+    private void OnLanguageChanged()
+    {
+        ApplyNavLabels();
+        var type = ContentFrame.CurrentSourcePageType;
+        if (type != null)
+        {
+            ContentFrame.Navigate(type, null, new Microsoft.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+        }
     }
 
     private void OnActivated(object sender, WindowActivatedEventArgs args)

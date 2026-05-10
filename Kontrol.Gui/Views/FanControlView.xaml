@@ -21,6 +21,8 @@
         <conv:FloatPercentConverter x:Key="FloatPercent"/>
         <conv:FloatDegreeConverter x:Key="FloatDegree"/>
         <conv:IntMsConverter x:Key="IntMs"/>
+        <conv:ColorToSolidBrushConverter x:Key="ColorToBrush"/>
+        <conv:NullableFloatToDoubleConverter x:Key="NullableFloatToDouble"/>
     </Page.Resources>
 
     <Grid>
@@ -30,42 +32,93 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Grid.Row="0" Margin="32,24,32,16">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <FontIcon Glyph="&#xE9CA;" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock x:Name="PageTitle" FontSize="24" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.55"/>
+        <Grid Grid.Row="0" Margin="32,24,32,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title row -->
+            <Grid Grid.Row="0" Margin="0,0,0,12">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <FontIcon Glyph="&#xE9CA;" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="PageTitle" FontSize="24" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding StatusText}" FontSize="11" Opacity="0.55"/>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
-                <Button Command="{Binding ToggleShowHiddenCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon Glyph="&#xE7B3;" FontSize="14"/>
-                        <TextBlock Text="{Binding ShowHiddenButtonText}"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding ImportConfigCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon Glyph="&#xE8B5;" FontSize="14"/>
-                        <TextBlock x:Name="BtnImportText"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding ExportConfigCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon Glyph="&#xEDE1;" FontSize="14"/>
-                        <TextBlock x:Name="BtnExportText"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding RescanFansCommand}" x:Name="BtnRescan"/>
-                <Button Command="{Binding SaveConfigCommand}"
-                        Style="{StaticResource AccentButtonStyle}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon Glyph="&#xE74E;" FontSize="14"/>
-                        <TextBlock x:Name="BtnSaveText"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
+                    <Button Command="{Binding ToggleShowHiddenCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE7B3;" FontSize="14"/>
+                            <TextBlock Text="{Binding ShowHiddenButtonText}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ImportConfigCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE8B5;" FontSize="14"/>
+                            <TextBlock x:Name="BtnImportText"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportConfigCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xEDE1;" FontSize="14"/>
+                            <TextBlock x:Name="BtnExportText"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RescanFansCommand}" x:Name="BtnRescan"/>
+                    <Button Command="{Binding SaveConfigCommand}"
+                            Style="{StaticResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE74E;" FontSize="14"/>
+                            <TextBlock x:Name="BtnSaveText"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Profile bar -->
+            <Grid Grid.Row="1" Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Preset profile chips -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock x:Name="LblProfilesBarText" VerticalAlignment="Center" FontSize="12" Opacity="0.55" Margin="0,0,8,0"/>
+                    <ItemsControl ItemsSource="{Binding FanProfiles}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Click="OnProfileButtonClick"
+                                        Tag="{Binding}"
+                                        Padding="10,4"
+                                        CornerRadius="12">
+                                    <TextBlock Text="{Binding Name}" FontSize="12"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- Save custom profile -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBox x:Name="NewProfileBox"
+                             Text="{Binding NewFanProfileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Width="200" FontSize="12"/>
+                    <Button Command="{Binding SaveFanProfileCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE74E;" FontSize="13"/>
+                            <TextBlock x:Name="BtnSaveProfileText"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Grid>
 
         <Pivot Grid.Row="1" Margin="32,0,32,24">
@@ -212,6 +265,8 @@
                                                     <RowDefinition Height="Auto"/>
                                                     <RowDefinition Height="8"/>
                                                     <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="8"/>
+                                                    <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
 
                                                 <TextBlock Grid.Row="0" Text="{StaticResource LblCurve}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
@@ -241,11 +296,17 @@
                                                                VerticalAlignment="Center" FontSize="12"/>
                                                 </StackPanel>
 
-                                                <TextBlock Grid.Row="6" Text="{StaticResource LblLive}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Row="6" Grid.Column="1"
-                                                           Text="{Binding LiveTempDisplay}"
-                                                           FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"
-                                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                                <TextBlock Grid.Row="6" Text="{StaticResource LblZeroRpm}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                                                    <NumberBox Value="{Binding ZeroRpmBelowC, Mode=TwoWay, Converter={StaticResource NullableFloatToDouble}}"
+                                                               Minimum="0" Maximum="100" SmallChange="1" LargeChange="5"
+                                                               SpinButtonPlacementMode="Compact" Width="110" VerticalAlignment="Center"
+                                                               PlaceholderText="{StaticResource LblDisabled}"/>
+                                                    <TextBlock Text="°C" VerticalAlignment="Center" Opacity="0.6"/>
+                                                </StackPanel>
+
+                                                <TextBlock Grid.Row="8" Text="{StaticResource LblLive}" FontSize="12" Opacity="0.8" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding LiveTempDisplay}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                             </Grid>
                                         </StackPanel>
 
@@ -348,10 +409,11 @@
                                             <ColumnDefinition Width="48"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock x:Name="LblHysteresisText" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
-                                        <Slider Grid.Column="1" Value="{Binding HysteresisC, Mode=TwoWay}"
-                                                Minimum="0" Maximum="10" TickFrequency="0.5" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2" Text="{Binding HysteresisC, Converter={StaticResource FloatDegree}}"
-                                                   HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12"/>
+                                        <NumberBox Grid.Column="1" Value="{Binding HysteresisC, Mode=TwoWay}"
+                                                   Minimum="0" Maximum="10" SmallChange="0.5" LargeChange="1"
+                                                   SpinButtonPlacementMode="Compact" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2" Text="°C"
+                                                   HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12" Opacity="0.6"/>
                                     </Grid>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -360,10 +422,11 @@
                                             <ColumnDefinition Width="48"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock x:Name="LblResponseText" FontSize="12" VerticalAlignment="Center" Opacity="0.8"/>
-                                        <Slider Grid.Column="1" Value="{Binding ResponseTimeMs, Mode=TwoWay}"
-                                                Minimum="0" Maximum="5000" TickFrequency="100" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2" Text="{Binding ResponseTimeMs, Converter={StaticResource IntMs}}"
-                                                   HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12"/>
+                                        <NumberBox Grid.Column="1" Value="{Binding ResponseTimeMs, Mode=TwoWay}"
+                                                   Minimum="0" Maximum="5000" SmallChange="50" LargeChange="200"
+                                                   SpinButtonPlacementMode="Compact" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2" Text="ms"
+                                                   HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12" Opacity="0.6"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -401,11 +464,15 @@
                                                         <ColumnDefinition Width="110"/>
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBox Text="{Binding TempC, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                                             Width="96" HorizontalAlignment="Left"/>
-                                                    <TextBox Grid.Column="1"
-                                                             Text="{Binding Percent, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                                             Width="96" HorizontalAlignment="Left"/>
+                                                    <NumberBox Value="{Binding TempC, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                               Minimum="0" Maximum="120"
+                                                               SpinButtonPlacementMode="Compact"
+                                                               Width="96" HorizontalAlignment="Left"/>
+                                                    <NumberBox Grid.Column="1"
+                                                               Value="{Binding Percent, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                               Minimum="0" Maximum="100"
+                                                               SpinButtonPlacementMode="Compact"
+                                                               Width="96" HorizontalAlignment="Left"/>
                                                     <Button Grid.Column="2" Tag="{Binding}" Click="OnRemoveCurvePointClick">
                                                         <FontIcon Glyph="&#xEA1F;" FontSize="14"/>
                                                     </Button>

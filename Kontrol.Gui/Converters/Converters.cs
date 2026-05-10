@@ -152,6 +152,21 @@ public class NullableFloatConverter : IValueConverter
     }
 }
 
+public class NullableFloatToDoubleConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        if (value is float f) return (double)f;
+        return double.NaN;
+    }
+
+    public object? ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        if (value is double d && !double.IsNaN(d)) return (float)d;
+        return null;
+    }
+}
+
 public class HiddenOpacityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
@@ -188,19 +203,6 @@ public class TempDisplayConverter : IValueConverter
         => throw new NotImplementedException();
 }
 
-public class RgbBackendLabelConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, string language)
-        => value is RgbBackend backend ? backend switch
-        {
-            RgbBackend.LampArray => "Native",
-            RgbBackend.RgbNet => "SDK",
-            _ => backend.ToString()
-        } : string.Empty;
-
-    public object ConvertBack(object value, Type targetType, object parameter, string language)
-        => throw new NotImplementedException();
-}
 
 public class FanModeTempLabelConverter : IValueConverter
 {

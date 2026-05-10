@@ -1,0 +1,125 @@
+{
+  "devices": [
+    {
+      "id": "asus-aura-addressable-1",
+      "name": "ASUS Aura USB Controller (Addressable Gen1)",
+      "vendor": "ASUS",
+      "type": "Motherboard",
+      "vid": 2821,
+      "pids": [6247],
+      "protocol": "AuraUSB",
+      "ledCount": 180,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Addressable 1", "ledStart": 0,   "ledCount": 60, "channel": 0, "resizable": true },
+        { "name": "Addressable 2", "ledStart": 60,  "ledCount": 60, "channel": 1, "resizable": true },
+        { "name": "Addressable 3", "ledStart": 120, "ledCount": 60, "channel": 2, "resizable": true }
+      ]
+    },
+    {
+      "id": "asus-aura-addressable-2",
+      "name": "ASUS Aura USB Controller (Addressable Gen2)",
+      "vendor": "ASUS",
+      "type": "Motherboard",
+      "vid": 2821,
+      "pids": [6258, 6307, 6309],
+      "protocol": "AuraUSB",
+      "ledCount": 180,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Addressable 1", "ledStart": 0,   "ledCount": 60, "channel": 0, "resizable": true },
+        { "name": "Addressable 2", "ledStart": 60,  "ledCount": 60, "channel": 1, "resizable": true },
+        { "name": "Addressable 3", "ledStart": 120, "ledCount": 60, "channel": 2, "resizable": true }
+      ]
+    },
+    {
+      "id": "asus-aura-mb-1",
+      "name": "ASUS Aura MB Controller (600/700 series)",
+      "vendor": "ASUS",
+      "type": "Motherboard",
+      "vid": 2821,
+      "pids": [6387, 6457],
+      "protocol": "AuraUSB",
+      "ledCount": 120,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Addressable 1", "ledStart": 0,  "ledCount": 60, "channel": 0, "resizable": true },
+        { "name": "Addressable 2", "ledStart": 60, "ledCount": 60, "channel": 1, "resizable": true }
+      ]
+    },
+    {
+      "id": "asus-aura-mb-2",
+      "name": "ASUS Aura MB Controller (X570/B550/Z490)",
+      "vendor": "ASUS",
+      "type": "Motherboard",
+      "vid": 2821,
+      "pids": [6575, 6822],
+      "protocol": "AuraUSB",
+      "ledCount": 180,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Addressable 1", "ledStart": 0,   "ledCount": 60, "channel": 0, "resizable": true },
+        { "name": "Addressable 2", "ledStart": 60,  "ledCount": 60, "channel": 1, "resizable": true },
+        { "name": "Addressable 3", "ledStart": 120, "ledCount": 60, "channel": 2, "resizable": true }
+      ]
+    },
+    {
+      "id": "asus-aura-mb-3",
+      "name": "ASUS Aura MB Controller (Z690/B660/Z790)",
+      "vendor": "ASUS",
+      "type": "Motherboard",
+      "vid": 2821,
+      "pids": [7149],
+      "protocol": "AuraUSB",
+      "ledCount": 180,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Addressable 1", "ledStart": 0,   "ledCount": 60, "channel": 0, "resizable": true },
+        { "name": "Addressable 2", "ledStart": 60,  "ledCount": 60, "channel": 1, "resizable": true },
+        { "name": "Addressable 3", "ledStart": 120, "ledCount": 60, "channel": 2, "resizable": true }
+      ]
+    },
+    {
+      "id": "asus-aura-terminal",
+      "name": "ASUS Aura Terminal",
+      "vendor": "ASUS",
+      "type": "Accessory",
+      "vid": 2821,
+      "pids": [6281],
+      "protocol": "AuraUSB",
+      "ledCount": 15,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Terminal LEDs", "ledStart": 0, "ledCount": 15, "channel": 0, "resizable": false }
+      ]
+    },
+    {
+      "id": "asus-aura-keyboard-flare",
+      "name": "ASUS ROG Strix Flare Keyboard",
+      "vendor": "ASUS",
+      "type": "Keyboard",
+      "vid": 2821,
+      "pids": [6261, 6319],
+      "protocol": "AuraUSB",
+      "ledCount": 104,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Keys", "ledStart": 0, "ledCount": 104, "channel": 0, "resizable": false }
+      ]
+    },
+    {
+      "id": "asus-aura-keyboard-scope",
+      "name": "ASUS ROG Strix Scope Keyboard",
+      "vendor": "ASUS",
+      "type": "Keyboard",
+      "vid": 2821,
+      "pids": [6392, 6412],
+      "protocol": "AuraUSB",
+      "ledCount": 87,
+      "expectedOutputReportLength": 65,
+      "zones": [
+        { "name": "Keys", "ledStart": 0, "ledCount": 87, "channel": 0, "resizable": false }
+      ]
+    }
+  ]
+}

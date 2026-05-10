@@ -21,6 +21,7 @@
     <x:String x:Key="BtnAddFilter">Add Filter</x:String>
     <x:String x:Key="BtnApplySelected">Apply to Selected Device</x:String>
     <x:String x:Key="BtnApplyAll">Apply to All</x:String>
+    <x:String x:Key="BtnCancel">Cancel</x:String>
 
     <!-- Common labels -->
     <x:String x:Key="LblName">Name:</x:String>
@@ -30,6 +31,8 @@
     <x:String x:Key="LblCurve">Curve:</x:String>
     <x:String x:Key="LblSource">Source:</x:String>
     <x:String x:Key="LblMinMax">Min/Max:</x:String>
+    <x:String x:Key="LblZeroRpm">0 RPM Below</x:String>
+    <x:String x:Key="LblDisabled">Disabled</x:String>
     <x:String x:Key="LblLive">Live:</x:String>
     <x:String x:Key="LblHysteresis">Hysteresis:</x:String>
     <x:String x:Key="LblResponse">Response:</x:String>
@@ -47,7 +50,7 @@
     <x:String x:Key="LblTheme">Theme</x:String>
     <x:String x:Key="LblThemeHint">Choose Dark, Light, or System theme</x:String>
     <x:String x:Key="LblLanguage">Language</x:String>
-    <x:String x:Key="LblLanguageHint">Select interface language · Restart required</x:String>
+    <x:String x:Key="LblLanguageHint">Select interface language</x:String>
     <x:String x:Key="LblServer">Server:</x:String>
     <x:String x:Key="LblPort">Port:</x:String>
     <x:String x:Key="LblClient">Client:</x:String>
@@ -62,9 +65,8 @@
     <x:String x:Key="LblEnableAlerts">Enable Temperature Alerts</x:String>
     <x:String x:Key="LblEnableAlertsHint">Show a notification when threshold is exceeded</x:String>
     <x:String x:Key="LblAlertThreshold">Alert Threshold (°C)</x:String>
-    <x:String x:Key="LblOpenRGBServer">OpenRGB SDK Server</x:String>
-    <x:String x:Key="LblOpenRGBServerHint">Control all devices using OpenRGB SDK Server mode</x:String>
-    <x:String x:Key="LblOpenRGBNote">Note: Enable SDK Server in OpenRGB. Restart the app for changes to take effect.</x:String>
+    <x:String x:Key="LblRgbCustomDefs">Custom Device Definitions</x:String>
+    <x:String x:Key="LblRgbCustomDefsHint">Add JSON files to %APPDATA%\Kontrol\hid_devices\ to define new devices</x:String>
 
     <!-- Tooltips -->
     <x:String x:Key="TipRename">Rename</x:String>
@@ -106,7 +108,7 @@
     <x:String x:Key="SecHardwareMonitoring">Hardware Monitoring</x:String>
     <x:String x:Key="SecAppBehavior">App Behavior</x:String>
     <x:String x:Key="SecTempAlerts">Temperature Alerts</x:String>
-    <x:String x:Key="SecOpenRGB">OpenRGB Integration</x:String>
+    <x:String x:Key="SecOpenRGB">RGB Devices</x:String>
     <x:String x:Key="SecAppearance">Appearance</x:String>
 
     <!-- Fan control specific -->
@@ -114,6 +116,10 @@
     <x:String x:Key="FanCtrlHideHidden">Hide Hidden</x:String>
     <x:String x:Key="DlgExportFanProfile">Export Fan Profile</x:String>
     <x:String x:Key="DlgImportFanProfile">Import Fan Profile</x:String>
+    <x:String x:Key="DlgDeleteCurveTitle">Delete Curve</x:String>
+    <x:String x:Key="DlgDeleteCurveMsg">Are you sure you want to delete the curve '{0}'?</x:String>
+    <x:String x:Key="DlgDeleteSourceTitle">Delete Temperature Source</x:String>
+    <x:String x:Key="DlgDeleteSourceMsg">Are you sure you want to delete the temperature source '{0}'?</x:String>
     <x:String x:Key="FmtCurveItem">{0} pts · {1}</x:String>
 
     <!-- Fan mode display -->
@@ -130,15 +136,16 @@
 
     <!-- RGB -->
     <x:String x:Key="RgbNoDevices">No RGB devices found</x:String>
-    <x:String x:Key="RgbDetectionIntro">The app detects devices in two ways:</x:String>
-    <x:String x:Key="RgbLampArrayLabel">1. Windows Native (LampArray)</x:String>
-    <x:String x:Key="RgbLampArrayDesc">Requires no vendor SDK. Automatically discovers devices supporting HID LampArray.</x:String>
-    <x:String x:Key="RgbVendorSDKLabel">2. Vendor SDK</x:String>
-    <x:String x:Key="RgbVendorSDKDesc">Devices from the vendors below work when their software is installed.</x:String>
-    <x:String x:Key="RgbSupportedSDKs">Supported Vendor SDKs</x:String>
-    <x:String x:Key="RgbStartupSummary">Startup Summary</x:String>
+    <x:String x:Key="RgbDetectionIntro">Kontrol controls RGB lighting directly via USB — no external software needed.</x:String>
+    <x:String x:Key="RgbLampArrayLabel">Windows Dynamic Lighting (LampArray)</x:String>
+    <x:String x:Key="RgbLampArrayDesc">Supported by modern ASUS ROG, Corsair, Razer, SteelSeries and others on Windows 10 2004+.</x:String>
+    <x:String x:Key="RgbVendorSDKLabel">Direct USB HID</x:String>
+    <x:String x:Key="RgbVendorSDKDesc">ASUS Aura, Gigabyte RGB Fusion 2, NZXT HUE 2, MSI Mystic Light and more via built-in definitions.</x:String>
+    <x:String x:Key="RgbSupportedSDKs">Supported Devices</x:String>
+    <x:String x:Key="RgbStartupSummary">Detection Summary</x:String>
     <x:String x:Key="RgbDevices">Devices</x:String>
     <x:String x:Key="RgbErrorTitle">RGB Error</x:String>
+    <x:String x:Key="RgbCustomDefsHint">Add %APPDATA%\Kontrol\hid_devices\*.json to support additional devices.</x:String>
 
     <!-- Status / ViewModel format strings -->
     <x:String x:Key="StatReady">Ready</x:String>
@@ -166,15 +173,37 @@
     <x:String x:Key="StatRGBScanning">Scanning RGB devices...</x:String>
     <x:String x:Key="StatRGBStartupError">Startup error: {0}</x:String>
     <x:String x:Key="StatRGBScanError">Device scan error: {0}</x:String>
-    <x:String x:Key="StatRGBDevices">{0} devices ({1} SDK · {2} Native)</x:String>
+    <x:String x:Key="StatRGBDevices">{0} RGB devices found</x:String>
     <x:String x:Key="StatRGBNoDevice">No device found</x:String>
     <x:String x:Key="StatRGBColorApplied">{0} — color applied</x:String>
     <x:String x:Key="StatRGBAllApplied">{0} devices — color applied</x:String>
     <x:String x:Key="StatRGBProfileError">Profile could not be loaded</x:String>
     <x:String x:Key="StatRGBProfileLoaded">Profile loaded: {0}</x:String>
     <x:String x:Key="StatRGBProfileSaved">Profile saved: {0}</x:String>
-    <x:String x:Key="StatInitLogNoProvider">No provider is active</x:String>
-    <x:String x:Key="StatInitLogActive">Active: {0} | {1} provider(s) skipped</x:String>
+    <x:String x:Key="StatInitLogNoProvider">No RGB device found. Connect a supported device and rescan.</x:String>
+    <x:String x:Key="StatRGBLedCountSaved">LED count set to {0}</x:String>
+    <x:String x:Key="StatRGBLedCountReset">LED count reset to default</x:String>
+    <x:String x:Key="StatRGBZoneColorApplied">Zone {0} — color applied</x:String>
+    <x:String x:Key="LblLedCountHeader">LED Count Override</x:String>
+    <x:String x:Key="LblLedCountHint">Set the actual number of LEDs connected to this device. Applied immediately.</x:String>
+    <x:String x:Key="BtnSaveLedCount">Apply</x:String>
+    <x:String x:Key="RgbZones">Zones</x:String>
+    <x:String x:Key="BtnApplyZone">Apply to Zone</x:String>
+    <x:String x:Key="BtnApplyDevice">Apply to Device</x:String>
+    <x:String x:Key="LblZoneLedCountHeader">Zone LED Count</x:String>
+    <x:String x:Key="LblZoneLedCountHint">Set the number of LEDs on the ARGB strip connected to this header. Applied immediately.</x:String>
+
+    <!-- Fan profiles -->
+    <x:String x:Key="SecFanProfiles">FAN PROFILES</x:String>
+    <x:String x:Key="LblFanProfiles">Fan Profiles</x:String>
+    <x:String x:Key="LblCustomProfiles">Custom Profiles</x:String>
+    <x:String x:Key="HintNewFanProfileName">Save current settings as profile...</x:String>
+    <x:String x:Key="BtnSaveFanProfile">Save</x:String>
+    <x:String x:Key="DlgDeleteProfileTitle">Delete Profile</x:String>
+    <x:String x:Key="DlgDeleteProfileMsg">Delete profile '{0}'?</x:String>
+    <x:String x:Key="StatFanProfileApplied">Profile applied: {0}</x:String>
+    <x:String x:Key="StatFanProfileSaved">Profile saved: {0}</x:String>
+    <x:String x:Key="StatFanProfileDeleted">Profile deleted: {0}</x:String>
 
     <!-- Tray icon -->
     <x:String x:Key="TrayShowHide">Show / Hide</x:String>
@@ -182,12 +211,27 @@
 
     <!-- Dashboard -->
     <x:String x:Key="DashSecFans">FAN SUMMARY</x:String>
+    <x:String x:Key="DashSecFanControl">FAN CONTROL</x:String>
     <x:String x:Key="DashSecRgb">RGB DEVICES</x:String>
     <x:String x:Key="DashCpu">CPU</x:String>
     <x:String x:Key="DashGpu">GPU</x:String>
     <x:String x:Key="DashMaxRpm">MAX RPM</x:String>
     <x:String x:Key="DashFans">FANS</x:String>
     <x:String x:Key="DashNoRgb">No RGB devices detected</x:String>
+    <x:String x:Key="DashNoFans">No controllable fans found</x:String>
+    <x:String x:Key="DashFanMode">Mode</x:String>
+    <x:String x:Key="DashFanSpeed">Speed %</x:String>
+    <x:String x:Key="DashGoAdvanced">Advanced Settings →</x:String>
+    <x:String x:Key="DashRgbChangeColor">Change Color</x:String>
+    <x:String x:Key="DashRgbQuickPickTitle">Quick Color</x:String>
+    <x:String x:Key="DashRgbLoadProfile">Load Profile</x:String>
+    <x:String x:Key="DashRgbNoProfiles">No saved profiles</x:String>
+    <x:String x:Key="DashRgbOpenSettings">Open RGB Settings →</x:String>
+
+    <!-- Advanced Mode -->
+    <x:String x:Key="SecAdvancedMode">Advanced Mode</x:String>
+    <x:String x:Key="LblAdvancedMode">Enable Advanced Mode</x:String>
+    <x:String x:Key="LblAdvancedModeHint">Show the fan curve editor, hardware monitoring and per-zone RGB control in the sidebar</x:String>
 
     <!-- Sidebar stats labels -->
     <x:String x:Key="StatCpu">CPU</x:String>

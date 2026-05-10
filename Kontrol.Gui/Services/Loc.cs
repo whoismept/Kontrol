@@ -18,6 +18,8 @@ public static class Loc
         catch { return fmt; }
     }
 
+    public static event Action? LanguageChanged;
+
     public static void Load(string languageCode)
     {
         try
@@ -25,6 +27,7 @@ public static class Loc
             var uri = new Uri($"ms-appx:///Resources/Strings/{languageCode}.xaml");
             var dict = new ResourceDictionary { Source = uri };
             Application.Current.Resources.MergedDictionaries.Add(dict);
+            LanguageChanged?.Invoke();
         }
         catch
         {

@@ -29,18 +29,14 @@ public sealed partial class SettingsView : Page
         LblEnableAlertsText.Text = Loc.Get("LblEnableAlerts");
         LblEnableAlertsHintText.Text = Loc.Get("LblEnableAlertsHint");
         LblAlertThresholdText.Text = Loc.Get("LblAlertThreshold");
-        SecOpenRGBText.Text = Loc.Get("SecOpenRGB");
-        LblOpenRGBServerText.Text = Loc.Get("LblOpenRGBServer");
-        LblOpenRGBServerHintText.Text = Loc.Get("LblOpenRGBServerHint");
-        LblServerText.Text = Loc.Get("LblServer");
-        LblPortText.Text = Loc.Get("LblPort");
-        LblClientText.Text = Loc.Get("LblClient");
-        LblOpenRGBNoteText.Text = Loc.Get("LblOpenRGBNote");
         SecAppearanceText.Text = Loc.Get("SecAppearance");
         LblThemeText.Text = Loc.Get("LblTheme");
         LblThemeHintText.Text = Loc.Get("LblThemeHint");
         LblLanguageText.Text = Loc.Get("LblLanguage");
         LblLanguageHintText.Text = Loc.Get("LblLanguageHint");
+        SecAdvancedText.Text = Loc.Get("SecAdvancedMode");
+        LblAdvancedModeText.Text = Loc.Get("LblAdvancedMode");
+        LblAdvancedModeHintText.Text = Loc.Get("LblAdvancedModeHint");
         BtnSaveText.Text = Loc.Get("BtnSave");
     }
 }

@@ -21,6 +21,7 @@ public class FanControllerService : IDisposable
 
     // fanKey, targetPercent, tempC, currentRpm
     public event Action<string, float, float, float>? FanUpdated;
+    public event Action<List<SensorReading>>? ReadingsUpdated;
 
     public FanControllerService(
         HardwareService hardwareService,
@@ -72,6 +73,23 @@ public class FanControllerService : IDisposable
 
     public void SaveConfig() => _configService.Save(_config);
 
+    /// <summary>
+    /// Applies a fan profile in-place, saves the config, and fires ConfigChanged.
+    /// Returns true if the profile was applied successfully.
+    /// </summary>
+    public bool ApplyFanProfile(FanProfile profile, FanProfileService profileService)
+    {
+        try
+        {
+            profileService.ApplyProfile(profile, _config);
+            _configService.Save(_config);
+            _curveEvaluator.ResetAll();
+            ConfigChanged?.Invoke();
+            return true;
+        }
+        catch { return false; }
+    }
+
     public void ForceApplyNow(string fanKey)
     {
         var fan = _fans.FirstOrDefault(f => GetFanKey(f) == fanKey);
@@ -86,6 +104,7 @@ public class FanControllerService : IDisposable
             if (assignment is not null)
             {
                 var readings = _hardwareService.GetAllReadings();
+                ReadingsUpdated?.Invoke(readings);
                 ApplyAssignment(fan, assignment, readings);
             }
         }
@@ -97,6 +116,16 @@ public class FanControllerService : IDisposable
         try
         {
             var readings = await Task.Run(() => _hardwareService.GetAllReadings());
+            ReadingsUpdated?.Invoke(readings);
+
+            if (_fans.Count == 0)
+            {
+                float temp = GetMaxTemp(readings);
+                foreach (var assignment in _config.Assignments)
+                    FanUpdated?.Invoke(assignment.FanKey, 0, temp, 0);
+                return;
+            }
+
             foreach (var fan in _fans)
             {
                 _fanControlService.RefreshFanState(fan);

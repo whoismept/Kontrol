@@ -23,6 +23,9 @@ public sealed partial class FanControlView : Page
         BtnRescan.Content = new FontIcon { Glyph = "", FontSize = 14 };
         ToolTipService.SetToolTip(BtnRescan, Loc.Get("TipRescan"));
         BtnSaveText.Text = Loc.Get("BtnSave");
+        LblProfilesBarText.Text = Loc.Get("LblFanProfiles");
+        NewProfileBox.PlaceholderText = Loc.Get("HintNewFanProfileName");
+        BtnSaveProfileText.Text = Loc.Get("BtnSaveFanProfile");
 
         TabFans.Header = Loc.Get("SecFans");
         TabCurves.Header = Loc.Get("SecCurves");
@@ -65,6 +68,15 @@ public sealed partial class FanControlView : Page
             && DataContext is FanControlViewModel vm)
         {
             vm.RemoveSensorRefCommand.Execute(sref);
+        }
+    }
+
+    private void OnProfileButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is FanProfile profile
+            && DataContext is FanControlViewModel vm)
+        {
+            vm.ApplyFanProfileCommand.Execute(profile);
         }
     }
 }

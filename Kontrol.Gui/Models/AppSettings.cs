@@ -1,12 +1,11 @@
 using Kontrol.Fan;
-using Kontrol.Rgb;
 using Microsoft.Win32;
 using System.IO;
 using System.Text.Json;
 
 namespace Kontrol.Models;
 
-public class AppSettings : IAlertSettings, IOpenRgbSettings
+public class AppSettings : IAlertSettings
 {
     public int PollingIntervalMs { get; set; } = 2000;
     public bool StartMinimized { get; set; } = false;
@@ -16,11 +15,23 @@ public class AppSettings : IAlertSettings, IOpenRgbSettings
     public float TempAlertThresholdC { get; set; } = 90f;
     public string Theme { get; set; } = "Dark"; // Dark, Light, System
     public string Language { get; set; } = "en";
+    public bool AdvancedMode { get; set; } = false;
 
-    public bool OpenRgbEnabled { get; set; } = false;
-    public string OpenRgbHost { get; set; } = "127.0.0.1";
-    public int OpenRgbPort { get; set; } = 6742;
-    public string OpenRgbClientName { get; set; } = "Kontrol";
+    /// <summary>
+    /// ID of the currently active fan profile (preset or custom).
+    /// Matches FanProfile.Id. Empty = no active profile (manual state).
+    /// </summary>
+    public string ActiveFanProfileId { get; set; } = string.Empty;
+
+    /// <summary>Per-device LED count overrides. Key: RgbDevice.Id, Value: user-specified count.</summary>
+    public Dictionary<string, int> RgbDeviceLedCounts { get; set; } = [];
+
+    /// <summary>
+    /// Per-zone LED count overrides.
+    /// Key format: "{RgbDevice.Id}:ch{zone.Channel}", Value: user-specified count.
+    /// Used for resizable ARGB zones where the LED count depends on the connected strip.
+    /// </summary>
+    public Dictionary<string, int> RgbZoneLedCounts { get; set; } = [];
 
     private static readonly string SettingsPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),

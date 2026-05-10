@@ -1,0 +1,51 @@
+{
+  "devices": [
+    {
+      "id": "gigabyte-rgb-fusion2-it8297",
+      "name": "Gigabyte RGB Fusion 2.0 (IT8297 — Z490/B460/B550/X570/Z590)",
+      "vendor": "Gigabyte",
+      "type": "Motherboard",
+      "vid": 1165,
+      "pids": [33431, 35152],
+      "protocol": "RgbFusion2",
+      "ledCount": 2,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "D_LED1", "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "D_LED2", "ledStart": 1, "ledCount": 1, "channel": 1 }
+      ]
+    },
+    {
+      "id": "gigabyte-rgb-fusion2-5702",
+      "name": "Gigabyte RGB Fusion 2.0 (IT8297 — Z590/B560/H570)",
+      "vendor": "Gigabyte",
+      "type": "Motherboard",
+      "vid": 1165,
+      "pids": [22274, 22275],
+      "protocol": "RgbFusion2",
+      "ledCount": 2,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "D_LED1", "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "D_LED2", "ledStart": 1, "ledCount": 1, "channel": 1 }
+      ]
+    },
+    {
+      "id": "gigabyte-rgb-fusion2-5711",
+      "name": "Gigabyte RGB Fusion 2.0 (IT5711 — Z690/B660/Z790 serisi)",
+      "vendor": "Gigabyte",
+      "type": "Motherboard",
+      "vid": 1165,
+      "pids": [22289],
+      "protocol": "RgbFusion2",
+      "ledCount": 4,
+      "expectedOutputReportLength": 0,
+      "zones": [
+        { "name": "D_LED1", "ledStart": 0, "ledCount": 1, "channel": 0 },
+        { "name": "D_LED2", "ledStart": 1, "ledCount": 1, "channel": 1 },
+        { "name": "D_LED3", "ledStart": 2, "ledCount": 1, "channel": 2 },
+        { "name": "D_LED4", "ledStart": 3, "ledCount": 1, "channel": 3 }
+      ]
+    }
+  ]
+}

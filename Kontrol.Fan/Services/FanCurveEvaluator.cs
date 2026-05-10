@@ -19,7 +19,7 @@ public class FanCurveEvaluator
     private float InterpolatePoints(FanCurve curve, float tempC, string fanKey)
     {
         float effectiveTemp = ApplyHysteresis(curve, tempC, fanKey);
-        return CurveInterpolator.Interpolate(curve.Points, effectiveTemp);
+        return CurveInterpolator.Interpolate(curve.Points, effectiveTemp, curve.Type);
     }
 
     private float ApplyHysteresis(FanCurve curve, float currentTemp, string fanKey)

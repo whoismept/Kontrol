@@ -22,10 +22,6 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _tempAlertsEnabled;
     [ObservableProperty] private float _tempAlertThresholdC;
     [ObservableProperty] private string _selectedTheme = string.Empty;
-    [ObservableProperty] private bool _openRgbEnabled;
-    [ObservableProperty] private string _openRgbHost = string.Empty;
-    [ObservableProperty] private int _openRgbPort;
-    [ObservableProperty] private string _openRgbClientName = string.Empty;
     [ObservableProperty] private LanguageOption _selectedLanguage = null!;
     [ObservableProperty] private string _saveStatusText = string.Empty;
 
@@ -54,9 +50,18 @@ public partial class SettingsViewModel : ObservableObject
         new LanguageOption("sv", "Svenska"),
     };
 
-    public SettingsViewModel(AppSettings settings)
+    private readonly MainViewModel _mainVm;
+
+    public bool IsAdvancedMode
+    {
+        get => _mainVm.IsAdvancedMode;
+        set => _mainVm.IsAdvancedMode = value;
+    }
+
+    public SettingsViewModel(AppSettings settings, MainViewModel mainVm)
     {
         _settings = settings;
+        _mainVm = mainVm;
         _pollingIntervalMs = settings.PollingIntervalMs;
         _startMinimized = settings.StartMinimized;
         _minimizeToTray = settings.MinimizeToTray;
@@ -64,12 +69,14 @@ public partial class SettingsViewModel : ObservableObject
         _tempAlertsEnabled = settings.TempAlertsEnabled;
         _tempAlertThresholdC = settings.TempAlertThresholdC;
         _selectedTheme = settings.Theme;
-        _openRgbEnabled = settings.OpenRgbEnabled;
-        _openRgbHost = settings.OpenRgbHost;
-        _openRgbPort = settings.OpenRgbPort;
-        _openRgbClientName = settings.OpenRgbClientName;
         _selectedLanguage = LanguageOptions.FirstOrDefault(l => l.Code == settings.Language)
                             ?? LanguageOptions[0];
+
+        mainVm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MainViewModel.IsAdvancedMode))
+                OnPropertyChanged(nameof(IsAdvancedMode));
+        };
     }
 
     [RelayCommand]
@@ -82,10 +89,6 @@ public partial class SettingsViewModel : ObservableObject
         _settings.TempAlertsEnabled = TempAlertsEnabled;
         _settings.TempAlertThresholdC = TempAlertThresholdC;
         _settings.Theme = SelectedTheme;
-        _settings.OpenRgbEnabled = OpenRgbEnabled;
-        _settings.OpenRgbHost = OpenRgbHost;
-        _settings.OpenRgbPort = OpenRgbPort;
-        _settings.OpenRgbClientName = OpenRgbClientName;
         _settings.Language = SelectedLanguage.Code;
         _settings.Save();
         Services.ThemeHelper.Apply(SelectedTheme);
@@ -102,6 +105,7 @@ public partial class SettingsViewModel : ObservableObject
             CultureInfo.DefaultThreadCurrentUICulture = culture;
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
+            Loc.Load(code);
         }
         catch { }
     }

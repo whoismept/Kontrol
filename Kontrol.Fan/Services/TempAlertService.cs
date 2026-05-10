@@ -2,9 +2,8 @@ namespace Kontrol.Fan;
 
 public class TempAlertService : IDisposable
 {
-    private readonly HardwareService _hardwareService;
+    private readonly FanControllerService _fanController;
     private readonly IAlertSettings _settings;
-    private readonly System.Timers.Timer _timer;
     private readonly HashSet<string> _activeAlerts = new();
     private DateTime _lastAlertTime = DateTime.MinValue;
     private bool _disposed;
@@ -13,25 +12,23 @@ public class TempAlertService : IDisposable
 
     public event Action<string, string>? AlertTriggered;
 
-    public TempAlertService(HardwareService hardwareService, IAlertSettings settings)
+    public TempAlertService(FanControllerService fanController, IAlertSettings settings)
     {
-        _hardwareService = hardwareService;
+        _fanController = fanController;
         _settings = settings;
-
-        _timer = new System.Timers.Timer(5000);
-        _timer.Elapsed += (_, _) => CheckTemperatures();
-        _timer.AutoReset = true;
     }
 
-    public void Start() => _timer.Start();
+    public void Start()
+    {
+        _fanController.ReadingsUpdated += CheckTemperatures;
+    }
 
-    private void CheckTemperatures()
+    private void CheckTemperatures(List<SensorReading> readings)
     {
         if (!_settings.TempAlertsEnabled) return;
 
         try
         {
-            var readings = _hardwareService.GetAllReadings();
             var threshold = _settings.TempAlertThresholdC;
             var criticalSensors = new List<string>();
 
@@ -65,7 +62,6 @@ public class TempAlertService : IDisposable
     {
         if (_disposed) return;
         _disposed = true;
-        _timer.Stop();
-        _timer.Dispose();
+        _fanController.ReadingsUpdated -= CheckTemperatures;
     }
 }
