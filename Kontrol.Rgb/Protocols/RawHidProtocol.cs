@@ -4,17 +4,7 @@ using WinColor = Windows.UI.Color;
 
 namespace Kontrol.Rgb.Protocols;
 
-/// <summary>
-/// Kullanıcı tanımlı "ham" HID protokolü.
-/// JSON tanımındaki <see cref="RawProtocolDefinition"/> alanlarından komutu oluşturur.
-///
-/// ColorCommand içinde "{R}", "{G}", "{B}" token'ları renk değerleriyle değiştirilir.
-/// Örnek JSON:
-/// "rawProtocol": {
-///   "colorCommand": ["0x00","0xB0","0x00","0x00","{R}","{G}","{B}"],
-///   "reportSize": 65
-/// }
-/// </summary>
+
 public class RawHidProtocol : IHidProtocol
 {
     public string ProtocolName => "Raw";

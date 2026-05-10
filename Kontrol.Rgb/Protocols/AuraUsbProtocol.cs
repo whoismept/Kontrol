@@ -4,20 +4,7 @@ using WinColor = Windows.UI.Color;
 
 namespace Kontrol.Rgb.Protocols;
 
-/// <summary>
-/// ASUS Aura USB protokolü — OpenRGB kaynak koduna dayalı doğru implementasyon.
-///
-/// Kaynak: Controllers/AsusAuraUSBController/AsusAuraUSBController/
-///
-/// Kritik bilgiler:
-///   - HID Report ID: 0xEC  (buffer[0])
-///   - Firmware sorgulama: [0xEC, 0x82, ...]
-///   - Config table: [0xEC, 0xB0, ...]
-///   - Direct renk modu: [0xEC, 0x40, (apply|channel), offset, count, R, G, B, ...]
-///     * apply flag: son pakette buffer[2] |= 0x80
-///     * Paket başına max 20 LED (0x14)
-///   - VID: 0x0B05
-/// </summary>
+
 public class AuraUsbProtocol : IHidProtocol
 {
     private const byte REPORT_ID    = 0xEC;
@@ -75,10 +62,7 @@ public class AuraUsbProtocol : IHidProtocol
         }
     }
 
-    /// <summary>
-    /// SendDirect implementasyonu — OpenRGB AsusAuraUSBController::SendDirect'e birebir karşılık gelir.
-    /// Son pakette 0x80 | channel yazarak cihaza "uygula" sinyali verilir.
-    /// </summary>
+ 
     private static void SendDirectToChannel(
         HidStream stream,
         byte channel,

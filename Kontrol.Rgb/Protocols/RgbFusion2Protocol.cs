@@ -4,22 +4,6 @@ using WinColor = Windows.UI.Color;
 
 namespace Kontrol.Rgb.Protocols;
 
-/// <summary>
-/// Gigabyte RGB Fusion 2.0 USB protokolü — OpenRGB kaynak koduna dayalı.
-///
-/// Kaynak: Controllers/GigabyteRGBFusion2USBController/GigabyteRGBFusion2USBController.cpp
-///
-/// Kritik bilgiler:
-///   - HID FEATURE reports kullanır (hid_send_feature_report / hid_get_feature_report)
-///     HidSharp'ta: stream.SetFeature() / stream.GetFeature()
-///   - Report ID: cihazdan dinamik okunur (0x60 sorgusundan)
-///   - Reset: 0x20–0x27 arasındaki registerlara 0 yaz
-///   - Zone efekti: PktEffect yapısı ile (ham byte paketi)
-///   - Apply: hızlı apply = 0x28 komutu
-///   - VID: 0x048D
-///
-/// Basitleştirilmiş implementasyon: static renk için zone 0 ve 1'e 0x21 static modu yazar.
-/// </summary>
 public class RgbFusion2Protocol : IHidProtocol
 {
     private const int  BUF_SIZE       = 64;

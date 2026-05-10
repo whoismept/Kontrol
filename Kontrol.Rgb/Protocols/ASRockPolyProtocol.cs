@@ -4,17 +4,7 @@ using WinColor = Windows.UI.Color;
 
 namespace Kontrol.Rgb.Protocols;
 
-/// <summary>
-/// ASRock Polychrome USB protokolü — OpenRGB kaynak koduna dayalı.
-///
-/// Kaynak: Controllers/ASRockPolychromeUSBController/ASRockPolychromeUSBController.cpp
-///
-/// Kritik bilgiler:
-///   - HID Report ID: 0x00  (buffer[0] = 0x00)
-///   - SET_ZONE komutu 0x10: renk G ve R sırasıyla ters yazılır (GRB değil, G=buf[5], R=buf[6])
-///   - COMMIT komutu 0x12: değişiklikleri uygula
-///   - VID: 0x26CE
-/// </summary>
+
 public class ASRockPolyProtocol : IHidProtocol
 {
     private const byte REPORT_ID = 0x00;
@@ -58,10 +48,7 @@ public class ASRockPolyProtocol : IHidProtocol
         Commit(stream);
     }
 
-    /// <summary>
-    /// OpenRGB WriteZone implementasyonu.
-    /// DİKKAT: G ve R sıraları ters — buf[5]=G, buf[6]=R.
-    /// </summary>
+
     private static void WriteZone(HidStream stream, byte zoneType, byte mode, WinColor color, bool allZones)
     {
         var buf = new byte[65];
