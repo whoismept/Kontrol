@@ -86,7 +86,7 @@ A Windows desktop application for fan speed control and RGB lighting management.
 ## Building
 
 ```powershell
-git clone https://github.com/user/kontrol.git
+git clone https://github.com/whoismept/kontrol.git
 cd kontrol
 
 # Build (requires Visual Studio or VS Build Tools)
