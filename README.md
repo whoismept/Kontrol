@@ -220,4 +220,4 @@ RGB device protocols were studied from the **OpenRGB** source code and independe
 
 ## License
 
-MIT
+GPL-2.0 license 
